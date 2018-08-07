@@ -1,7 +1,7 @@
 # StackOverflow-lite
 A platform for sharing questions and answers. 
 
-###Features
+### Features
 1. Users can create an account and log in.
 2. Users can post questions.
 3. Users can delete the questions they post.
