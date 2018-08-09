@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="css/style.css" />
+  
+  <script src="js/index.js"></script>
+  <title>StackOverflow</title>
+</head>
+
+<body>
+  <header>
+    <div id="header_div">
+      <a href="index.html"><img src="img/logo.png" alt="logo" id="logoImage" class = "headerElements"></a>
+      <h1 class = "headerElements">StackOverflow Lite</h1>
+      <a href="signin.html"><button class = "buttons signingButton">Sign In</button></a>
+    </div>
+  </header>
+  <section>
+    <div id="midSectionDiv">
+      <fieldset class = "fieldsets">
+        <legend>Sign Up:</legend>
+        <form action="" onsubmit="return signUp(this)" id = "signUpForm">
+          <input type="email" placeholder="john_doe@gmail.com" name="email" id = "email" required>
+          <input type="text" placeholder="enter a username" name="username" id = "username" required>
+          <input type="password" placeholder="password" name="password" id = "password" required>
+          <p id="warnings"></p>
+          <input type="submit" value="Create Account" id="submitButton">
+        </form>
+      </fieldset>
+      </div>
+  </section>
+  </div>
+</body>
+
+</html>
