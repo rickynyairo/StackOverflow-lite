@@ -5,7 +5,7 @@ function signUp(form){
   if (email in test_data.users){
     console.log("account creation unsuccessful");
     document.getElementById("signUpForm").action=""
-    alert("Email is already taken");
+    //alert("Email is already taken");
     return false;
   }
   else{
