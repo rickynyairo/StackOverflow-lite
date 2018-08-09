@@ -122,6 +122,9 @@ ul{
   left: 50%;
   transform: translate(-50%, -50%);
 }
+.questions p{
+  text-align: right;
+}
 .questions{
   border-left:solid 3px rgb(117, 104, 240);
   border-right:solid 3px rgb(117, 104, 240);
