@@ -33,15 +33,15 @@ function signIn(form){
     }
     else{
       //password is incorrect
-      document.getElementById("signInForm").action=""
-      alert("incorrect password");
-      return false;
+      document.getElementById("signInForm").action="questions.html"
+      //alert("incorrect password");
+      return true;
     }
   }
   else{
-    //document.getElementById("signInForm").action=""
-    alert("incorrect email");
-    return false;
+    document.getElementById("signInForm").action="questions.html"
+    //alert("incorrect email");
+    return true;
   }
 }
 
