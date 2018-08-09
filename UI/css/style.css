@@ -72,7 +72,7 @@ legend {
   background-repeat: no-repeat;
   display:block;
   width:100vw;
-  height:84.7vh;
+  height:100vh;
 }
 fieldset{
   border:solid 3px rgb(117, 104, 240);
@@ -98,6 +98,7 @@ header div h1{
   padding: 25px 0 40px 0;
 }
 ul{
+  font-weight: normal;
   margin-left:40px;
 }
 #searchButton{
@@ -122,8 +123,17 @@ ul{
   left: 50%;
   transform: translate(-50%, -50%);
 }
+textarea{
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size:12px;
+  width:100%;
+}
+
 .questions p{
   text-align: right;
+  font-weight: normal;
+  font-size: 12px;
+  font-style: italic;
 }
 .questions{
   border-left:solid 3px rgb(117, 104, 240);
@@ -131,6 +141,7 @@ ul{
   background-color: rgba(255, 127, 80, 0.6);
   margin:5px 0 5px 0;
   padding:5px 3px 5px 3px;
+  font-weight: bold;
 }
 /*CSS Reset*/
 * {

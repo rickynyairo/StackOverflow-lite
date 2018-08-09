@@ -27,8 +27,26 @@ function loadQuestions(){
         pElem.appendChild(askedByParagraphElement);
         pElem.appendChild(userAnswerParagraphElement);
         pElem.className = "questions"
+        textArea = document.createElement("textarea");
+        button = document.createElement("button");
+        button.innerHTML = "Post Answer";
+        button.className = "postAnswer"
+        button.id = "postAnswer"+x;
+        button.setAttribute("onclick","postAnswer(this)");
+        pElem.appendChild(textArea);
+        pElem.appendChild(button);
         container.appendChild(pElem);
     }
 }
 
+function postAnswer(button){
+    text = button.parentNode.children[3].value;
+    button.parentNode.children[3].value = '';
+    ulELement = button.parentNode.children[0];
+    let textNode = document.createTextNode(text)
+    //append the answer to the list of answers
+    let liElement = document.createElement("LI");
+    liElement.appendChild(textNode);
+    ulELement.appendChild(liElement);
+}
 loadQuestions();
