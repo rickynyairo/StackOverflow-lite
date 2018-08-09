@@ -20,15 +20,19 @@
   <section>
     <div id="midSectionDiv">
       <div class = "container">
-        <div>
-          <input type="text" placeholder="Search..." name="search" id="search">
-          <button class="buttons" id="searchButton">Go</button>
+        <div id="userProfile">
+          <fieldset id = "statsField">
+            <legend>Nancy</legend>
+            <label class = "stats">Questions Asked: 5</label>
+            <label class = "stats">Answers Given: 19</label>
+          </fieldset>
         </div>
-        <div  id="questionsDiv">
-          <h1>Recent Questions</h1> 
-          <!--Questions and answers will be inserted using JS.-->
-        </div>
-       
+        
+        <fieldset>
+          <legend>Post a Question:</legend>
+          <textarea name="question" id="questionText"></textarea>
+          <button id = "postQuestion" onclick="postQuestion(this)">Post</button>
+        </fieldset>
       </div>  
     </div>
   </section>
