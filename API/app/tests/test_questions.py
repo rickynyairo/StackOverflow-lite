@@ -31,8 +31,10 @@ class QuestionsTests(unittest.TestCase):
 
     def test_post_question(self):
         """Test that a user can post a new question"""
+        # post a question
         result = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(result.status_code, 201)
+        # assert that the question is in the response
         self.assertIn(self.question['text'], str(result.data))
 
     def test_get_questions(self):

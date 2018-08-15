@@ -18,7 +18,7 @@ def create_app():
             # return the new question with the question id
             question_id = int(data["questions"][-1]['id']) + 1
             req_data = json.loads(request.data.decode('utf-8').replace("'", '"'))
-            #import pdb; pdb.set_trace()
+            # import pdb; pdb.set_trace()
             question_text = req_data['text']
             asked_by = req_data['asked_by']
             date = '{:%B %d, %Y}'.format(datetime.now())
