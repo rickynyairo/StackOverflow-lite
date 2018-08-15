@@ -5,6 +5,7 @@ import json
 from app import create_app
 from app import data as test_data
 
+
 class QuestionsTests(unittest.TestCase):
     """This class collects all the test cases for the questions"""
     def setUp(self):
@@ -23,14 +24,20 @@ class QuestionsTests(unittest.TestCase):
             self.data = test_data
 
     def post_data(self, path, data):
-        """This function performs a post request using the testing client"""
+        """This function performs a POST request using the testing client"""
         result = self.client.post(path, data=json.dumps(data),
                              content_type='applicaton/json')
         return result
 
     def get_data(self, path):
-        """This function performs a get request using the testing client"""
+        """This function performs a GET request using the testing client"""
         result = self.client.get(path)
+        return result
+
+    def put_data(self, path, data):
+        """This function performs a PUT request using the testing client"""
+        result = self.client.put(path, data=json.dumps(data),
+                             content_type='applicaton/json')
         return result
 
     def test_post_question(self):
@@ -64,7 +71,7 @@ class QuestionsTests(unittest.TestCase):
         self.assertIn(self.question['text'], str(result.data))
 
     def test_post_an_answer_to_a_question(self):
-        """This tests that the user can post an answer to a given question"""
+        """Test that the user can post an answer to a given question"""
         # create a question 
         new_question = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(new_question.status_code, 201)
@@ -78,6 +85,29 @@ class QuestionsTests(unittest.TestCase):
         response2 = json.loads(result.data.decode('utf-8').replace("'", '"'))
         self.assertEqual("{}".format(response['id']), response2['question_id'])
         self.assertEqual("{}".format(self.answer['text']), response2['text'])
+    
+    def test_edit_question(self):
+        """Test whether the user can edit a question"""
+        # create a question 
+        new_question = self.post_data('/api/v1/questions/', data=self.question)
+        self.assertEqual(new_question.status_code, 201)
+        question = json.loads(new_question.data.decode('utf-8').replace("'", '"'))
+        question_id = question['id']
+        # edit the question by splitting it into 2
+        size = len(question['text'])//2
+        edited_question_text = question['text'][:size]
+        # make PUT request to the endpoint
+        result = self.put_data('/api/v1/questions/{}'.format(question_id), 
+                                data = {"text":edited_question_text})
+        # test that the request returns the right response
+        self.assertEqual(result.status_code, 200)
+        result = json.loads(result.data.decode('utf-8').replace("'", '"'))
+        # test that the request returns the edited question
+        self.assertEqual(edited_question_text, result['text'])
+        # test that the function edits the data
+        response = self.get_data('/api/v1/questions/{}'.format(question_id))
+        response = json.loads(response.data.decode('utf-8').replace("'", '"'))
+        self.assertEqual(edited_question_text, response['text'])
 
     def tearDown(self):
         """This function destroys all the variables that have been created during the test"""

@@ -12,7 +12,7 @@ def create_app():
 
     @app.route('/api/v1/questions/', methods=['POST', 'GET'])
     def questions():
-        """this route handles request to the questions resource"""
+        """This function handles request to the questions resource"""
         if request.method == 'GET':
             # return all questions in the db
             response = jsonify(data['questions'])
