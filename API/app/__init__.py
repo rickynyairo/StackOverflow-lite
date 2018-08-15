@@ -4,7 +4,7 @@ from flask import request, jsonify, abort
 from datetime import datetime
 import pdb
 def create_app():
-    app=Flask(__name__)
+    app = Flask(__name__)
 
     @app.route('/api/v1/questions/', methods=['POST', 'GET'])
     def questions():
