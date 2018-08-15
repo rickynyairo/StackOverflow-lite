@@ -16,7 +16,7 @@ class QuestionsTests(unittest.TestCase):
             "asked_by":"Jimmy"
         }
         self.answer =  {
-            "text":"You do so by using the 'int' keyword like so:\nint x;",
+            "text":"You do so by using the int keyword like so: int x;",
             "answered_by":"Jimmy"
         }
         with self.app.app_context():
@@ -75,9 +75,9 @@ class QuestionsTests(unittest.TestCase):
         result = self.post_data(url, data=self.answer)
         self.assertEqual(result.status_code, 201)
         # the response should contain the question id and the answer
-        response = json.loads(result.data.decode('utf-8').replace("'", '"'))
-        self.assertIn("{}".format(response['id']), str(response.data))
-        self.assertIn("{}".format(self.answer['text']), str(response.data))
+        response2 = json.loads(result.data.decode('utf-8').replace("'", '"'))
+        self.assertEqual("{}".format(response['id']), response2['question_id'])
+        self.assertEqual("{}".format(self.answer['text']), response2['text'])
 
     def tearDown(self):
         """This function destroys all the variables that have been created during the test"""
