@@ -3,12 +3,13 @@ import sys
 import unittest
 import json
 from app import create_app
+from app import data as test_data
 
 class QuestionsTests(unittest.TestCase):
     """This class collects all the test cases for the questions"""
     def setUp(self):
         """Performs variable definition and app initialization"""
-        self.app=create_app()
+        self.app = create_app()
         self.client = self.app.test_client()
         self.question =  {
             "text":"How do you declare an integer variable in Java?",
@@ -18,6 +19,9 @@ class QuestionsTests(unittest.TestCase):
             "text":"You do so by using the 'int' keyword like so:\nint x;",
             "answered_by":"Jimmy"
         }
+        with self.app.app_context():
+            self.data = test_data
+
     def post_data(self, path, data):
         """This function performs a post request using the testing client"""
         result = self.client.post(path, data=json.dumps(data),
@@ -26,7 +30,7 @@ class QuestionsTests(unittest.TestCase):
 
     def get_data(self, path):
         """This function performs a get request using the testing client"""
-        result = self.client.get(path, content_type='applicaton/json')
+        result = self.client.get(path)
         return result
 
     def test_post_question(self):
@@ -53,7 +57,7 @@ class QuestionsTests(unittest.TestCase):
         self.assertEqual(new_question.status_code, 201)
         # convert response to JSON
         response = json.loads(new_question.data.decode('utf-8').replace("'", '"'))
-        result = self.get_data('/api/questions/{}'.format(response['id']))
+        result = self.get_data('/api/v1/questions/{}'.format(response['id']))
         # check that the server responds with the correct status code 
         self.assertEqual(result.status_code, 200)
         # test that the response contains the correct question
@@ -66,14 +70,21 @@ class QuestionsTests(unittest.TestCase):
         self.assertEqual(new_question.status_code, 201)
         # convert response to JSON
         response = json.loads(new_question.data.decode('utf-8').replace("'", '"'))
-        #post an answer to a question
+        # post an answer to a question
         url='/api/v1/questions/{}/answers'.format(response['id'])
         result = self.post_data(url, data=self.answer)
         self.assertEqual(result.status_code, 201)
-        #the response should contain the question id and the answer
+        # the response should contain the question id and the answer
         response = json.loads(result.data.decode('utf-8').replace("'", '"'))
         self.assertIn("{}".format(response['id']), str(response.data))
         self.assertIn("{}".format(self.answer['text']), str(response.data))
+
+    def tearDown(self):
+        """This function destroys all the variables that have been created during the test"""
+        del self.question
+        del self.answer
+        del self.data
+
 
 if __name__ == "__main__":
     unittest.main()

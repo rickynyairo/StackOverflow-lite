@@ -2,7 +2,7 @@ from flask import Flask
 import json
 from flask import request, jsonify, abort
 from datetime import datetime
-
+import pdb
 def create_app():
     app=Flask(__name__)
 
@@ -18,7 +18,6 @@ def create_app():
             # return the new question with the question id
             question_id = int(data["questions"][-1]['id']) + 1
             req_data = json.loads(request.data.decode('utf-8').replace("'", '"'))
-            # import pdb; pdb.set_trace()
             question_text = req_data['text']
             asked_by = req_data['asked_by']
             date = '{:%B %d, %Y}'.format(datetime.now())
@@ -34,6 +33,26 @@ def create_app():
 
         return response
         
+    @app.route('/api/v1/questions/<int:id>', methods=['GET'])
+    def question(id, **kwargs):
+        """This function retrieves a question, given a particular id"""
+        questions = data['questions']
+        question = {}
+        for q in questions:
+            if int(q['id']) == int(id):
+                question = q 
+        
+        if len(question) == 0:
+            # question not found
+            # return error 404
+            abort(404)
+        else:
+            # return the question
+            response = jsonify(question)
+            response.status_code = 200
+
+            return response
+           
     return app
 
 data = {
