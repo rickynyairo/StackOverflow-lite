@@ -19,12 +19,14 @@ def create_app():
         collection = data[items]
         required_item = {}
         found = False
-        for item in collection:
-            if int(item['id']) == int(id):
-                required_item = item
+        index = 0
+        for i in range(len(collection)):
+            if int(collection[i]['id']) == int(id):
+                required_item = collection[i]
                 found = True
+                index = i
         if found:
-            return required_item
+            return (required_item, index)
         else:
             return None
         
@@ -57,40 +59,42 @@ def create_app():
 
         return response
         
-    @app.route('/api/v1/questions/<int:id>', methods=['GET', 'PUT'])
+    @app.route('/api/v1/questions/<int:id>', methods=['GET', 'PUT', 'DELETE'])
     def question(id, **kwargs):
         """This function, given a particular question id,
             retrieves the question or edits the question"""
-        questions = data['questions']
         response = {}
-        question = {}
+        # locate the question
+        q = locate(int(id), "questions")
+        
+        if q is None:
+            # question not found
+            # return error 404
+            abort(404)
+
         if request.method == 'GET':
-            # locate the question
-            question = locate(int(id), "questions") 
-            
-            if question is None:
-                # question not found
-                # return error 404
-                abort(404)
-            else:
-                # return the question
-                response = jsonify(question)
-                response.status_code = 200
+            # return the question
+            response = jsonify(q[0])
+            response.status_code = 200
         elif request.method == 'PUT':
-            # locate the question
-            question = locate(int(id), "questions")
-            if question:
-                edited_question = json.loads(request.data.decode('utf-8').replace("'", '"'))['text']
-                # edit the question in the data store
-                question['text'] = edited_question
-                response = jsonify({
-                            "id":id,
-                            "text":edited_question
-                            })
-                response.status_code = 200
-            else:
-                # question was not found, return 404 error
-                abort(404)
+            # obtain the required edit
+            edited_question = json.loads(request.data.decode('utf-8').replace("'", '"'))['text']
+            # edit the question in the data store
+            q[0]['text'] = edited_question
+            response = jsonify({
+                        "id":id,
+                        "text":edited_question
+                        })
+            response.status_code = 200
+        else:
+            # delete the question
+            question_index = q[1]
+            del data["questions"][question_index]
+            response = jsonify({
+                "question_id":id,
+                "action":"deleted"})
+            response.status_code = 200
+
         return response
 
     @app.route('/api/v1/questions/<int:id>/answers', methods=['POST'])
@@ -103,7 +107,7 @@ def create_app():
         # initialize up votes to 0
         answer['up_votes'] = "0"
         # locate the question
-        question = locate(int(id), "questions")
+        question = locate(int(id), "questions")[0]
         if question:
             # question is located, append answer
             question['answers'].append(answer)

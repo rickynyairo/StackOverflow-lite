@@ -100,7 +100,7 @@ class QuestionsTests(unittest.TestCase):
         self.assertEqual("{}".format(self.answer['text']), response2['text'])
     
     def test_edit_question(self):
-        """Test whether the user can edit a question"""
+        """Test that the user can edit a question"""
         # create a question 
         new_question = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(new_question.status_code, 201)
