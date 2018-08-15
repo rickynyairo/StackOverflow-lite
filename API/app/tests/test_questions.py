@@ -32,14 +32,25 @@ class QuestionsTests(unittest.TestCase):
         return result
 
     def get_data(self, path):
-        """This function performs a GET request using the testing client"""
+        """This function performs a GET request to a given path 
+            using the testing client
+        """
         result = self.client.get(path)
         return result
 
     def put_data(self, path, data):
-        """This function performs a PUT request using the testing client"""
+        """This function performs a PUT request to a given path 
+            using the testing client
+        """
         result = self.client.put(path, data=json.dumps(data),
                              content_type='applicaton/json')
+        return result
+
+    def delete_data(self, path):
+        """This function performs a DELETE request to a given path 
+            using the testing client
+        """
+        result = self.client.delete(path)
         return result
 
     def test_post_question(self):
@@ -111,8 +122,25 @@ class QuestionsTests(unittest.TestCase):
         response = json.loads(response.data.decode('utf-8').replace("'", '"'))
         self.assertEqual(edited_question_text, response['text'])
 
+
+    def test_delete_question(self):
+        """Test that the user can delete a question"""
+        # create a question 
+        new_question = self.post_data('/api/v1/questions/', data=self.question)
+        self.assertEqual(new_question.status_code, 201)
+        question_id = json.loads(
+            new_question.data.decode('utf-8').replace("'", '"'))['id']
+        response = self.delete_data('/api/v1/questions/{}'.format(question_id))
+        # test that the right response code is returned
+        self.assertEqual(response.status_code, 200)
+        # test that the data store does not have the question
+        response = self.get_data('/api/v1/questions/{}'.format(question_id))
+        self.assertEqual(response.status_code, 404)
+        
     def tearDown(self):
-        """This function destroys all the variables that have been created during the test"""
+        """This function destroys all the variables 
+        that have been created during the test
+        """
         del self.question
         del self.answer
         del self.data
