@@ -10,6 +10,22 @@ from flask import request, jsonify, abort
 def create_app():
     app = Flask(__name__)
 
+    def locate(id, items):
+        """This function takes 2 arguments (id : int and items : string)
+            To locate the item, question or user, with the identifier, id, 
+            from the collection of items: either questions or users."""
+        collection = data[items]
+        required_item = {}
+        found = False
+        for item in collection:
+            if int(item['id']) == int(id):
+                required_item = item
+                found = True
+        if found:
+            return required_item
+        else:
+            return None
+        
     @app.route('/api/v1/questions/', methods=['POST', 'GET'])
     def questions():
         """This function handles request to the questions resource"""
@@ -39,25 +55,41 @@ def create_app():
 
         return response
         
-    @app.route('/api/v1/questions/<int:id>', methods=['GET'])
+    @app.route('/api/v1/questions/<int:id>', methods=['GET', 'PUT'])
     def question(id, **kwargs):
-        """This function retrieves a question, given a particular id"""
+        """This function, given a particular question id,
+            retrieves the question or edits the question"""
         questions = data['questions']
+        response = {}
         question = {}
-        for q in questions:
-            if int(q['id']) == int(id):
-                question = q 
-        
-        if len(question) == 0:
-            # question not found
-            # return error 404
-            abort(404)
-        else:
-            # return the question
-            response = jsonify(question)
-            response.status_code = 200
-
-            return response
+        if request.method == 'GET':
+            # locate the question
+            question = locate(int(id), "questions") 
+            
+            if question is None:
+                # question not found
+                # return error 404
+                abort(404)
+            else:
+                # return the question
+                response = jsonify(question)
+                response.status_code = 200
+        elif request.method == 'PUT':
+            # locate the question
+            question = locate(int(id), "questions")
+            if question:
+                edited_question = json.loads(request.data.decode('utf-8').replace("'", '"'))['text']
+                # edit the question in the data store
+                question['text'] = edited_question
+                response = jsonify({
+                            "id":id,
+                            "text":edited_question
+                            })
+                response.status_code = 200
+            else:
+                # question was not found, return 404 error
+                abort(404)
+        return response
 
     @app.route('/api/v1/questions/<int:id>/answers', methods=['POST'])
     def answer(id, **kwargs):
@@ -68,14 +100,11 @@ def create_app():
         answer = json.loads(request.data.decode('utf-8').replace("'", '"'))
         # initialize up votes to 0
         answer['up_votes'] = "0"
-        found = False
-        for q in questions:
-            if int(q['id']) == int(id):
-                # append the received answer to the answers list
-                found = True
-                question = q
-                question['answers'].append(answer)
-        if found:
+        # locate the question
+        question = locate(int(id), "questions")
+        if question:
+            # question is located, append answer
+            question['answers'].append(answer)
             # return a response with the question id and the answer
             response = jsonify({
                 "question_id":str(question['id']),
@@ -87,7 +116,6 @@ def create_app():
             # the question with the given id was not found
             # return error 404
             abort(404)
-            
 
     return app
 

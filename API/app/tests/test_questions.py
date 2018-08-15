@@ -2,6 +2,8 @@ import os
 import sys
 import unittest
 import json
+
+# local imports
 from app import create_app
 from app import data as test_data
 
