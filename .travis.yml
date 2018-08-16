@@ -7,7 +7,7 @@ install:
   - pip install coveralls
 
 script:
-  - nosetests API/app/tests 
+  - nosetests API/app/tests -v
 
 after_success:
   - coveralls
