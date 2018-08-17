@@ -1,13 +1,30 @@
-language: python
-python:
-  - "3.6"
+env:
+  global:
+    - CC_TEST_REPORTER_ID=787a2f89b15c637323c7340d65ec17e898ac44480706b4b4122ea040c2a88f1d
+matrix:
+  include:    
+    - language: python
+      python:
+        - "3.6"
 
-install:
-  - pip install -r requirements.txt
-  - pip install coveralls
+      install:
+        - pip install -r requirements.txt
+        - pip install coveralls
 
-script:
-  - nosetests API/app/tests -v
+      script:
+        - nosetests API/app/tests -v --with-coverage --cover-package=app
 
-after_success:
-  - coveralls
+      after_success:
+        - coveralls
+    
+    - language: ruby
+      rvm:
+        - 2.2.0
+      before_script:
+        - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+        - chmod +x ./cc-test-reporter
+        - ./cc-test-reporter before-build
+      script:
+        - bundle exec rspec
+      after_script:
+        - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
