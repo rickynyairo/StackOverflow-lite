@@ -8,6 +8,10 @@ StackOverflow-Lite is a platform for sharing questions and answers.
 [![PyPI version](https://badge.fury.io/py/Flask.svg)](https://badge.fury.io/py/Flask)
 [![Build Status](https://travis-ci.org/rickynyairo/StackOverflow-lite.svg?branch=development)](https://travis-ci.org/rickynyairo/StackOverflow-lite)
 
+### Code Climate
+[![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/codeclimate/codeclimate/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/codeclimate/codeclimate/test_coverage)
+
 ### Features
 1. Users can create an account and log in.
 2. Users can post questions.
