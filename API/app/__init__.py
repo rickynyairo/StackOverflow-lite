@@ -8,5 +8,6 @@ def create_app():
     from .users import users as users_blueprints
     app.register_blueprint(users_blueprints)
     return app
-
+    
+app = create_app()
     

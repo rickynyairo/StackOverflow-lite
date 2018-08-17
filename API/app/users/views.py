@@ -3,25 +3,7 @@ from datetime import datetime
 from flask import request, jsonify, abort
 from . import users
 from app.data import data
-
-def locate(id, items):
-    """This function takes 2 arguments (id : int and items : string)
-        To locate the item, question or user, with the identifier, id, 
-        from the collection of items: either questions or users."""
-    collection = data[items]
-    required_item = {}
-    found = False
-    index = 0
-    for i in range(len(collection)):
-        if int(collection[i]['id']) == int(id):
-            required_item = collection[i]
-            found = True
-            index = i
-    if found:
-        return (required_item, index)
-    else:
-        return None
-        
+     
 @users.route('/api/v1/users/', methods=['POST', 'GET'])
 def get_users():
     """This function handles request to the users resource"""
