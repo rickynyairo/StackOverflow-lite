@@ -1,14 +1,20 @@
 data = {
     "users":[
         {
+            "id":"1",
             "email":"john_doe@gmail.com",
             "username":"johndoe",
-            "password":"¥«,Â\u008aÝ"
+            "password":"¥«,Â\u008aÝ",
+            "no_of_answers":"70",
+            "date_created":"September 17, 2017"
         },
         {
+             "id":"2",
             "email":"rickynyairo@gmail.com",
             "username":"ricky",
-            "password":"¥«,Â\u008aÝ"
+            "password":"¥«,Â\u008aÝ",
+            "no_of_answers":"100",
+            "date_created":"January 31, 2017"
         },
 
     ],
