@@ -1,2 +1,7 @@
 API/flask-env
 API/instance
+API/__pycache__
+API/app/__pycache__
+API/app/questions/__pycache__
+API/app/users/__pycache__
+API/app/tests/__pycache__

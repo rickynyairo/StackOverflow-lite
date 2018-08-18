@@ -1,4 +1,6 @@
-data = {
+data = {"users":[],"questions":[]}
+
+data2 = {
     "users":[
         {
             "id":"1",

@@ -10,7 +10,6 @@ StackOverflow-Lite is a platform for sharing questions and answers.
 
 ### Code Climate
 [![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/codeclimate/codeclimate/maintainability)
-[![Test Coverage](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/test_coverage)](https://codeclimate.com/github/codeclimate/codeclimate/test_coverage)
 
 ### Features
 1. Users can create an account and log in.
@@ -37,6 +36,10 @@ In a virtual environment, perform the following:
 >pip install -r requirements.txt
 >nosetests app/tests
 >python run.py
+
+### API-Endpoints
+
+[![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/479da9f494c39acebfd6)
 
 ### Questions
 [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://GitHub.com/Naereen/ama)

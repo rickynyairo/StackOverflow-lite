@@ -20,6 +20,7 @@ class QuestionsTests(unittest.TestCase):
             "text":"You do so by using the int keyword like so: int x;",
             "answered_by":"Jimmy"
         }
+        self.error_msg = "The path accessed / resource requested cannot be found, please check"
         with self.app.app_context():
             self.data = test_data
 
@@ -57,7 +58,7 @@ class QuestionsTests(unittest.TestCase):
         result = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(result.status_code, 201)
         # assert that the question is in the response
-        self.assertIn(self.question['text'], str(result.data))
+        self.assertEqual(self.question['text'], result.json['text'])
 
     def test_get_questions(self):
         """Test that a user can obtain all the questions from the API"""
@@ -73,8 +74,8 @@ class QuestionsTests(unittest.TestCase):
         # post a new question to get a question id in the response
         new_question = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(new_question.status_code, 201)
-        # convert response to JSON
-        response = json.loads(new_question.data.decode('utf-8').replace("'", '"'))
+        # get json response
+        response = new_question.json
         result = self.get_data('/api/v1/questions/{}'.format(response['id']))
         # check that the server responds with the correct status code 
         self.assertEqual(result.status_code, 200)
@@ -86,23 +87,22 @@ class QuestionsTests(unittest.TestCase):
         # create a question 
         new_question = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(new_question.status_code, 201)
-        # convert response to JSON
-        response = json.loads(new_question.data.decode('utf-8').replace("'", '"'))
+        # this is the response of the newly posted question
+        response = new_question.json
         # post an answer to a question
         url='/api/v1/questions/{}/answers'.format(response['id'])
         result = self.post_data(url, data=self.answer)
         self.assertEqual(result.status_code, 201)
-        # the response should contain the question id and the answer
-        response2 = json.loads(result.data.decode('utf-8').replace("'", '"'))
-        self.assertEqual("{}".format(response['id']), response2['question_id'])
-        self.assertEqual("{}".format(self.answer['text']), response2['text'])
+        # the response should contain the question id and the answer text
+        self.assertEqual("{}".format(response['id']), "{}".format(result.json['question_id']))
+        self.assertEqual("{}".format(self.answer['text']), result.json['text'])
     
     def test_edit_question(self):
         """Test that the user can edit a question"""
         # create a question 
         new_question = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(new_question.status_code, 201)
-        question = json.loads(new_question.data.decode('utf-8').replace("'", '"'))
+        question = new_question.json
         question_id = question['id']
         # edit the question by splitting it into 2
         size = len(question['text'])//2
@@ -112,12 +112,10 @@ class QuestionsTests(unittest.TestCase):
                                 data = {"text":edited_question_text})
         # test that the request returns the right response
         self.assertEqual(result.status_code, 200)
-        result = json.loads(result.data.decode('utf-8').replace("'", '"'))
         # test that the request returns the edited question
-        self.assertEqual(edited_question_text, result['text'])
+        self.assertEqual(edited_question_text, result.json['text'])
         # test that the function edits the data
-        response = self.get_data('/api/v1/questions/{}'.format(question_id))
-        response = json.loads(response.data.decode('utf-8').replace("'", '"'))
+        response = self.get_data('/api/v1/questions/{}'.format(question_id)).json
         self.assertEqual(edited_question_text, response['text'])
 
 
@@ -126,15 +124,51 @@ class QuestionsTests(unittest.TestCase):
         # create a question 
         new_question = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(new_question.status_code, 201)
-        question_id = json.loads(
-            new_question.data.decode('utf-8').replace("'", '"'))['id']
+        question_id = new_question.json['id']
         response = self.delete_data('/api/v1/questions/{}'.format(question_id))
         # test that the right response code is returned
         self.assertEqual(response.status_code, 200)
         # test that the data store does not have the question
         response = self.get_data('/api/v1/questions/{}'.format(question_id))
         self.assertEqual(response.status_code, 404)
-        
+
+    def test_error_handling_for_not_found(self):
+        """Test that the API sends back an error message when 404 errors are encountered"""
+        # test that a non existent question cannot be accessed
+        # post a question and obtain an id
+        # create a question 
+        new_question = self.post_data('/api/v1/questions/', data=self.question)
+        self.assertEqual(new_question.status_code, 201)
+        question_id = new_question.json['id']
+        # obtain an errorneous id
+        erroneous_id = int(question_id) * int(question_id)
+        result = self.get_data('/api/v1/questions/{}'.format(erroneous_id))
+        self.assertEqual(result.status_code, 404)
+
+        # attempting to post an answer to a non existent question
+        # should raise an error
+        result = self.post_data('/api/v1/questions/{}/answers'.format(erroneous_id), 
+                                data=self.answer)
+        self.assertNotEqual(result.status_code, 200)
+
+        # check that the right message is sent
+        self.assertEqual(result.json['message'], self.error_msg)
+
+    def test_error_handling_for_bad_requests(self):
+        """Test that the API sends an appropriate error message when a bad request is made"""
+        list_of_bad_requests = [
+            {"text":"", "asked_by":"Jimmy"},
+            {"text":"Question", "asked_by":""},
+            {"asked_by":"Jimmy"},
+            {"text":"Question"}
+        ]
+        for bad_req in list_of_bad_requests:
+            result = self.post_data('/api/v1/questions/', data=bad_req)
+            # assert correct status code
+            self.assertEqual(result.status_code, 400)
+            # assert correct error message
+            self.assertEqual(result.json["message"], "The request made had errors, please check the headers or params")
+
     def tearDown(self):
         """This function destroys all the variables 
         that have been created during the test
@@ -142,6 +176,7 @@ class QuestionsTests(unittest.TestCase):
         del self.question
         del self.answer
         del self.data
+        del self.error_msg
 
 
 if __name__ == "__main__":

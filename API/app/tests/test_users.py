@@ -27,8 +27,7 @@ class UserTests(unittest.TestCase):
         return result
 
     def test_create_user(self):
-        """This function tests that a new user is created
-        using a POST request
+        """Test that a new user is created using a POST request
         """
         new_user = self.post_data("/api/v1/users/", data=self.user)
         # test that the server responds with the correct status code

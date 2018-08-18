@@ -14,7 +14,11 @@ def get_users():
     else: 
         # handles a POST request
         # return the new user with the user id and username
-        user_id = int(data["users"][-1]['id']) + 1
+        try:
+            user_id = int(data["users"][-1]['id']) + 1
+        except IndexError:
+            # there are no existing users, create first user. 
+            user_id = "1"
         req_data = json.loads(
             request.data.decode('utf-8').replace("'", '"'))
         username = req_data['username']

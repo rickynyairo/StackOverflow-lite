@@ -1,13 +1,15 @@
 import json
+
 from datetime import datetime
-from flask import request, jsonify, abort
+from flask import request, jsonify, make_response
 from . import questions
 from app.data import data
+from werkzeug.exceptions import NotFound, BadRequest
 
-def locate(id, items):
+def _locate(id, items):
     """This function takes 2 arguments (id : int and items : string)
-        To locate the item, question or user, with the identifier, id, 
-        from the collection of items: either questions or users."""
+        To locate the item = question or user, with the identifier = id, 
+        from the collection of items."""
     collection = data[items]
     required_item = {}
     found = False
@@ -17,26 +19,45 @@ def locate(id, items):
             required_item = collection[i]
             found = True
             index = i
+            break
     if found:
         return (required_item, index)
     else:
-        return None
-        
+        return (None, None)
+
 @questions.route('/api/v1/questions/', methods=['POST', 'GET'])
 def get_questions():
     """This function handles request to the questions resource"""
     if request.method == 'GET':
         # return all questions in the db
-        response = jsonify(data['questions'])
-        response.status_code = 200
-    else: 
-        # handles a POST request
-        # return the new question with the question id
-        question_id = int(data["questions"][-1]['id']) + 1
-        req_data = json.loads(
-            request.data.decode('utf-8').replace("'", '"'))
-        question_text = req_data['text']
-        asked_by = req_data['asked_by']
+        response = make_response(jsonify(data['questions']), 200)
+
+    elif request.method == 'POST': 
+        # return the new question with the assigned question id
+        # try to access the local data store to locate the last 
+        # and allocate the new question an id
+        try:
+            question_id = int(data["questions"][-1]['id']) + 1
+        
+        # if that fails, there is no data in the data store
+        # assign id = 1
+        except IndexError:
+            question_id = "1"
+
+        req_data = json.loads(request.data.decode('utf-8').replace("'", '"'))
+        # validation
+        try:
+            question_text = req_data['text']
+            asked_by = req_data['asked_by']
+        except IndexError:
+            raise BadRequest
+            
+        except KeyError:
+            raise BadRequest
+
+        if len(req_data["text"]) == 0 or len(req_data["asked_by"]) == 0:
+            raise BadRequest
+
         date = '{:%B %d, %Y}'.format(datetime.now())
         new_question = {
             "id":question_id,
@@ -46,8 +67,7 @@ def get_questions():
             "answers":[]
         }
         data['questions'].append(new_question)
-        response = jsonify(new_question)
-        response.status_code = 201
+        response = make_response(jsonify(new_question), 201)
 
     return response
     
@@ -57,35 +77,33 @@ def question(id, **kwargs):
         retrieves the question or edits the question"""
     response = {}
     # locate the question
-    q = locate(int(id), "questions")
+    q , index = _locate(int(id), "questions")
     
     if q is None:
         # question not found
         # return error 404
-        abort(404)
+        raise NotFound
 
     if request.method == 'GET':
         # return the question
-        response = jsonify(q[0])
-        response.status_code = 200
+        response = make_response(jsonify(q), 200)
+
     elif request.method == 'PUT':
         # obtain the required edit
         edited_question = json.loads(request.data.decode('utf-8').replace("'", '"'))['text']
         # edit the question in the data store
-        q[0]['text'] = edited_question
-        response = jsonify({
+        q['text'] = edited_question
+        response = make_response(jsonify({
                     "id":id,
                     "text":edited_question
-                    })
-        response.status_code = 200
+                }), 200)
     else:
         # delete the question
-        question_index = q[1]
-        del data["questions"][question_index]
-        response = jsonify({
-            "question_id":id,
-            "action":"deleted"})
-        response.status_code = 200
+        del data["questions"][index]
+        response = make_response(jsonify({
+                    "question_id":id,
+                    "action":"deleted"
+                }), 200)
 
     return response
 
@@ -99,18 +117,18 @@ def answer(id, **kwargs):
     # initialize up votes to 0
     answer['up_votes'] = "0"
     # locate the question
-    question = locate(int(id), "questions")[0]
+    question = _locate(int(id), "questions")[0]
     if question:
         # question is located, append answer
         question['answers'].append(answer)
         # return a response with the question id and the answer
-        response = jsonify({
-            "question_id":str(question['id']),
+        response = make_response(jsonify({
+            "question_id":question['id'],
             "text":answer['text'],                
-        })
-        response.status_code = 201
+            }), 201)
         return response         
     else:
         # the question with the given id was not found
-        # return error 404
-        abort(404)
+        # raise error 404
+        raise NotFound
+
