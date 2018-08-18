@@ -4,7 +4,7 @@ StackOverflow-Lite is a platform for sharing questions and answers.
 
 [![Coverage Status](https://coveralls.io/repos/github/rickynyairo/StackOverflow-lite/badge.svg?branch=development)](https://coveralls.io/github/rickynyairo/StackOverflow-lite?branch=development)
 [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
-[![Website naereen.github.io](https://img.shields.io/website-up-down-green-red/https/naereen.github.io.svg)](https://naereen.github.io/)
+[![Website naereen.github.io](https://img.shields.io/website-up-down-green-red/https/naereen.github.io.svg)](https://rickynyairo.github.io/StackOverflow-lite/)
 [![PyPI version](https://badge.fury.io/py/Flask.svg)](https://badge.fury.io/py/Flask)
 [![Build Status](https://travis-ci.org/rickynyairo/StackOverflow-lite.svg?branch=development)](https://travis-ci.org/rickynyairo/StackOverflow-lite)
 
