@@ -1,3 +1,8 @@
+"""
+This module tests the questions resource thoroughly to ensure correct API functionality
+
+Authored by: Ricky Nyairo
+"""
 import unittest
 import json
 
@@ -12,11 +17,11 @@ class QuestionsTests(unittest.TestCase):
         """Performs variable definition and app initialization"""
         self.app = create_app()
         self.client = self.app.test_client()
-        self.question =  {
+        self.question = {
             "text":"How do you declare an integer variable in Java?",
             "asked_by":"Jimmy"
         }
-        self.answer =  {
+        self.answer = {
             "text":"You do so by using the int keyword like so: int x;",
             "answered_by":"Jimmy"
         }
@@ -27,26 +32,23 @@ class QuestionsTests(unittest.TestCase):
     def post_data(self, path, data):
         """This function performs a POST request using the testing client"""
         result = self.client.post(path, data=json.dumps(data),
-                             content_type='applicaton/json')
+                                  content_type='applicaton/json')
         return result
 
     def get_data(self, path):
-        """This function performs a GET request to a given path 
-            using the testing client
+        """This function performs a GET request to a given path using the testing client
         """
         result = self.client.get(path)
         return result
 
     def put_data(self, path, data):
-        """This function performs a PUT request to a given path 
-            using the testing client
-        """
+        """This function performs a PUT request to a given path using the testing client"""
         result = self.client.put(path, data=json.dumps(data),
-                             content_type='applicaton/json')
+                                 content_type='applicaton/json')
         return result
 
     def delete_data(self, path):
-        """This function performs a DELETE request to a given path 
+        """This function performs a DELETE request to a given path
             using the testing client
         """
         result = self.client.delete(path)
@@ -77,29 +79,29 @@ class QuestionsTests(unittest.TestCase):
         # get json response
         response = new_question.json
         result = self.get_data('/api/v1/questions/{}'.format(response['id']))
-        # check that the server responds with the correct status code 
+        # check that the server responds with the correct status code
         self.assertEqual(result.status_code, 200)
         # test that the response contains the correct question
         self.assertIn(self.question['text'], str(result.data))
 
     def test_post_an_answer_to_a_question(self):
         """Test that the user can post an answer to a given question"""
-        # create a question 
+        # create a question
         new_question = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(new_question.status_code, 201)
         # this is the response of the newly posted question
         response = new_question.json
         # post an answer to a question
-        url='/api/v1/questions/{}/answers'.format(response['id'])
+        url = '/api/v1/questions/{}/answers'.format(response['id'])
         result = self.post_data(url, data=self.answer)
         self.assertEqual(result.status_code, 201)
         # the response should contain the question id and the answer text
         self.assertEqual("{}".format(response['id']), "{}".format(result.json['question_id']))
         self.assertEqual("{}".format(self.answer['text']), result.json['text'])
-    
+
     def test_edit_question(self):
         """Test that the user can edit a question"""
-        # create a question 
+        # create a question
         new_question = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(new_question.status_code, 201)
         question = new_question.json
@@ -108,8 +110,8 @@ class QuestionsTests(unittest.TestCase):
         size = len(question['text'])//2
         edited_question_text = question['text'][:size]
         # make PUT request to the endpoint
-        result = self.put_data('/api/v1/questions/{}'.format(question_id), 
-                                data = {"text":edited_question_text})
+        result = self.put_data('/api/v1/questions/{}'.format(question_id),
+                               data={"text":edited_question_text})
         # test that the request returns the right response
         self.assertEqual(result.status_code, 200)
         # test that the request returns the edited question
@@ -121,7 +123,7 @@ class QuestionsTests(unittest.TestCase):
 
     def test_delete_question(self):
         """Test that the user can delete a question"""
-        # create a question 
+        # create a question
         new_question = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(new_question.status_code, 201)
         question_id = new_question.json['id']
@@ -136,7 +138,7 @@ class QuestionsTests(unittest.TestCase):
         """Test that the API sends back an error message when 404 errors are encountered"""
         # test that a non existent question cannot be accessed
         # post a question and obtain an id
-        # create a question 
+        # create a question
         new_question = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(new_question.status_code, 201)
         question_id = new_question.json['id']
@@ -147,10 +149,9 @@ class QuestionsTests(unittest.TestCase):
 
         # attempting to post an answer to a non existent question
         # should raise an error
-        result = self.post_data('/api/v1/questions/{}/answers'.format(erroneous_id), 
+        result = self.post_data('/api/v1/questions/{}/answers'.format(erroneous_id),
                                 data=self.answer)
         self.assertNotEqual(result.status_code, 200)
-
         # check that the right message is sent
         self.assertEqual(result.json['message'], self.error_msg)
 
@@ -167,10 +168,11 @@ class QuestionsTests(unittest.TestCase):
             # assert correct status code
             self.assertEqual(result.status_code, 400)
             # assert correct error message
-            self.assertEqual(result.json["message"], "The request made had errors, please check the headers or params")
+            self.assertEqual(result.json["message"],
+                             "The request made had errors, please check the headers or params")
 
     def tearDown(self):
-        """This function destroys all the variables 
+        """This function destroys all the variables
         that have been created during the test
         """
         del self.question

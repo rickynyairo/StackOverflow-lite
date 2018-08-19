@@ -1,3 +1,8 @@
+"""
+This module tests the users resource thoroughly to ensure correct API functionality
+
+Authored by: Ricky Nyairo
+"""
 import unittest
 import json
 
@@ -23,11 +28,11 @@ class UserTests(unittest.TestCase):
     def post_data(self, path, data):
         """This function performs a POST request using the testing client"""
         result = self.client.post(path, data=json.dumps(data),
-                             content_type='applicaton/json')
+                                  content_type='applicaton/json')
         return result
 
     def get_data(self, path):
-        """This function performs a GET request to a given path 
+        """This function performs a GET request to a given path
             using the testing client
         """
         result = self.client.get(path)
@@ -57,7 +62,7 @@ class UserTests(unittest.TestCase):
         result = json.loads(result.data.decode().replace("'", '"'))
 
         self.assertIn(username, str(result))
-        self.assertIn(user_id, str(result))        
+        self.assertIn(user_id, str(result))
 
     def test_error_handling_for_not_found(self):
         """Test that the user resource sends an error message when a resource is not found
@@ -91,10 +96,11 @@ class UserTests(unittest.TestCase):
             # assert correct status code
             self.assertEqual(result.status_code, 400)
             # assert correct error message
-            self.assertEqual(result.json["message"], "The request made had errors, please check the headers or params")
+            self.assertEqual(result.json["message"],
+                             "The request made had errors, please check the headers or params")
 
     def tearDown(self):
-        """This function destroys all the variables 
+        """This function destroys all the variables
         that have been created during the test
         """
         del self.user
