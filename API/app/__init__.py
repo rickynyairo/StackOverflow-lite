@@ -1,6 +1,26 @@
 import json
 #local imports
 from flask import Flask, jsonify, request, make_response
+from .data import data
+
+def _locate(id, items):
+    """This function takes 2 arguments (id : int and items : string)
+        To locate the item = question or user, with the identifier = id, 
+        from the collection of items."""
+    collection = data[items]
+    required_item = {}
+    found = False
+    index = 0
+    for i in range(len(collection)):
+        if int(collection[i]['id']) == int(id):
+            required_item = collection[i]
+            found = True
+            index = i
+            break
+    if found:
+        return (required_item, index)
+    else:
+        return (None, None)
 
 def not_found(e):
     """This function returns a custom JSON response when a resource is not found"""

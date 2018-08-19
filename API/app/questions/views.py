@@ -3,27 +3,10 @@ import json
 from datetime import datetime
 from flask import request, jsonify, make_response
 from . import questions
+from app import _locate
 from app.data import data
 from werkzeug.exceptions import NotFound, BadRequest
 
-def _locate(id, items):
-    """This function takes 2 arguments (id : int and items : string)
-        To locate the item = question or user, with the identifier = id, 
-        from the collection of items."""
-    collection = data[items]
-    required_item = {}
-    found = False
-    index = 0
-    for i in range(len(collection)):
-        if int(collection[i]['id']) == int(id):
-            required_item = collection[i]
-            found = True
-            index = i
-            break
-    if found:
-        return (required_item, index)
-    else:
-        return (None, None)
 
 @questions.route('/api/v1/questions/', methods=['POST', 'GET'])
 def get_questions():
@@ -49,18 +32,16 @@ def get_questions():
         try:
             question_text = req_data['text']
             asked_by = req_data['asked_by']
-        except IndexError:
+
+        except (IndexError, KeyError):
             raise BadRequest
             
-        except KeyError:
-            raise BadRequest
-
         if len(req_data["text"]) == 0 or len(req_data["asked_by"]) == 0:
             raise BadRequest
 
         date = '{:%B %d, %Y}'.format(datetime.now())
         new_question = {
-            "id":question_id,
+            "id":str(question_id),
             "text":question_text,
             "asked_by":asked_by,
             "date":date,
