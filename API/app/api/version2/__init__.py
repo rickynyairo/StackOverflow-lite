@@ -6,6 +6,5 @@ Authored by: Ricky Nyairo
 
 from flask import Blueprint
 
-users = Blueprint('users', __name__)
+version2 = Blueprint('version2', __name__)
 
-from . import views
