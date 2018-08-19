@@ -67,10 +67,12 @@ def unauthorized(error):
 def create_app():
     """This function sets up and returns the application"""
     app = Flask(__name__)
-    from .questions import questions as questions_blueprint
-    app.register_blueprint(questions_blueprint)
-    from .users import users as users_blueprints
-    app.register_blueprint(users_blueprints)
+    from .api.version1 import version1 as version1_blueprint
+    app.register_blueprint(version1_blueprint, url_prefix="/api/v1")
+
+    from .api.version2 import version2 as version2_blueprint
+    app.register_blueprint(version2_blueprint, url_prefix="/api/v2")
+
     app.register_error_handler(400, bad_request)
     app.register_error_handler(401, unauthorized)
     app.register_error_handler(404, not_found)

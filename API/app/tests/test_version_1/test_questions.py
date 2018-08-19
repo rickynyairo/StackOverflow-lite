@@ -7,8 +7,8 @@ import unittest
 import json
 
 # local imports
-from app import create_app
-from app import data as test_data
+from ... import create_app
+from ... import data as test_data
 
 
 class QuestionsTests(unittest.TestCase):

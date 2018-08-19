@@ -7,8 +7,8 @@ import unittest
 import json
 
 # local imports
-from app import create_app
-from app import data as test_data
+from ... import create_app
+from ... import data as test_data
 
 class UserTests(unittest.TestCase):
     """This class collects all the test cases for the users"""

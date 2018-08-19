@@ -16,9 +16,9 @@ from werkzeug.exceptions import NotFound, BadRequest, Unauthorized
 # local imports
 from app.data import data
 from app import _locate
-from . import users
+from . import version1
 
-@users.route('/api/v1/users/', methods=['GET'], strict_slashes=False)
+@version1.route('/users/', methods=['GET'], strict_slashes=False)
 def get_users():
     """This function handles request to the users resource"""
     # return response with all the users in the data store
@@ -26,7 +26,7 @@ def get_users():
 
     return response
 
-@users.route('/api/v1/users/<int:user_id>', methods=['GET'], strict_slashes=False)
+@version1.route('/users/<int:user_id>', methods=['GET'], strict_slashes=False)
 def get_user(user_id):
     """This function responds with a particular user, given the id"""
     # locate the user
@@ -44,7 +44,7 @@ def get_user(user_id):
             }), 201)
         return response
 
-@users.route('/api/v1/users/signup/', methods=['POST'], strict_slashes=False)
+@version1.route('/users/signup/', methods=['POST'], strict_slashes=False)
 def signup_users():
     """This functions hangle user signup requests"""
     try:
@@ -89,7 +89,7 @@ def signup_users():
 
     return response
 
-@users.route('/api/v1/users/signin', methods=['POST'], strict_slashes=False)
+@version1.route('/users/signin', methods=['POST'], strict_slashes=False)
 def signin_users():
     """This functions hangle user signin requests"""
     req_data = json.loads(

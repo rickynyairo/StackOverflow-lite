@@ -15,9 +15,9 @@ from flask import request, jsonify, make_response
 # local imports
 from app import _locate
 from app.data import data
-from . import questions
+from . import version1
 
-@questions.route('/api/v1/questions/',
+@version1.route('/questions/',
                  methods=['POST', 'GET'], strict_slashes=False)
 def get_questions():
     """This function handles request to the questions resource"""
@@ -61,7 +61,7 @@ def get_questions():
 
     return response
 
-@questions.route('/api/v1/questions/<int:ques_id>',
+@version1.route('/questions/<int:ques_id>',
                  methods=['GET', 'PUT', 'DELETE'], strict_slashes=False)
 def get_question(ques_id):
     """This function, given a particular question id,
@@ -98,7 +98,7 @@ def get_question(ques_id):
 
     return response
 
-@questions.route('/api/v1/questions/<int:ques_id>/answers',
+@version1.route('/questions/<int:ques_id>/answers',
                  methods=['POST'], strict_slashes=False)
 def post_answer(ques_id):
     """ This function allows the user to post an answer
