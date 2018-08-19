@@ -53,6 +53,17 @@ def bad_request(error):
     response = make_response(jsonify(error_dict), 400)
     return response
 
+def unauthorized(error):
+    """This function creates a custom JSON response when an unauthorized request is made"""
+    error_dict = {
+        "path_accessed":str(request.path),
+        "message":"You are not authorized to access this resource, please confirm credentials",
+        "request_data":json.loads(request.data.decode().replace("'", '"')),
+        "error":str(error)
+    }
+    response = make_response(jsonify(error_dict), 400)
+    return response
+
 def create_app():
     """This function sets up and returns the application"""
     app = Flask(__name__)
@@ -61,8 +72,8 @@ def create_app():
     from .users import users as users_blueprints
     app.register_blueprint(users_blueprints)
     app.register_error_handler(400, bad_request)
+    app.register_error_handler(401, unauthorized)
     app.register_error_handler(404, not_found)
     return app
 
 APP = create_app()
-    

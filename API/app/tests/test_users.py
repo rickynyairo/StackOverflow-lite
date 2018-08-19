@@ -19,7 +19,7 @@ class UserTests(unittest.TestCase):
         self.user = {
             "email":"ugalimayai@gmail.com",
             "username":"ugalimayai",
-            "password":"¥«,Â\u008aÝ"
+            "password":"password"
         }
         self.error_msg = "The path accessed / resource requested cannot be found, please check"
         with self.app.app_context():
@@ -41,7 +41,7 @@ class UserTests(unittest.TestCase):
     def test_create_user(self):
         """Test that a new user is created using a POST request
         """
-        new_user = self.post_data("/api/v1/users/", data=self.user)
+        new_user = self.post_data("/api/v1/users/signup", data=self.user)
         # test that the server responds with the correct status code
         self.assertEqual(new_user.status_code, 201)
         # test that the correct user is created
@@ -50,7 +50,7 @@ class UserTests(unittest.TestCase):
     def test_get_all_users(self):
         """Test that the API responds with a list of all the users"""
         # create a new user
-        new_user = self.post_data("/api/v1/users/", data=self.user)
+        new_user = self.post_data("/api/v1/users/signup", data=self.user)
         self.assertEqual(new_user.status_code, 201)
 
         user_id = new_user.json['user_id']
@@ -68,7 +68,7 @@ class UserTests(unittest.TestCase):
         """Test that the API can respond with user details, given the id
         """
         # create user
-        new_user = self.post_data("/api/v1/users/", data=self.user)
+        new_user = self.post_data("/api/v1/users/signup", data=self.user)
         self.assertEqual(new_user.status_code, 201)
         user_id = new_user.json['user_id']
         # obtain user details
@@ -81,11 +81,11 @@ class UserTests(unittest.TestCase):
         """Test that the user resource sends an error message when a resource is not found
         """
         # test that a non existent user cannot be accessed
-        new_user = self.post_data('/api/v1/users/', data=self.user)
+        new_user = self.post_data('/api/v1/users/signup', data=self.user)
         self.assertEqual(new_user.status_code, 201)
         user_id = new_user.json['user_id']
         # obtain an errorneous id
-        erroneous_id = int(user_id) * int(user_id)
+        erroneous_id = int(user_id) + int(user_id)
 
         # an attempt to get a non-existing user should raise an error
         result = self.get_data('/api/v1/users/{}'.format(erroneous_id))
@@ -105,12 +105,39 @@ class UserTests(unittest.TestCase):
             {"username":"jamie", "email":"Jimmymail.com", "password":""}
         ]
         for bad_req in list_of_bad_requests:
-            result = self.post_data('/api/v1/users/', data=bad_req)
+            result = self.post_data('/api/v1/users/signup', data=bad_req)
             # assert correct status code
             self.assertEqual(result.status_code, 400)
             # assert correct error message
             self.assertEqual(result.json["message"],
                              "The request made had errors, please check the headers or params")
+
+
+    def test_user_sign_up_and_sign_in(self):
+        """Test that a new user can sign up for an account and sign in
+        """
+        new_user = self.post_data('/api/v1/users/signup/', data=self.user)
+
+        # API should respond with a success message and the allocated user id
+        self.assertEqual(new_user.status_code, 201)
+        # user_id = new_user.json['user_id']
+        message = new_user.json['message']
+
+        # test that message was a success
+        self.assertEqual(message, "User signed up successfully")
+
+        # attempt unauthorized sign in
+        user = {
+            "username":self.user['username'],
+            "password":self.user['password']
+        }
+        unauthorized_user = user
+        unauthorized_user['password'] = user['password'][::-1]
+
+        unauthorized_user_signin = self.post_data('/api/v1/users/signin', data=unauthorized_user)
+        self.assertEqual(unauthorized_user_signin.status_code, 400)
+        self.assertEqual(unauthorized_user_signin.json['message'],
+                         "You are not authorized to access this resource, please confirm credentials")
 
     def tearDown(self):
         """This function destroys all the variables

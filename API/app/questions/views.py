@@ -98,9 +98,9 @@ def get_question(ques_id):
 
     return response
 
-@questions.route('/api/v1/questions/<int:ans_id>/answers',
+@questions.route('/api/v1/questions/<int:ques_id>/answers',
                  methods=['POST'], strict_slashes=False)
-def post_answer(ans_id):
+def post_answer(ques_id):
     """ This function allows the user to post an answer
     to a particular question, given the question id """
 
@@ -108,7 +108,7 @@ def post_answer(ans_id):
     # initialize up votes to 0
     answer['up_votes'] = "0"
     # locate the question
-    question = _locate(int(ans_id), "questions")[0]
+    question = _locate(int(ques_id), "questions")[0]
     if not question:
         # the question with the given id was not found
         # raise error 404
