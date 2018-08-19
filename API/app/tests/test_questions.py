@@ -78,7 +78,7 @@ class QuestionsTests(unittest.TestCase):
         self.assertEqual(new_question.status_code, 201)
         # get json response
         response = new_question.json
-        result = self.get_data('/api/v1/questions/{}'.format(response['id']))
+        result = self.get_data('/api/v1/questions/{}'.format(response['question_id']))
         # check that the server responds with the correct status code
         self.assertEqual(result.status_code, 200)
         # test that the response contains the correct question
@@ -92,11 +92,11 @@ class QuestionsTests(unittest.TestCase):
         # this is the response of the newly posted question
         response = new_question.json
         # post an answer to a question
-        url = '/api/v1/questions/{}/answers'.format(response['id'])
+        url = '/api/v1/questions/{}/answers'.format(response['question_id'])
         result = self.post_data(url, data=self.answer)
         self.assertEqual(result.status_code, 201)
         # the response should contain the question id and the answer text
-        self.assertEqual("{}".format(response['id']), "{}".format(result.json['question_id']))
+        self.assertEqual("{}".format(response['question_id']), "{}".format(result.json['question_id']))
         self.assertEqual("{}".format(self.answer['text']), result.json['text'])
 
     def test_edit_question(self):
@@ -105,7 +105,7 @@ class QuestionsTests(unittest.TestCase):
         new_question = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(new_question.status_code, 201)
         question = new_question.json
-        question_id = question['id']
+        question_id = question['question_id']
         # edit the question by splitting it into 2
         size = len(question['text'])//2
         edited_question_text = question['text'][:size]
@@ -126,7 +126,7 @@ class QuestionsTests(unittest.TestCase):
         # create a question
         new_question = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(new_question.status_code, 201)
-        question_id = new_question.json['id']
+        question_id = new_question.json['question_id']
         response = self.delete_data('/api/v1/questions/{}'.format(question_id))
         # test that the right response code is returned
         self.assertEqual(response.status_code, 200)
@@ -141,7 +141,7 @@ class QuestionsTests(unittest.TestCase):
         # create a question
         new_question = self.post_data('/api/v1/questions/', data=self.question)
         self.assertEqual(new_question.status_code, 201)
-        question_id = new_question.json['id']
+        question_id = new_question.json['question_id']
         # obtain an errorneous id
         erroneous_id = int(question_id) * int(question_id)
         result = self.get_data('/api/v1/questions/{}'.format(erroneous_id))

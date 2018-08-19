@@ -18,7 +18,7 @@ from app.data import data
 from app import _locate
 from . import users
 
-@users.route('/api/v1/users/', methods=['POST', 'GET'])
+@users.route('/api/v1/users/', methods=['POST', 'GET'], strict_slashes=False)
 def get_users():
     """This function handles request to the users resource"""
     if request.method == 'GET':
@@ -28,7 +28,7 @@ def get_users():
         # handles a POST request
         # return the new user with the user id and username
         try:
-            user_id = int(data["users"][-1]['id']) + 1
+            user_id = int(data["users"][-1]['user_id']) + 1
         except IndexError:
             # there are no existing users, create first user.
             user_id = "1"
@@ -54,7 +54,7 @@ def get_users():
 
         date_created = '{:%B %d, %Y}'.format(datetime.now())
         new_user = {
-            "id":str(user_id),
+            "user_id":str(user_id),
             "username":username,
             "email":email,
             "date_created":date_created,
@@ -69,10 +69,9 @@ def get_users():
 
     return response
 
-@users.route('/api/v1/users/<int:user_id>', methods=['GET'])
+@users.route('/api/v1/users/<int:user_id>', methods=['GET'], strict_slashes=False)
 def get_user(user_id):
     """This function responds with a particular user, given the id"""
-    response = {}
     # locate the user
     user = _locate(int(user_id), "users")[0]
     if not user:
@@ -82,7 +81,7 @@ def get_user(user_id):
     else:
         # return a response with the user id, email and username
         response = make_response(jsonify({
-            "user_id":str(user['id']),
+            "user_id":str(user['user_id']),
             "username":user['username'],
             "email":user['email']
             }), 201)

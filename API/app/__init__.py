@@ -20,7 +20,7 @@ def _locate(item_id, items):
     found = False
     index = 0
     for i, item in enumerate(collection):
-        if item['id'] == str(item_id):
+        if item['{}_id'.format(items[:-1])] == str(item_id):
             required_item = item
             found = True
             index = i

@@ -53,7 +53,7 @@ class UserTests(unittest.TestCase):
         new_user = self.post_data("/api/v1/users/", data=self.user)
         self.assertEqual(new_user.status_code, 201)
 
-        user_id = new_user.json['id']
+        user_id = new_user.json['user_id']
         username = new_user.json['username']
 
         result = self.get_data("/api/v1/users/")
@@ -64,13 +64,26 @@ class UserTests(unittest.TestCase):
         self.assertIn(username, str(result))
         self.assertIn(user_id, str(result))
 
+    def test_get_user_by_id(self):
+        """Test that the API can respond with user details, given the id
+        """
+        # create user
+        new_user = self.post_data("/api/v1/users/", data=self.user)
+        self.assertEqual(new_user.status_code, 201)
+        user_id = new_user.json['user_id']
+        # obtain user details
+        result = self.get_data('/api/v1/users/{}'.format(user_id))
+
+        self.assertEqual(result.json['user_id'], user_id)
+        self.assertNotEqual(result.status_code, 404)
+
     def test_error_handling_for_not_found(self):
         """Test that the user resource sends an error message when a resource is not found
         """
         # test that a non existent user cannot be accessed
         new_user = self.post_data('/api/v1/users/', data=self.user)
         self.assertEqual(new_user.status_code, 201)
-        user_id = new_user.json['id']
+        user_id = new_user.json['user_id']
         # obtain an errorneous id
         erroneous_id = int(user_id) * int(user_id)
 

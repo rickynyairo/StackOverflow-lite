@@ -17,7 +17,8 @@ from app import _locate
 from app.data import data
 from . import questions
 
-@questions.route('/api/v1/questions/', methods=['POST', 'GET'])
+@questions.route('/api/v1/questions/',
+                 methods=['POST', 'GET'], strict_slashes=False)
 def get_questions():
     """This function handles request to the questions resource"""
     if request.method == 'GET':
@@ -29,7 +30,7 @@ def get_questions():
         # try to access the local data store to locate the last
         # and allocate the new question an id
         try:
-            question_id = int(data["questions"][-1]['id']) + 1
+            question_id = int(data["questions"][-1]['question_id']) + 1
         # if that fails, there is no data in the data store
         # assign id = 1
         except IndexError:
@@ -49,7 +50,7 @@ def get_questions():
 
         date = '{:%B %d, %Y}'.format(datetime.now())
         new_question = {
-            "id":str(question_id),
+            "question_id":str(question_id),
             "text":question_text,
             "asked_by":asked_by,
             "date":date,
@@ -60,7 +61,8 @@ def get_questions():
 
     return response
 
-@questions.route('/api/v1/questions/<int:ques_id>', methods=['GET', 'PUT', 'DELETE'])
+@questions.route('/api/v1/questions/<int:ques_id>',
+                 methods=['GET', 'PUT', 'DELETE'], strict_slashes=False)
 def get_question(ques_id):
     """This function, given a particular question id,
         retrieves the question or edits the question"""
@@ -83,7 +85,7 @@ def get_question(ques_id):
         # edit the question in the data store
         question['text'] = edited_question
         response = make_response(jsonify({
-            "id":ques_id,
+            "question_id":ques_id,
             "text":edited_question
             }), 200)
     else:
@@ -96,7 +98,8 @@ def get_question(ques_id):
 
     return response
 
-@questions.route('/api/v1/questions/<int:ans_id>/answers', methods=['POST'])
+@questions.route('/api/v1/questions/<int:ans_id>/answers',
+                 methods=['POST'], strict_slashes=False)
 def post_answer(ans_id):
     """ This function allows the user to post an answer
     to a particular question, given the question id """
@@ -115,7 +118,7 @@ def post_answer(ans_id):
         question['answers'].append(answer)
         # return a response with the question id and the answer
         response = make_response(jsonify({
-            "question_id":question['id'],
+            "question_id":question['question_id'],
             "text":answer['text'],
             }), 201)
         return response

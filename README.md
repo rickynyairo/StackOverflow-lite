@@ -33,8 +33,11 @@ Navigate to the API/ directory
 In a virtual environment, perform the following:
 
 >git checkout development
+
 >pip install -r requirements.txt
+
 >nosetests app/tests
+
 >python run.py
 
 ### API-Endpoints
