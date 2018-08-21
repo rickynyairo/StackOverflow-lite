@@ -48,6 +48,12 @@ th{
   grid-row-start: second-row;
   grid-row-end: third-row;
 }
+.item-3{
+  grid-column-start: third-col;
+  grid-column-end: fourth-col;
+  grid-row-start: third-row;
+  grid-row-end: fourth-row;
+}
 /*Specific styling*/
 header{
   padding:0 10px 0 0;
@@ -132,21 +138,14 @@ ul{
   padding:3px;
   margin:0px;
 }
-/*Style the questions*/
 
 .stats{
-  height:80px;
-  width:180px;
+  padding:7px;
+  width:150px;
+  margin:7px;
   border:solid 3px #000;
 }
-.sticky {
-  position: fixed;
-  top: 0;
-  width: 100%;
-}
-.sticky body{
-  padding-top: 102px;
-}
+
 textarea{
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size:12px;

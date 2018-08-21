@@ -9,40 +9,42 @@
 </head>
 
 <body>
-  <header id = "myHeader">
-    <div id="header_div">
-      <a href="index.html"><img src="img/logo.png" alt="logo" id="logoImage"></a>
-      <h1>StackOverflow Lite</h1>
-      <a href="signin.html"><button class = "buttons signingButton" >Sign Out</button></a>
-      <a href="profile.html"><button class = "buttons signingButton" >Profile</button></a>
-    </div>
-  </header>
   <section>
-    <div id="midSectionDiv">
-      <div class = "container">
-        <div id="userProfile">
-          <fieldset id = "statsField">
-            <legend>Nancy</legend>
-            <label class = "stats">Questions Asked: 5</label>
-            <label class = "stats">Answers Given: 19</label>
-            <p>FAQ:</p>
-            <p>
-              Who was the first Kenyan president?
-            </p>
-        <p>Answers: 4</p>
-          </fieldset>
-        </div>
-        
+    <div class = "container">
+
+      <header class = "item-1" id = "myHeader">
+          <div  id="header_div">
+            <a href="index.html"><img src="img/logo.png" alt="logo" id="logoImage"></a>
+            <h1>StackOverflow Lite</h1>
+            <a href="signin.html"><button class = "buttons signingButton" >Sign Out</button></a>
+            <a href="profile.html"><button class = "buttons signingButton" >Profile</button></a>
+          </div>
+      </header>
+
+      <div class="item-2">
+        <fieldset>
+          <legend>Nancy</legend>
+          <h5>Questions asked on the platform:</h5>
+          <p>
+            Who was the first Kenyan president?
+          </p>
+          <p>
+            What code editor is better for linux than vim?
+          </p>
+          <p class = "stats">Questions Asked: 2</p>
+          <p class = "stats">Answers Given: 19</p>
+        </fieldset>  
         <fieldset>
           <legend>Post a Question:</legend>
           <textarea name="question" id="questionText"></textarea>
           <button id = "postQuestion" onclick="postQuestion(this)">Post</button>
         </fieldset>
-      </div>  
-    </div>
+
+      </div>    
+    </div>  
   </section>
+ 
   <script src="js/index.js"></script>
-  <script src="js/questions.js"></script>
 </body>
 
 </html>
