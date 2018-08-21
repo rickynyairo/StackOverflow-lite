@@ -1,0 +1,37 @@
+.container{
+    width:100%;
+    height:100%;
+    display:grid;
+    grid-template-columns: [first-col] 150px [second-col] 150px [third-col] auto [fourth-col] 150px [fifth-col] 150px [sixth-col];
+    grid-template-rows: [first-row] 75px [second-row] auto [third-row] 50px [fourth-row];
+}
+/*navbar grid item*/
+.item-1{
+    grid-column-start: first-col;
+    grid-column-end: sixth-col;
+    grid-row-start: first-row;
+    grid-row-end: second-row;
+    background-color:red;
+}
+.item-2{
+    grid-column-start: third-col;
+    grid-column-end: fourth-col;
+    grid-row-start: second-row;
+    grid-row-end: third-row;
+    background-color:green;
+}
+.item-3{
+    grid-column-start: third-col;
+    grid-column-end: fourth-col;
+    grid-row-start: third-row;
+    grid-row-end: fourth-row;
+    background-color:yellow;
+}
+/*CSS Reset*/
+* {
+    margin: 0;
+    border: 0;
+    outline: 0;
+    vertical-align: baseline;
+}
+  
