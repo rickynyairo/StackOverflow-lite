@@ -9,7 +9,7 @@ StackOverflow-Lite is a platform for sharing questions and answers.
 [![Build Status](https://travis-ci.org/rickynyairo/StackOverflow-lite.svg?branch=development)](https://travis-ci.org/rickynyairo/StackOverflow-lite)
 
 ### Code Climate
-[![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/codeclimate/codeclimate/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/rickynyairo/StackOverflow-lite)
 
 ### Features
 1. Users can create an account and log in.

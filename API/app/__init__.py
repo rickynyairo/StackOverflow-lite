@@ -2,6 +2,8 @@
 This module sets up configuration and creates the application.
 It defines functions to be accessed by all modules.
 
+The module sets up the blueprints to seperate the api versions
+
 Authored by: Ricky Nyairo
 """
 
@@ -10,6 +12,8 @@ import json
 # local imports
 from flask import Flask, jsonify, request, make_response
 from .data import data
+from instance.config import app_config
+
 
 def _locate(item_id, items):
     """This function takes 2 arguments (id : int and items : string)
@@ -64,9 +68,13 @@ def unauthorized(error):
     response = make_response(jsonify(error_dict), 400)
     return response
 
-def create_app():
+def create_app(config_name = 'development'):
     """This function sets up and returns the application"""
-    app = Flask(__name__)
+    app = Flask(__name__, instance_relative_config=True)
+    
+    app.config.from_object(app_config[config_name])
+    app.config.from_pyfile('config.py')
+
     from .api.version1 import version1 as version1_blueprint
     app.register_blueprint(version1_blueprint, url_prefix="/api/v1")
 
@@ -76,6 +84,7 @@ def create_app():
     app.register_error_handler(400, bad_request)
     app.register_error_handler(401, unauthorized)
     app.register_error_handler(404, not_found)
+
     return app
 
 APP = create_app()
