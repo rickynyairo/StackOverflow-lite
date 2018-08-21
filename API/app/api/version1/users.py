@@ -52,6 +52,8 @@ def signup_users():
     except IndexError:
         # there are no existing users, create first user.
         user_id = "1"
+    if not request.data.decode():
+        raise BadRequest
     req_data = json.loads(request.data.decode('utf-8').replace("'", '"'))
     # validation
     try:
@@ -87,6 +89,8 @@ def signup_users():
 @version1.route('/users/signin', methods=['POST'], strict_slashes=False)
 def signin_users():
     """This functions hangle user signin requests"""
+    if not request.data.decode():
+        raise BadRequest
     req_data = json.loads(
         request.data.decode('utf-8').replace("'", '"'))
     # import pdb
