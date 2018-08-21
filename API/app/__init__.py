@@ -8,11 +8,13 @@ Authored by: Ricky Nyairo
 """
 
 import json
+import os
 
 # local imports
 from flask import Flask, jsonify, request, make_response
 from .data import data
 from instance.config import app_config
+import psycopg2
 
 
 def _locate(item_id, items):
@@ -35,6 +37,20 @@ def _locate(item_id, items):
         responce = (None, None)
 
     return responce
+
+def init_db():
+    """Set up the database to stode the user data
+    """
+    params={"host":"localhost", "dbname":"stackoverflow-lite", "user":"rickynyairo", "password":"aces4890"}
+    db = psycopg2.connect(**params)
+
+    return db
+
+def dest_db(db):
+    if type(db) is not psycopg2.connect()
+        return "Unknown type"
+    else:
+        return db.close()
 
 def not_found(error):
     """This function returns a custom JSON response when a resource is not found"""
@@ -93,4 +109,5 @@ def create_app(config_name = 'development'):
 
     return app
 
+db = init_db()
 APP = create_app()
