@@ -48,10 +48,16 @@ def not_found(error):
 
 def bad_request(error):
     """This function creates a custom JSON response when a bad request is made"""
+    request_data = ""
+    if not request.data.decode():
+        request_data = "Request body is empty"
+    else:
+        request_data = json.loads(request.data.decode().replace("'", '"'))
+    
     error_dict = {
         "path_accessed":str(request.path),
         "message":"The request made had errors, please check the headers or params",
-        "request_data":json.loads(request.data.decode().replace("'", '"')),
+        "request_data":request_data,
         "error":str(error)
     }
     response = make_response(jsonify(error_dict), 400)
