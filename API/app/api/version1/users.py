@@ -52,21 +52,16 @@ def signup_users():
     except IndexError:
         # there are no existing users, create first user.
         user_id = "1"
-    req_data = json.loads(
-        request.data.decode('utf-8').replace("'", '"'))
-
+    req_data = json.loads(request.data.decode('utf-8').replace("'", '"'))
     # validation
     try:
         username = req_data['username']
         email = req_data['email']
         password = req_data['password']
-
     except (IndexError, KeyError):
         raise BadRequest
-
     if not username or not email:
         raise BadRequest
-
     # validate the email structure
     if not re.match(r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$',
                     email):
@@ -101,24 +96,19 @@ def signin_users():
         password = req_data['password']
     except (IndexError, KeyError):
         raise BadRequest
-
     user = {}
     user = [user for item in data['users'] if item['username'] is username]
     if not user:
         # user was not found, raise error
         raise Unauthorized
-
     elif user['password'] is not password:
         # user is not authorized
-        raise Unauthorized
-    
+        raise Unauthorized 
     resp = {
         "user_id":user['user_id'],
         "username":user['username'],
         "no_of_answers":user['no_of_answers'],
         "message":"User signed in successfully"
     }
-
     response = make_response(jsonify(resp), 200)
-
     return response

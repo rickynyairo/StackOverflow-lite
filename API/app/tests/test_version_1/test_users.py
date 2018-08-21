@@ -25,8 +25,14 @@ class UserTests(unittest.TestCase):
         with self.app.app_context():
             self.data = test_data
 
-    def post_data(self, path, data):
+    def post_data(self, path='/api/v1/users/signup', data={}):
         """This function performs a POST request using the testing client"""
+        if not data:
+            data = {
+            "email":"ugalimayai@gmail.com",
+            "username":"ugalimayai",
+            "password":"password"
+            }
         result = self.client.post(path, data=json.dumps(data),
                                   content_type='applicaton/json')
         return result
@@ -50,7 +56,7 @@ class UserTests(unittest.TestCase):
     def test_get_all_users(self):
         """Test that the API responds with a list of all the users"""
         # create a new user
-        new_user = self.post_data("/api/v1/users/signup", data=self.user)
+        new_user = self.post_data()
         self.assertEqual(new_user.status_code, 201)
 
         user_id = new_user.json['user_id']
@@ -68,7 +74,7 @@ class UserTests(unittest.TestCase):
         """Test that the API can respond with user details, given the id
         """
         # create user
-        new_user = self.post_data("/api/v1/users/signup", data=self.user)
+        new_user = self.post_data()
         self.assertEqual(new_user.status_code, 201)
         user_id = new_user.json['user_id']
         # obtain user details
@@ -81,7 +87,7 @@ class UserTests(unittest.TestCase):
         """Test that the user resource sends an error message when a resource is not found
         """
         # test that a non existent user cannot be accessed
-        new_user = self.post_data('/api/v1/users/signup', data=self.user)
+        new_user = self.post_data()
         self.assertEqual(new_user.status_code, 201)
         user_id = new_user.json['user_id']
         # obtain an errorneous id
@@ -105,7 +111,7 @@ class UserTests(unittest.TestCase):
             {"username":"jamie", "email":"Jimmymail.com", "password":""}
         ]
         for bad_req in list_of_bad_requests:
-            result = self.post_data('/api/v1/users/signup', data=bad_req)
+            result = self.post_data(data=bad_req)
             # assert correct status code
             self.assertEqual(result.status_code, 400)
             # assert correct error message
@@ -116,7 +122,8 @@ class UserTests(unittest.TestCase):
     def test_user_sign_up_and_sign_in(self):
         """Test that a new user can sign up for an account and sign in
         """
-        new_user = self.post_data('/api/v1/users/signup/', data=self.user)
+        # cerate a user
+        new_user = self.post_data()
 
         # API should respond with a success message and the allocated user id
         self.assertEqual(new_user.status_code, 201)

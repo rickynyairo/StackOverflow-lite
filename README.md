@@ -9,7 +9,7 @@ StackOverflow-Lite is a platform for sharing questions and answers.
 [![Build Status](https://travis-ci.org/rickynyairo/StackOverflow-lite.svg?branch=development)](https://travis-ci.org/rickynyairo/StackOverflow-lite)
 
 ### Code Climate
-[![Maintainability](https://api.codeclimate.com/v1/badges/a99a88d28ad37a79dbf6/maintainability)](https://codeclimate.com/github/rickynyairo/StackOverflow-lite)
+[![Maintainability](https://api.codeclimate.com/v1/badges/13a7eb6d1036b235a820/maintainability)](https://codeclimate.com/github/rickynyairo/StackOverflow-lite/maintainability)
 
 ### Features
 1. Users can create an account and log in.
@@ -43,6 +43,25 @@ In a virtual environment, perform the following:
 ### API-Endpoints
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/479da9f494c39acebfd6)
+
+#### Users Endpoints
+
+Method | Endpoint | Functionality
+--- | --- | ---
+POST | /api/v1/users/signup | Creates a user account
+POST | /api/v1/users/signin | Sign in a user
+GET | /api/v1/users | Get a list of all users
+
+
+#### Questions Endpoints
+
+Method | Endpoint | Functionality
+--- | --- | ---
+POST | /api/v1/questions | Post a question
+POST | /api/v1/questions/int:ques_id/answers | post an answer to a question
+GET | /api/v1/questions | Get a List of all questions
+GET | /api/v1/questions/int:ques_id | Get a question using its id
+PUT | /api/v1/questions/int:ques_id | Edit a question
 
 ### Questions
 [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://GitHub.com/Naereen/ama)

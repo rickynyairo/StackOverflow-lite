@@ -29,10 +29,9 @@ def get_questions():
         # return the new question with the assigned question id
         try:
             question_id = int(data["questions"][-1]['question_id']) + 1
-        # if that fails, there is no data in the data store
+            # if that fails, there is no data in the data store
         except IndexError:
             question_id = "1"
-
         req_data = json.loads(request.data.decode('utf-8').replace("'", '"'))
         # validation
         try:
@@ -55,7 +54,8 @@ def get_questions():
     return response
 
 @version1.route('/questions/<int:ques_id>',
-                 methods=['GET', 'PUT', 'DELETE'], strict_slashes=False)
+                 methods=['GET', 'PUT', 'DELETE'], 
+                 strict_slashes=False)
 def get_question(ques_id):
     """This function, given a particular question id,
         retrieves the question or edits the question"""
@@ -65,14 +65,14 @@ def get_question(ques_id):
     if question is None:
         # question not found
         raise NotFound
-
     if request.method == 'GET':
-        # return the question
         response = make_response(jsonify(question), 200)
     elif request.method == 'PUT':
         # obtain the required edit
         edited_question = json.loads(request.data.decode('utf-8').replace("'", '"'))['text']
         # edit the question in the data store
+        if not edited_question:
+            raise BadRequest
         question['text'] = edited_question
         response = make_response(jsonify({
             "question_id":ques_id,
@@ -92,8 +92,9 @@ def get_question(ques_id):
 def post_answer(ques_id):
     """ This function allows the user to post an answer
     to a particular question, given the question id """
-
     answer = json.loads(request.data.decode('utf-8').replace("'", '"'))
+    if not answer:
+        raise BadRequest
     # initialize up votes to 0
     answer['up_votes'] = "0"
     # locate the question

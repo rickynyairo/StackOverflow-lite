@@ -29,8 +29,13 @@ class QuestionsTests(unittest.TestCase):
         with self.app.app_context():
             self.data = test_data
 
-    def post_data(self, path, data):
+    def post_data(self, path='/api/v1/questions/', data={}):
         """This function performs a POST request using the testing client"""
+        if not data:
+            data = {
+            "text":"How do you declare an integer variable in Java?",
+            "asked_by":"Jimmy"
+            }
         result = self.client.post(path, data=json.dumps(data),
                                   content_type='applicaton/json')
         return result
@@ -64,7 +69,7 @@ class QuestionsTests(unittest.TestCase):
 
     def test_get_questions(self):
         """Test that a user can obtain all the questions from the API"""
-        new_question = self.post_data('/api/v1/questions/', data=self.question)
+        new_question = self.post_data()
         self.assertEqual(new_question.status_code, 201)
         result = self.get_data('/api/v1/questions/')
         # assert that the server responds with the correct status code
@@ -74,7 +79,7 @@ class QuestionsTests(unittest.TestCase):
     def test_get_specific_question(self):
         """Test that the API can respond with a particular question, given the id"""
         # post a new question to get a question id in the response
-        new_question = self.post_data('/api/v1/questions/', data=self.question)
+        new_question = self.post_data()
         self.assertEqual(new_question.status_code, 201)
         # get json response
         response = new_question.json
@@ -87,7 +92,7 @@ class QuestionsTests(unittest.TestCase):
     def test_post_an_answer_to_a_question(self):
         """Test that the user can post an answer to a given question"""
         # create a question
-        new_question = self.post_data('/api/v1/questions/', data=self.question)
+        new_question = self.post_data()
         self.assertEqual(new_question.status_code, 201)
         # this is the response of the newly posted question
         response = new_question.json
@@ -102,7 +107,7 @@ class QuestionsTests(unittest.TestCase):
     def test_edit_question(self):
         """Test that the user can edit a question"""
         # create a question
-        new_question = self.post_data('/api/v1/questions/', data=self.question)
+        new_question = self.post_data()
         self.assertEqual(new_question.status_code, 201)
         question = new_question.json
         question_id = question['question_id']
