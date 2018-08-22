@@ -50,13 +50,14 @@ def init_db():
     """Set up the database to stode the user data
     """
     # this is for travis
-    environment = os.getenv("APP_SETTINGS")
-    if environment is 'testing':
-        init_test_db()
+    try:
+        testing = os.getenv("TESTING")
+        if testing is 'true':
+            init_test_db()
+    except Exception:
+        pass
     db_url = os.getenv("DATABASE_URL")  
-    
     db = psycopg2.connect(db_url)
-
     return db
 
 
