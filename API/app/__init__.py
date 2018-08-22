@@ -8,13 +8,15 @@ Authored by: Ricky Nyairo
 """
 
 import json
+<<<<<<< HEAD
 import os
 from contextlib import closing
+=======
+>>>>>>> parent of 2426653... [Chore #Feature] Wrote tests for the user sign up endpoint and made the endpoint
 
 # third party imports
 from flask import Flask, jsonify, request, make_response
 from instance.config import app_config
-import psycopg2
 
 # local imports
 from .data import data
@@ -40,6 +42,7 @@ def _locate(item_id, items):
 
     return responce
 
+<<<<<<< HEAD
 def init_db():
     """Set up the database to stode the user data
     """
@@ -54,6 +57,8 @@ def init_test_db():
             cursor.execute(sql.read())
         conn.commit()
 
+=======
+>>>>>>> parent of 2426653... [Chore #Feature] Wrote tests for the user sign up endpoint and made the endpoint
 def not_found(error):
     """This function returns a custom JSON response when a resource is not found"""
     error_dict = {
@@ -112,5 +117,9 @@ def create_app(config_name='development'):
 
     return app
 
+<<<<<<< HEAD
 db = init_db()
 APPs = create_app()
+=======
+APP = create_app()
+>>>>>>> parent of 2426653... [Chore #Feature] Wrote tests for the user sign up endpoint and made the endpoint
