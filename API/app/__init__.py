@@ -9,13 +9,15 @@ Authored by: Ricky Nyairo
 
 import json
 import os
+from contextlib import closing
 
-# local imports
+# third party imports
 from flask import Flask, jsonify, request, make_response
-from .data import data
 from instance.config import app_config
 import psycopg2
 
+# local imports
+from .data import data
 
 def _locate(item_id, items):
     """This function takes 2 arguments (id : int and items : string)
@@ -46,11 +48,11 @@ def init_db():
 
     return db
 
-def dest_db(db):
-    if type(db) is not psycopg2.connect()
-        return "Unknown type"
-    else:
-        return db.close()
+def init_test_db():
+    with closing(init_db()) as conn, conn.cursor() as cursor:
+        with APP.open_resource('stackovflow.sql', mode='r') as sql:
+            cursor.execute(sql.read())
+        conn.commit()
 
 def not_found(error):
     """This function returns a custom JSON response when a resource is not found"""
@@ -90,7 +92,8 @@ def unauthorized(error):
     response = make_response(jsonify(error_dict), 400)
     return response
 
-def create_app(config_name = 'development'):
+
+def create_app(config_name='development'):
     """This function sets up and returns the application"""
     app = Flask(__name__, instance_relative_config=True)
     
@@ -110,4 +113,4 @@ def create_app(config_name = 'development'):
     return app
 
 db = init_db()
-APP = create_app()
+APPs = create_app()

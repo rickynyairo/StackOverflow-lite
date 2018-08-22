@@ -5,9 +5,11 @@ Authored by: Ricky Nyairo
 """
 import unittest
 import json
+import string
+from random import choice, randint
 
 # local imports
-from ... import create_app
+from ... import create_app, init_db
 
 class AuthTest(unittest.TestCase):
     """This class collects all the test cases for the users"""
@@ -18,20 +20,20 @@ class AuthTest(unittest.TestCase):
         self.user = {
             "first_name":"ugali",
             "last_name":"mayai",
-            "email":"ugalimayai@gmail.com",
-            "username":"ugalimayai",
+            "email":"testemail@gmail.com",
+            "username":"".join(choice(
+                                string.ascii_letters) for x in range (randint(7,10))),
             "password":"password"
         }
         self.error_msg = "The path accessed / resource requested cannot be found, please check"
-        self.data={}
+        
+        with self.app.app_context():
+            self.db = init_db()
 
     def post_data(self, path='/api/v2/auth/signup', data={}):
         """This function performs a POST request using the testing client"""
         if not data:
-            data = {
-            "username":"ugalimayai",
-            "password":"password"
-            }
+            data = self.user
         result = self.client.post(path, data=json.dumps(data),
                                   content_type='applicaton/json')
         return result
@@ -49,22 +51,70 @@ class AuthTest(unittest.TestCase):
         new_user = self.post_data("/api/v2/auth/signup", data=self.user)
         # test that the server responds with the correct status code
         self.assertEqual(new_user.status_code, 201)
+        username =  new_user.json['username']
         # test that the correct user is created
-        # self.assertEqual(self.user['username'], new_user.json['username'])
+        self.assertEqual(self.user['username'], username)
+        # test that the correct response is sent back
+        self.assertTrue(new_user.json['AuthToken'])
+        self.assertTrue(new_user.json['message'])
 
     def test_error_messages(self):
         """Test that the endpoint responds with the correct error message"""
         empty_req = self.client.post("/api/v2/auth/signup", data={})
         self.assertEqual(empty_req.status_code, 400)
+        bad_data = self.user
+        del bad_data['first_name']
+        empty_params = self.client.post("/api/v2/auth/signup", data=bad_data)
+        self.assertEqual(empty_params.status_code, 400)
+        empty_req = self.client.post("/api/v2/auth/login", data={"":""})
+        self.assertEqual(empty_req.status_code, 400)
+        bad_data = {
+            "username":"",
+            "password":"pass"
+        }
+        empty_params = self.client.post("/api/v2/auth/signup", data=bad_data)
+        self.assertEqual(empty_params.status_code, 400)
+
+    def test_user_login(self):
+        """Test that the user can login and make requests"""
+        # create user in the database:
+        new_user = self.post_data()
+        self.assertTrue(new_user.json)
+        user_id = new_user.json['user_id']
+        username = new_user.json['username']
+        password = self.user['password']
+        payload = dict(
+            username=username,
+            password=password
+        )
+        # attempt to log in
+        login = self.post_data('/api/v2/auth/login', data=payload)
+        self.assertEqual(login.json['message'], 'success')
+        self.assertTrue(login.json['AuthToken'])
+    
+    def test_an_unregistered_user(self):
+        """Test that an unregistered user cannot log in"""
+        # generate random username and password
+        un_user = {
+            "username":"".join(choice(
+                                string.ascii_letters) for x in range (randint(7,10))),
+            "passsword":"".join(choice(
+                                string.ascii_letters) for x in range (randint(7,10))),
+        }
+        # attempt to log in
+        login = self.post_data('/api/v2/auth/login', data=un_user)
+        self.assertEqual(login.status_code, 400)
 
     def tearDown(self):
-        """This function destroys all the variables
-        that have been created during the test
-        """
+        """This function destroys objests created during the test run"""
+        curr = self.db.cursor()
+        exit_query = "DELETE FROM users WHERE email = '%s';" % (self.user['email'])
+        curr.execute(exit_query)
+        curr.close
+        self.db.commit()
         del self.user
-        del self.data
-        del self.error_msg
-        del self.client
+        with self.app.app_context():
+            self.db.close()
 
 
 if __name__ == "__main__":
