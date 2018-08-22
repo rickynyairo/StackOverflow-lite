@@ -10,7 +10,8 @@ from .... import init_db, create_app
 
 class UserModel(object):
 
-    def __init__(self, username="u", first_name="i", last_name="o", password="p", email="1"):
+    def __init__(self, username="user", first_name="first", 
+                 last_name="last", password="pass", email="em@ai.l"):
         """initialize the user model"""
         self.username = username
         self.first_name = first_name
