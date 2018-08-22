@@ -84,10 +84,15 @@ def bad_request(error):
 
 def unauthorized(error):
     """This function creates a custom JSON response when an unauthorized request is made"""
+    request_data = ""
+    if not request.data.decode():
+        request_data = "Request body is empty"
+    else:
+        request_data = json.loads(request.data.decode().replace("'", '"'))
     error_dict = {
         "path_accessed":str(request.path),
         "message":"You are not authorized to access this resource, please confirm credentials",
-        "request_data":json.loads(request.data.decode().replace("'", '"')),
+        "request_data":request_data,
         "error":str(error)
     }
     response = make_response(jsonify(error_dict), 400)
@@ -97,7 +102,7 @@ def unauthorized(error):
 def create_app(config_name='development'):
     """This function sets up and returns the application"""
     app = Flask(__name__, instance_relative_config=True)
-    
+    app.url_map.strict_slashes = False
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
 

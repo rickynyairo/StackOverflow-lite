@@ -1,7 +1,5 @@
 """
-This module tests the authentication endpoint
-
-Authored by: Ricky Nyairo
+This module tests the questions end point
 """
 import unittest
 import json
@@ -10,31 +8,51 @@ from random import choice, randint
 
 # local imports
 from ... import create_app, init_db
+from ...api.version2.users.user_models import UserModel
+from ...api.version2.questions.question_models import QuestionModel
 
-class AuthTest(unittest.TestCase):
-    """This class collects all the test cases for the users"""
+class TestQuestions(unittest.TestCase):
+    """This class collects all the test cases for the questions"""
+    def create_user(self):
+        """create a fictitious user"""
+        username = "".join(choice(
+                           string.ascii_letters) for x in range (randint(7,10)))
+        params = {
+                "username":username,
+                "first_name":"ugali",
+                "last_name":"mayai",
+                "email":"ugalimayai@gmail.com",
+                "password":"password"
+            }       
+        user = UserModel(**params)
+        user_id = user.save_user()
+        return user_id, user
+
     def setUp(self):
         """Performs variable definition and app initialization"""
         self.app = create_app()
         self.client = self.app.test_client()
-        self.user = {
-            "first_name":"ugali",
-            "last_name":"mayai",
-            "email":"testemail@gmail.com",
-            "username":"".join(choice(
-                                string.ascii_letters) for x in range (randint(7,10))),
-            "password":"password"
+        self.user_id, user = self.create_user()
+        self.auth_token = user.encode_auth_token(self.user_id).decode('utf-8')
+        self.question = {
+            "text":"What is the fastest programming language and why?",
+            "description":"I am looking for the fastest programming language in terms\
+                            of memory management for a very high performance project."
         }
-        self.error_msg = "The path accessed / resource requested cannot be found, please check"
-        
+        self.app = create_app()
         with self.app.app_context():
             self.db = init_db()
 
-    def post_data(self, path='/api/v2/auth/signup', data={}):
+    def post_data(self, path='/api/v2/questions', auth_token=2, data={}, headers=0):
         """This function performs a POST request using the testing client"""
         if not data:
-            data = self.user
+            data = self.question
+        if auth_token is 2:
+            auth_token = self.auth_token
+        if not headers:
+            headers = {"Authorization":"Bearer {}".format(auth_token)}
         result = self.client.post(path, data=json.dumps(data),
+                                  headers=headers,
                                   content_type='applicaton/json')
         return result
 
@@ -45,77 +63,63 @@ class AuthTest(unittest.TestCase):
         result = self.client.get(path)
         return result
 
-    def test_sign_up_user(self):
-        """Test that a new user can sign up using a POST request
+    def test_post_question(self):
+        """Test that a user can post a question
         """
-        new_user = self.post_data("/api/v2/auth/signup", data=self.user)
+        new_question = self.post_data()
         # test that the server responds with the correct status code
-        self.assertEqual(new_user.status_code, 201)
-        username =  new_user.json['username']
-        # test that the correct user is created
-        self.assertEqual(self.user['username'], username)
-        # test that the correct response is sent back
-        self.assertTrue(new_user.json['AuthToken'])
-        self.assertTrue(new_user.json['message'])
-
+        self.assertEqual(new_question.status_code, 201)
+        self.assertTrue(new_question.json['message'])
+        question_id =  new_question.json['question_id']
+        # test that the correct question is created
+        dbconn = self.db
+        curr = dbconn.cursor()
+        curr.execute("SELECT text FROM questions\
+                     WHERE question_id = %d" % (int(question_id)))
+        question_text = curr.fetchone()[0]
+        self.assertEqual(self.question['text'], question_text)
+        
     def test_error_messages(self):
         """Test that the endpoint responds with the correct error message"""
-        empty_req = self.client.post("/api/v2/auth/signup", data={})
+        empty_req = self.client.post("/api/v2/questions",
+                                     headers=dict(Authorization="Bearer {}".format(self.auth_token)),
+                                     data={})
         self.assertEqual(empty_req.status_code, 400)
-        bad_data = self.user
-        del bad_data['first_name']
-        empty_params = self.client.post("/api/v2/auth/signup", data=bad_data)
+        bad_data = self.question
+        del bad_data['text']
+        empty_params = self.post_data(data=bad_data)
         self.assertEqual(empty_params.status_code, 400)
-        empty_req = self.client.post("/api/v2/auth/login", data={"":""})
+        empty_req = self.post_data(data={"":""})
         self.assertEqual(empty_req.status_code, 400)
         bad_data = {
-            "username":"",
-            "password":"pass"
+            "user_id":"",
+            "textsss":"What is the fastest programming language and why?",
+            "description":"Description"
         }
-        empty_params = self.client.post("/api/v2/auth/signup", data=bad_data)
-        self.assertEqual(empty_params.status_code, 400)
-
-    def test_user_login(self):
-        """Test that the user can login and make requests"""
-        # create user in the database:
-        new_user = self.post_data()
-        self.assertTrue(new_user.json)
-        user_id = new_user.json['user_id']
-        username = new_user.json['username']
-        password = self.user['password']
-        payload = dict(
-            username=username,
-            password=password
-        )
-        # attempt to log in
-        login = self.post_data('/api/v2/auth/login', data=payload)
-        self.assertEqual(login.json['message'], 'success')
-        self.assertTrue(login.json['AuthToken'])
-
-    def test_an_unregistered_user(self):
-        """Test that an unregistered user cannot log in"""
-        # generate random username and password
-        un_user = {
-            "username":"".join(choice(
-                                string.ascii_letters) for x in range (randint(7,10))),
-            "passsword":"".join(choice(
-                                string.ascii_letters) for x in range (randint(7,10))),
-        }
-        # attempt to log in
-        login = self.post_data('/api/v2/auth/login', data=un_user)
-        self.assertEqual(login.status_code, 400)
+        bad_req = self.post_data(data=bad_data)
+        self.assertEqual(bad_req.status_code, 400)
+    
+    def test_unauthorized_request(self):
+        """Test that the endpoint rejects unauthorized requests"""
+        # test false token
+        false_token = self.post_data(headers=dict(Authorization="Bearer wrongtoken"))
+        self.assertEqual(false_token.status_code, 400)
+        # test correct token
+        correct_token = self.post_data()
+        self.assertEqual(correct_token.status_code, 201)
 
     def tearDown(self):
         """This function destroys objests created during the test run"""
         curr = self.db.cursor()
-        exit_query = "DELETE FROM users WHERE email = '%s';" % (self.user['email'])
+        exit_query = "DELETE FROM questions WHERE user_id = %d;" % (self.user_id)
+        curr.execute(exit_query)
+        exit_query = "DELETE FROM users WHERE user_id = %d;" % (self.user_id)
         curr.execute(exit_query)
         curr.close
         self.db.commit()
-        del self.user
+        del self.question
         with self.app.app_context():
             self.db.close()
-
 
 if __name__ == "__main__":
     unittest.main()

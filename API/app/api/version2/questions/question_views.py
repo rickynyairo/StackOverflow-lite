@@ -11,74 +11,34 @@ from werkzeug.exceptions import BadRequest, NotFound, Unauthorized
 from .... import init_db
 
 from ..users.user_models import UserModel
+from ..questions.question_models import QuestionModel
 
-class AuthLogin(MethodView):
-    """This class collects the methods for the auth/login endpoint"""
+class Questions(MethodView):
+    """This class collects the methods for the questions endpoint"""
     def post(self):
-        """This function handles post requests"""       
-        if not request.data:
+        """This function handles post requests"""
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
             raise BadRequest
-        req_data = json.loads(request.data.decode().replace("'", '"'))
-        try:
-            username = req_data['username']
-            password = req_data['password']
-        except (KeyError, IndexError):
-            raise BadRequest
-        # locate user in db
-        user = UserModel(username=username, password=password)
-        record = user.get_user_by_username(username)
-        if not user:
-            raise Unauthorized
-        
-        user_id, fname, lname, pwordhash, date_created = record
-        name = "{}, {}".format(lname, fname)
-        if not check_password_hash(pwordhash, password):
-            raise Unauthorized
-    
-        token = user.encode_auth_token(int(user_id))
-        
-        resp = dict(
-            message="success",
-            AuthToken=token.decode('utf-8'),
-            name=name,
-            date_created=date_created
-        )      
+        auth_token = auth_header.split(" ")[1]
+        response = UserModel().decode_auth_token(auth_token)
+        if not isinstance(response, str):
+            # the token decoded succesfully
+            user_id = response       
+            if not request.data:
+                raise BadRequest
+            req_data = json.loads(request.data.decode().replace("'", '"'))
+            try:
+                text = req_data['text']
+                description = req_data['description']
+            except (KeyError, IndexError):
+                raise BadRequest
+            # save question in db
+            question = QuestionModel(int(user_id), text, description)
+            question_id = question.save_question() 
+            resp = dict(message="success", text=text, question_id=str(question_id))
 
-        return jsonify(resp), 200
-
-class AuthSignup(MethodView):
-    """This class collects the methods for the auth/signup method"""
-    def post(self):
-        """This function handles a post request"""
-        req_data = request.data.decode().replace("'", '"')
-        if not req_data:
-            raise BadRequest
-        user_details = json.loads(req_data)
-        try:
-            username = user_details['username']
-            first_name = user_details['first_name']
-            last_name = user_details['last_name']
-            email = user_details['email']
-            password = user_details['password']
-        except (KeyError, IndexError):
-            raise BadRequest
-        user = {
-            "username":username,
-            "first_name":first_name,
-            "last_name":last_name,
-            "email":email,
-            "password":password
-        }
-        user_model = UserModel(**user)
-        user_model.save_user()
-        user_id = int(user_model.get_id()[0])
-        token = user_model.encode_auth_token(user_id)
-        resp = {
-            "message":"User signed up successfully",
-            "AuthToken":"{}".format(token.decode('utf-8')),
-            "username":username,
-            "user_id":"{}".format(user_id),
-            "status":"success"
-        }
-        user_model.close_db()
-        return jsonify(resp), 201
+            return jsonify(resp), 201
+        else:
+            # token is either invalid or expired, right now, we don't care
+            raise Unauthorized

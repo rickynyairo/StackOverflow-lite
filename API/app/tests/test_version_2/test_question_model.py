@@ -31,6 +31,14 @@ class TestQuestionModel(unittest.TestCase):
         user_id = user.save_user()
         return user_id
 
+    def create_question(self):
+        """This function sets up a test question in the db
+        """
+        params = self.question
+        question = QuestionModel(**params)
+        question_id = question.save_question()
+        return question_id
+  
     def setUp(self):
         """Define the data to be used for the test
         """
