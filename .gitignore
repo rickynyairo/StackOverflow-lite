@@ -1,6 +1,4 @@
 API/flask-env
-API/env.bat
-API/.env
 API/__pycache__
 API/app/__pycache__
 API/app/questions/__pycache__

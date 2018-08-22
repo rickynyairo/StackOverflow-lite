@@ -64,7 +64,6 @@ class TestUserModel(unittest.TestCase):
         user_id = int(user.get_id()[0])
         token = user.encode_auth_token(user_id)
         self.assertTrue(isinstance(token, bytes))
-
     def test_decode_user_token(self):
         """Test that the user model can decode an authentication token"""
         params = self.user
