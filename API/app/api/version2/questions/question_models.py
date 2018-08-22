@@ -58,6 +58,27 @@ class QuestionModel(object):
             return "Not Found"
         pass
 
+    def get_all(self):
+        """This function returns a list of all the questions"""
+        dbconn = self.db
+        curr = dbconn.cursor()
+        curr.execute("""SELECT * FROM questions;""")
+        data = curr.fetchall()
+        self.close_db()
+        resp = []
+        
+        for i, items in enumerate(data):
+            question_id, user_id, text, description, date = items
+            question = dict(
+               question_id=int(question_id),
+               user_id=int(user_id),
+               text=text,
+               description=description,
+               date_created=date
+            )
+            resp.append(question)
+        return resp
+       
     def close_db(self):
         """This function closes the database"""
         self.db.close()

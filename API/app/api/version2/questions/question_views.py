@@ -42,3 +42,13 @@ class Questions(MethodView):
         else:
             # token is either invalid or expired, right now, we don't care
             raise Unauthorized
+
+    def get(self):
+        """This function handles get requests"""
+        # get questions from db
+        questions = QuestionModel().get_all()
+        resp = {
+            "message":"success",
+            "questions":questions
+        }
+        return jsonify(resp), 200

@@ -82,6 +82,17 @@ def bad_request(error):
     response = make_response(jsonify(error_dict), 400)
     return response
 
+def method_not_allowed(error):
+    """This function creates a custom JSON response if the request method is not allowed."""
+    error_dict = {
+        "path_accessed":str(request.path),
+        "message":"The request method used is not allowed",
+        "request_method":request.method,
+        "error":str(error)
+    }
+    response = make_response(jsonify(error_dict), 400)
+    return response
+
 def unauthorized(error):
     """This function creates a custom JSON response when an unauthorized request is made"""
     request_data = ""
@@ -115,6 +126,7 @@ def create_app(config_name='development'):
     app.register_error_handler(400, bad_request)
     app.register_error_handler(401, unauthorized)
     app.register_error_handler(404, not_found)
+    app.register_error_handler(405, method_not_allowed)
 
     return app
 

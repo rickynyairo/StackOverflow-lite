@@ -56,7 +56,7 @@ class TestQuestions(unittest.TestCase):
                                   content_type='applicaton/json')
         return result
 
-    def get_data(self, path):
+    def get_data(self, path='/api/v2/questions'):
         """This function performs a GET request to a given path
             using the testing client
         """
@@ -107,6 +107,13 @@ class TestQuestions(unittest.TestCase):
         # test correct token
         correct_token = self.post_data()
         self.assertEqual(correct_token.status_code, 201)
+
+    def test_get_questions(self):
+        """Test that the api can respond with a list of questions"""
+        new_question = self.post_data()
+        questions = self.get_data().json
+        self.assertEqual(questions['message'], 'success')
+        self.assertIn(new_question.json['text'], str(questions['questions']))
 
     def tearDown(self):
         """This function destroys objests created during the test run"""
