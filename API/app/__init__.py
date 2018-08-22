@@ -40,19 +40,25 @@ def _locate(item_id, items):
 
     return responce
 
-def init_db():
-    """Set up the database to stode the user data
-    """
-    db_url = os.getenv("DATABASE_URL")
-    db = psycopg2.connect(db_url)
-
-    return db
-
 def init_test_db():
     with closing(init_db()) as conn, conn.cursor() as cursor:
         with APP.open_resource('stackovflow.sql', mode='r') as sql:
             cursor.execute(sql.read())
         conn.commit()
+
+def init_db():
+    """Set up the database to stode the user data
+    """
+    # this is for travis
+    environment = os.getenv("APP_SETTINGS")
+    if environment is 'testing':
+        init_test_db()
+    db_url = os.getenv("DATABASE_URL")  
+    
+    db = psycopg2.connect(db_url)
+
+    return db
+
 
 def not_found(error):
     """This function returns a custom JSON response when a resource is not found"""
