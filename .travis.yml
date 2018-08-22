@@ -11,8 +11,8 @@ services:
   - postgresql
 
 before_script:
-  - psql -c "CREATE DATABASE stackovf_test;"" -U postgres
-  - psql -c "CREATE USER rickynyairo WITH PASSWORD aces4890;" -U postgres
+  - psql -c 'CREATE DATABASE stackoverflow-lite' -U postgres
+  - psql -c 'CREATE USER rickynyairo WITH PASSWORD aces4890;' -U postgres
 
 script:
   - nosetests API/app/tests -v --with-coverage --cover-package=app
