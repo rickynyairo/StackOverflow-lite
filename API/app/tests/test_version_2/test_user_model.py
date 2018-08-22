@@ -47,8 +47,7 @@ class TestUserModel(unittest.TestCase):
         params = self.user
         username = self.user['username']
         user = UserModel(**params)
-        user.save_user()
-        user_id = user.get_id()[0]
+        user_id = user.save_user()
         user.delete_user(user_id)
         curr = self.db.cursor()
         query = "SELECT user_id FROM users WHERE user_id = %d;" % (int(user_id))
@@ -59,17 +58,16 @@ class TestUserModel(unittest.TestCase):
     def test_encode_user_token(self):
         """Test that the user model can encode a JWT token, given a user_id"""
         params = self.user
-        user = UserModel(**params)
-        user.save_user()
-        user_id = int(user.get_id()[0])
+        user = UserModel(**params)      
+        user_id = user.save_user()
         token = user.encode_auth_token(user_id)
         self.assertTrue(isinstance(token, bytes))
+
     def test_decode_user_token(self):
         """Test that the user model can decode an authentication token"""
         params = self.user
         user = UserModel(**params)
-        user.save_user()
-        user_id = int(user.get_id()[0])
+        user_id = user.save_user()
         token = user.encode_auth_token(user_id)
         decoded_sub = user.decode_auth_token(token)
         self.assertTrue(decoded_sub)
@@ -78,8 +76,8 @@ class TestUserModel(unittest.TestCase):
     def tearDown(self):
         """This function destroys objests created during the test run"""
         curr = self.db.cursor()
-        exit_query = "DELETE FROM users WHERE email = '%s';" % (self.user['email'])
-        curr.execute(exit_query)
+        # exit_query = "DELETE FROM users WHERE email = '%s';" % (self.user['email'])
+        # curr.execute(exit_query)
         curr.close()
         self.db.commit()
         del self.user

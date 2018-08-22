@@ -91,7 +91,7 @@ class AuthTest(unittest.TestCase):
         login = self.post_data('/api/v2/auth/login', data=payload)
         self.assertEqual(login.json['message'], 'success')
         self.assertTrue(login.json['AuthToken'])
-    
+
     def test_an_unregistered_user(self):
         """Test that an unregistered user cannot log in"""
         # generate random username and password

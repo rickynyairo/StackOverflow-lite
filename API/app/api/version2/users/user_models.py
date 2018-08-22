@@ -46,12 +46,13 @@ class UserModel(object):
         curr = database.cursor()
         query = """INSERT INTO users \
             VALUES (nextval('increment_pkey'), %(first_name)s, %(last_name)s,\
-            %(username)s, %(email)s, ('now'), %(password)s);
+            %(username)s, %(email)s, ('now'), %(password)s) RETURNING user_id;
             """
-        user_id = curr.execute(query, user)
+        curr.execute(query, user)
+        user_id = curr.fetchone()[0]
         database.commit()
         curr.close()
-        pass
+        return int(user_id)
 
     def get_id(self):
         """Queries the database for the user id
@@ -65,10 +66,6 @@ class UserModel(object):
         curr.close()
         return user_id
     
-    def get_user_by_id(self, user_id):
-        """This function returns user details when an id is passed"""
-        pass
-
     def delete_user(self, user_id):
         """This function takes in a user id and removes it from the database"""
         try:

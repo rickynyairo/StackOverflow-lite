@@ -43,6 +43,7 @@ def _locate(item_id, items):
 def init_db():
     """Set up the database to stode the user data
     """
+    
     params={"host":"localhost", "dbname":"stackoverflow-lite", "user":"rickynyairo", "password":"aces4890"}
     db = psycopg2.connect(**params)
 
