@@ -7,7 +7,7 @@ import json
 # third party imports
 from flask.views import MethodView
 from flask import request, jsonify
-from werkzeug.exceptions import BadRequest, NotFound, Unauthorized, Forbidden
+from werkzeug.exceptions import BadRequest, NotFound, Unauthorized
 from werkzeug.security import generate_password_hash, check_password_hash
 from .... import init_db
 
@@ -34,7 +34,7 @@ class AuthLogin(MethodView):
         user_id, fname, lname, pwordhash, date_created = record
         name = "{}, {}".format(lname, fname)
         if not check_password_hash(pwordhash, password):
-            raise Forbidden
+            raise Unauthorized
     
         token = user.encode_auth_token(int(user_id))
         
