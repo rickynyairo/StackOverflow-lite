@@ -1,11 +1,10 @@
 language: python
 env:
-  - DATABASE_URL="dbname='stackoverflow_lite' host='localhost' port='5432' user='postgres' password='postgres'"
+  - DATABASE_URL="dbname='stackoverflow_lite' host='127.0.0.1' port='5432' user='postgres' password=''"
 python:
   - "3.6"
 
 install:
-  - source API/.env
   - pip install -r requirements.txt
   - pip install coveralls
 
@@ -15,9 +14,6 @@ addons:
   postgresql: "9.6"
 
 before_script:
-  - sudo -u postgres psql postgres
-  - \password = postgres
-  - \q
   - psql -c 'CREATE DATABASE stackoverflow_lite' -U postgres
   - psql -f stackovflow.sql stackoverflow_lite
   - psql -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to postgres ;" -U postgres
