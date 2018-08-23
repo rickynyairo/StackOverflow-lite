@@ -1,6 +1,6 @@
 language: python
 env:
-  - TESTING = 'true'
+  - DATABASE_URL="dbname='stackoverflow_lite' host='localhost' port='5432' user='postgres' password='postgres'"
 python:
   - "3.6"
 
@@ -15,10 +15,12 @@ addons:
   postgresql: "9.6"
 
 before_script:
+  - sudo -u postgres psql postgres
+  - \password = postgres
+  - \q
   - psql -c 'CREATE DATABASE stackoverflow_lite' -U postgres
-  - psql -c "CREATE USER rickynyairo WITH PASSWORD 'aces4890';" -U postgres
   - psql -f stackovflow.sql stackoverflow_lite
-  - psql -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to rickynyairo;" -U postgres
+  - psql -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to postgres ;" -U postgres
 
 script:
   - nosetests API/app/tests -v --with-coverage --cover-package=app
