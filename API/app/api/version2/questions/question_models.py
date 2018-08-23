@@ -26,7 +26,19 @@ class QuestionModel(object):
         data = curr.fetchall()
         curr.close()
         # return a list of tuples
-        return data
+        resp = []
+        for i, items in enumerate(data):
+            question_id, user_id, text, description, date = items
+            question = dict(
+               question_id=int(question_id),
+               user_id=int(user_id),
+               text=text,
+               description=description,
+               date_created=date
+            )
+            resp.append(question)
+        return resp
+        
 
     def save_question(self):
         """Add question details to the database"""
@@ -84,7 +96,7 @@ class QuestionModel(object):
         dbconn = self.db
         curr = dbconn.cursor()
         curr.execute(
-            """SELECT * FROM questions WHERE question_id = %d;""" % (question_id))
+            """SELECT * FROM questions WHERE question_id = %d;""" % (int(question_id)))
         data = curr.fetchone()
         curr.close()
         return data

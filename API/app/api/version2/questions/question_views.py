@@ -36,7 +36,8 @@ class Questions(MethodView):
                 raise BadRequest
             # save question in db
             question = QuestionModel(int(user_id), text, description)
-            question_id = question.save_question() 
+            question_id = question.save_question()
+            question.close_db() 
             resp = dict(message="success", text=text, question_id=str(question_id))
 
             return jsonify(resp), 201
@@ -105,5 +106,39 @@ class GetQuestion(MethodView):
             resp = {
                 "message":"success",
                 "description":"question deleted succesfully"
+            }
+            return jsonify(resp), 200
+
+class GetUserQuestion(MethodView):
+    """question views associated with users"""
+    def get(self, username):
+        """returns all the questions associated with a particulart user"""
+        """This function deletes a question, given the id"""
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            raise BadRequest
+        auth_token = auth_header.split(" ")[1]
+        response = UserModel().decode_auth_token(auth_token)
+
+        if isinstance(response, str):
+            # the user is not authorized to view this endpoint
+            raise Unauthorized
+        else:
+            # user is authorized
+            users = UserModel()
+            user_id  = users.get_id(username)
+            if not user_id:
+                # user does not exist
+                raise NotFound("The username provided does not exist")
+            quest = QuestionModel()
+            questions = quest.get_questions_by_user_id(int(user_id[0]))
+            if not questions:
+                # no question was not found
+                raise NotFound     
+            # check if user ids match            
+            resp = {
+                "message":"success",
+                "username":username,
+                "questions":questions
             }
             return jsonify(resp), 200

@@ -55,13 +55,15 @@ class UserModel(object):
         curr.close()
         return int(user_id)
 
-    def get_id(self):
+    def get_id(self, username=0):
         """Queries the database for the user id
         with the passed username
         """
+        if not username:
+            username = self.username
         database = self.db
         curr = database.cursor()
-        query = "SELECT user_id FROM users WHERE username = '%s';" % (self.username)
+        query = "SELECT user_id FROM users WHERE username = '%s';" % (username)
         curr.execute(query)
         user_id = curr.fetchone()
         curr.close()

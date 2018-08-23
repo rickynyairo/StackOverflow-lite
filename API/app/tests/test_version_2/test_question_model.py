@@ -110,7 +110,7 @@ class TestQuestionModel(unittest.TestCase):
         questions_by_user = que2.get_questions_by_user_id(user_id)
 
         for question in questions_by_user:
-            self.assertEqual(int(question[1]), user_id)
+            self.assertEqual(int(question['user_id']), user_id)
 
 
     def tearDown(self):

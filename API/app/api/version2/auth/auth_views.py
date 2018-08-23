@@ -28,9 +28,9 @@ class AuthLogin(MethodView):
         # locate user in db
         user = UserModel(username=username, password=password)
         record = user.get_user_by_username(username)
-        if not user:
-            raise Unauthorized
-        
+        if not record:
+            raise Unauthorized('Your details were not found, please sign up')
+
         user_id, fname, lname, pwordhash, date_created = record
         name = "{}, {}".format(lname, fname)
         if not check_password_hash(pwordhash, password):
