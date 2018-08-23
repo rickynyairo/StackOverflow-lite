@@ -88,17 +88,24 @@ class AnswerModel(object):
         curr.execute("""SELECT * FROM answers WHERE \
                      question_id = %d;""" % (int(question_id))) 
         data = curr.fetchall()
+        data_items = []
+        if not isinstance(data, list):
+            # only one answer exists
+            data_items.append(data)
+
+        else:
+            data_items = data[:]
         self.close_db()
         resp = []     
-        for i, items in enumerate(data):
-            answer_id, question_id, user_id, text, date, up_votes, user_preferred = items
+        for i, items in enumerate(data_items):
+            answer_id, question_id, user_id, text, up_votes, date, user_preferred = items
             answer = dict(
                answer_id=int(answer_id),
                user_id=int(user_id),
                text=text,
                question_id=int(question_id),
                date_created=date,
-               up_votes=up_votes,
+               up_votes=int(up_votes),
                user_preferred=user_preferred
             )
             resp.append(answer)

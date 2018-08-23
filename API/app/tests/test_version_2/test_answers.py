@@ -56,15 +56,13 @@ class TestAnswers(unittest.TestCase):
         }
         self.question_id, ques = self.create_question(self.user_id)
         self.answer = {
-            "question_id":self.question_id,
-            "user_id":self.user_id,
             "text":"Julia. It has everything awesome about every great programming language, and more."
         }
         self.app = create_app()
         with self.app.app_context():
             self.db = init_db()
 
-    def post_data(self, question_id=0, auth_token=2, data={}, headers=0):
+    def post_data(self, question_id, auth_token=2, data={}, headers=0):
         """This function performs a POST request using the testing client"""
         if not data:
             data = self.answer
@@ -72,8 +70,6 @@ class TestAnswers(unittest.TestCase):
             auth_token = self.auth_token
         if not headers:
             headers = {"Authorization":"Bearer {}".format(auth_token)}
-        if not question_id:
-            question_id = self.answer['question_id']
         path = "/api/v2/questions/{}/answers".format(question_id)
         result = self.client.post(path, data=json.dumps(data),
                                   headers=headers,
@@ -83,30 +79,25 @@ class TestAnswers(unittest.TestCase):
     def test_post_answer(self):
         """Test that a user can post a answer
         """
-        new_answer = self.post_data()
+        new_answer = self.post_data(self.question_id)
         # test that the server responds with the correct status code
         self.assertEqual(new_answer.status_code, 201)
         self.assertTrue(new_answer.json['message'])
         
     def test_error_messages(self):
         """Test that the endpoint responds with the correct error message"""
-        question_id = self.answer['question_id']
-        path = "/api/v2/questions/{}/answers".format(question_id)
+        path = "/api/v2/questions/{}/answers".format(self.question_id)
         empty_req = self.client.post(path,
                                      headers=dict(Authorization="Bearer {}".format(self.auth_token)),
                                      data={})
         self.assertEqual(empty_req.status_code, 400)
-        bad_data = self.answer
-        del bad_data['text']
-        empty_params = self.post_data(data=bad_data)
-        self.assertEqual(empty_params.status_code, 400)
-        empty_req = self.post_data(data={"":""})
+        empty_req = self.post_data(question_id=self.question_id, data={"":""})
         self.assertEqual(empty_req.status_code, 400)
     
     def test_unauthorized_request(self):
         """Test that the endpoint rejects unauthorized requests"""
         # test false token
-        false_token = self.post_data(headers=dict(Authorization="Bearer wrongtoken"))
+        false_token = self.post_data(self.question_id, headers=dict(Authorization="Bearer wrongtoken"))
         self.assertEqual(false_token.status_code, 400)
    
     def tearDown(self):

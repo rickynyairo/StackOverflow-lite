@@ -73,6 +73,10 @@ class TestUserModel(unittest.TestCase):
         self.assertTrue(decoded_sub)
         self.assertEqual(decoded_sub, user_id)
 
+
+    def test_that_existing_user_cannot_be_created(self):
+        """Test that an existing user cannot be created """
+        
     def tearDown(self):
         """This function destroys objests created during the test run"""
         curr = self.db.cursor()

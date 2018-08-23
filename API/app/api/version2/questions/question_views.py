@@ -69,13 +69,17 @@ class GetQuestion(MethodView):
             # find it's answers
             answers = AnswerModel().get_answers_by_question_id(int(question_id))
             question_id, user_id, text, description, date_created = question
-            user = UserModel().get_user_by_id(int(user_id))
+            user = UserModel().get_user_by_id(int(user_id)) # returns the username
             resp = dict(user=user,
                         text=text,
                         description=description,
                         date_created=date_created,
                         answers=answers)
             return jsonify(resp), 200
+
+    def put(self):
+        """This function creates the method to allow users to vote for answers"""
+        pass
 
     def delete(self, question_id):
         """This function deletes a question, given the id"""
