@@ -7,11 +7,12 @@ import json
 # third party imports
 from flask.views import MethodView
 from flask import request, jsonify
-from werkzeug.exceptions import BadRequest, NotFound, Unauthorized
+from werkzeug.exceptions import BadRequest, NotFound, Unauthorized, Forbidden
 from .... import init_db
 
 from ..users.user_models import UserModel
 from ..questions.question_models import QuestionModel
+from ..answers.answers_models import AnswerModel
 
 class Questions(MethodView):
     """This class collects the methods for the questions endpoint"""
@@ -52,3 +53,57 @@ class Questions(MethodView):
             "questions":questions
         }
         return jsonify(resp), 200
+
+class GetQuestion(MethodView):
+    """This class collects the views gor a particular question"""
+
+    def get(self, question_id):
+        """Returns a question and all it's answers"""
+        # no auth required
+        question = QuestionModel().get_question_by_id(int(question_id))
+        if not question:
+            # question was not found
+            raise NotFound
+        else:
+            # find it's answers
+            answers = AnswerModel().get_answers_by_question_id(int(question_id))
+            question_id, user_id, text, description, date_created = question
+            user = UserModel().get_user_by_id(int(user_id))
+            resp = dict(user=user,
+                        text=text,
+                        description=description,
+                        date_created=date_created,
+                        answers=answers)
+            return jsonify(resp), 200
+
+    def delete(self, question_id):
+        """This function deletes a question, given the id"""
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            raise BadRequest
+        auth_token = auth_header.split(" ")[1]
+        response = UserModel().decode_auth_token(auth_token)
+
+        if isinstance(response, str):
+            # the user is not authorized to view this endpoint
+            raise Unauthorized
+        else:
+            # user is authorized
+            questions = QuestionModel()
+            question = questions.get_question_by_id(int(question_id))
+            if not question:
+                # the question was not found
+                raise NotFound
+            question_id, user_id, text, description, date_created = question           
+            # check if user ids match
+            if int(user_id) == int(response):
+                # delete question
+                questions.delete_question(int(question_id))
+            else:
+                # it is not the same user who asked the question
+                raise Forbidden
+            resp = {
+                "message":"success",
+                "description":"question deleted succesfully"
+            }
+            return jsonify(resp), 200

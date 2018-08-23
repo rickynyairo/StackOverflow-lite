@@ -26,7 +26,7 @@ CREATE TABLE answers (
     text character varying(1000) NOT NULL,
     up_votes numeric DEFAULT 0,
     date_created timestamp with time zone DEFAULT ('now'::text)::date NOT NULL,
-    user_preferred boolean DEFAULT false NOT NULL
+    user_preferred boolean DEFAULT false
 );
 
 COMMENT ON TABLE answers IS 'This tables stores the answers given by users on the platform';

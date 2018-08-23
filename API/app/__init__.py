@@ -99,6 +99,16 @@ def method_not_allowed(error):
     response = make_response(jsonify(error_dict), 400)
     return response
 
+def forbidden(error):
+    """Return an error message if the request is forbidden"""
+    error_dict = {
+        "path_accessed":str(request.path),
+        "message":"Sorry, You are not allowed to do that",
+        "request_data":request.data.decode('utf-8'),
+        "error":str(error)
+    }
+    return jsonify(error_dict), 403
+
 def unauthorized(error):
     """This function creates a custom JSON response when an unauthorized request is made"""
     request_data = ""
@@ -133,8 +143,9 @@ def create_app(config_name='development'):
     app.register_error_handler(401, unauthorized)
     app.register_error_handler(404, not_found)
     app.register_error_handler(405, method_not_allowed)
+    app.register_error_handler(403, forbidden)
 
     return app
 
 db = init_db()
-APPs = create_app()
+APP = create_app()

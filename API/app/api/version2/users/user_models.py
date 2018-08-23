@@ -67,6 +67,16 @@ class UserModel(object):
         curr.close()
         return user_id
     
+    def get_user_by_id(self, user_id):
+        """returns a username given the id"""
+        dbconn = self.db
+        curr = dbconn.cursor()
+        curr.execute(
+            """SELECT username FROM users WHERE user_id = %d;""" % (user_id))
+        data = curr.fetchone()
+        curr.close()
+        return data[0]
+
     def delete_user(self, user_id):
         """This function takes in a user id and removes it from the database"""
         try:

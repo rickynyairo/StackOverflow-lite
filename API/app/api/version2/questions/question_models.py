@@ -78,7 +78,17 @@ class QuestionModel(object):
             )
             resp.append(question)
         return resp
-       
+    
+    def get_question_by_id(self, question_id):
+        """returns a question, given the id"""
+        dbconn = self.db
+        curr = dbconn.cursor()
+        curr.execute(
+            """SELECT * FROM questions WHERE question_id = %d;""" % (question_id))
+        data = curr.fetchone()
+        curr.close()
+        return data
+    
     def close_db(self):
         """This function closes the database"""
         self.db.close()
