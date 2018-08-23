@@ -29,12 +29,11 @@ class Answers(MethodView):
             req_data = json.loads(request.data.decode().replace("'", '"'))
             try:
                 text = req_data['text']
-                question_id = req_data['question_id']
             except (KeyError, IndexError):
                 raise BadRequest
             # save answer in db
             answer = AnswerModel(int(question_id), int(user_id), text)
-            answer_id = answer.save_answer()
+            answer_id = int(answer.save_answer())
             answer.close_db() 
             resp = dict(message="success", text=text, answer_id=str(answer_id))
             return jsonify(resp), 201

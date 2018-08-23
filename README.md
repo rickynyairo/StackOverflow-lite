@@ -41,6 +41,7 @@ In a virtual environment, perform the following:
 >python run.py
 
 ### API-Endpoints
+#### Version 1 : /api/v2/
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/479da9f494c39acebfd6)
 
@@ -62,6 +63,28 @@ POST | /api/v1/questions/int:ques_id/answers | post an answer to a question
 GET | /api/v1/questions | Get a List of all questions
 GET | /api/v1/questions/int:ques_id | Get a question using its id
 PUT | /api/v1/questions/int:ques_id | Edit a question
+
+
+#### Version 2
+#### Users Endpoints : /api/v2/
+
+Method | Endpoint | Functionality
+--- | --- | ---
+POST | /auth/signup | Creates a user account
+POST | /users/login | Sign in a user
+
+#### Questions Endpoints : /api/v2/
+
+Method | Endpoint | Functionality
+--- | --- | ---
+POST | questions | Post a question
+POST | /questions/int:ques_id/answers | post an answer to a question
+GET | /questions | Get a List of all questions
+GET | /questions/int:ques_id | Get a question using its id
+PUT | /questions/int:ques_id | Edit a question
+DELETE | /questions/int:ques_id | Delete a question using its id
+POST | /questions/int:ques_id/answers | Post an answer to a question
+PUT | /questions/int:ques_id/answers | Edit an answer
 
 ### Questions
 [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://GitHub.com/Naereen/ama)
