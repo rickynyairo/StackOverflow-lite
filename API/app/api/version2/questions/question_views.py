@@ -56,7 +56,7 @@ class Questions(MethodView):
         return jsonify(resp), 200
 
 class GetQuestion(MethodView):
-    """This class collects the views gor a particular question"""
+    """This class collects the views for a particular question"""
 
     def get(self, question_id):
         """Returns a question and all it's answers"""
@@ -102,7 +102,7 @@ class GetQuestion(MethodView):
                 questions.delete_question(int(question_id))
             else:
                 # it is not the same user who asked the question
-                raise Forbidden
+                raise Forbidden("You are not authorized to delete the question")
             resp = {
                 "message":"success",
                 "description":"question deleted succesfully"
@@ -119,7 +119,7 @@ class GetUserQuestion(MethodView):
             raise BadRequest
         auth_token = auth_header.split(" ")[1]
         response = UserModel().decode_auth_token(auth_token)
-
+        
         if isinstance(response, str):
             # the user is not authorized to view this endpoint
             raise Unauthorized

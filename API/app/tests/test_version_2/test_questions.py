@@ -32,8 +32,8 @@ class TestQuestions(unittest.TestCase):
         """Performs variable definition and app initialization"""
         self.app = create_app()
         self.client = self.app.test_client()
-        self.user_id, user = self.create_user()
-        self.auth_token = user.encode_auth_token(self.user_id).decode('utf-8')
+        self.user_id, self.user = self.create_user()
+        self.auth_token = self.user.encode_auth_token(self.user_id).decode('utf-8')
         self.question = {
             "text":"What is the fastest programming language and why?",
             "description":"I am looking for the fastest programming language in terms\
@@ -114,6 +114,22 @@ class TestQuestions(unittest.TestCase):
         questions = self.get_data().json
         self.assertEqual(questions['message'], 'success')
         self.assertIn(new_question.json['text'], str(questions['questions']))
+
+    def test_get_questions_associated_to_user(self):
+        """Test that the API responds with all the questions of a particular user"""
+        user_id, user = self.create_user()
+        auth_token = user.encode_auth_token(user_id).decode('utf-8')
+        question = self.post_data(headers={"Authorization":"Bearer {}".format(self.auth_token)})
+        username = self.user.get_user_by_id(self.user_id)
+        path = "/api/v2/questions/{}".format(username)
+
+        req = self.client.get(
+            path=path,
+            headers={"Authorization":"Bearer {}".format(self.auth_token)},
+            content_type="application/json"
+        )
+        self.assertEqual(req.status_code, 200)
+        self.assertEqual(username, req.json["username"])
 
     def tearDown(self):
         """This function destroys objests created during the test run"""

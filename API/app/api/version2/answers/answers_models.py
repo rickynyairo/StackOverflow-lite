@@ -26,19 +26,33 @@ class AnswerModel(object):
         data = curr.fetchall()
         curr.close()
         # return a list of tuples
-        return data
+        resp = []
+        for i, items in enumerate(data):
+            answer_id, question_id, user_id, text, date, up_votes, user_preferred = items
+            answer = dict(
+               question_id=int(question_id),
+               user_id=int(user_id),
+               text=text,
+               answer_id=answer_id,
+               date_created=date,
+               up_votes=up_votes,
+               user_preferred=user_preferred
+            )
+            resp.append(answer)
+        return resp
 
     def save_answer(self):
         """Add answer details to the database"""
         answer = {
+            "question_id":self.question_id,
             "user_id": self.user_id,
             "text": self.text,
-            "description": self.description
+            "up_votes":0
         }
         database = self.db
         curr = database.cursor()
-        query = """INSERT INTO answers VALUES (nextval('increment_pkey'), %(user_id)s, %(text)s,\
-                %(description)s, ('now')) RETURNING answer_id;"""
+        query = """INSERT INTO answers VALUES (nextval('increment_pkey'), %(question_id)s,\
+                   %(user_id)s, %(text)s, %(up_votes)s,('now')) RETURNING answer_id;"""
         curr.execute(query, answer)
         answer_id = curr.fetchone()[0]
         database.commit()
@@ -57,6 +71,15 @@ class AnswerModel(object):
         except Exception as e:
             return "Not Found"
         pass
+
+    def update_answer(self, text, answer_id):
+        """update an answer given the answer_id"""
+        dbconn = self.db
+        curr = dbconn.cursor()
+        curr.execute("UPDATE answers \
+                     SET text = '%s' WHERE answer_id = %d RETURNING text;" % (text, answer_id))
+        text = curr.fetchone()
+        return text
 
     def get_answers_by_question_id(self, question_id):
         """return a list of all the answers with the given question_id"""

@@ -19,19 +19,17 @@ class Answers(MethodView):
     def post(self, question_id):
         """This function handles post requests"""
         auth_header = request.headers.get('Authorization')
-        if not auth_header:
+        if not auth_header or not request.data:
             raise BadRequest
         auth_token = auth_header.split(" ")[1]
         response = UserModel().decode_auth_token(auth_token)
         if not isinstance(response, str):
             # the token decoded succesfully
-            user_id = response       
-            if not request.data:
-                raise BadRequest
+            user_id = response           
             req_data = json.loads(request.data.decode().replace("'", '"'))
             try:
                 text = req_data['text']
-                description = req_data['description']
+                question_id = req_data['question_id']
             except (KeyError, IndexError):
                 raise BadRequest
             # save answer in db
@@ -44,39 +42,9 @@ class Answers(MethodView):
             # token is either invalid or expired, right now, we don't care
             raise Unauthorized
 
-    def get(self, question_id):
-        """This function handles get requests"""
-        # get answers from db
-        answers = AnswerModel().get_answers_by_question_id(int(question_id))
-        resp = {
-            "message":"success",
-            "answers":answers
-        }
-        return jsonify(resp), 200
-
 class GetAnswer(MethodView):
     """This class collects the views gor a particular answer"""
-
-    def get(self, answer_id):
-        """Returns a answer and all it's answers"""
-        # no auth required
-        answer = AnswerModel().get_answer_by_id(int(answer_id))
-        if not answer:
-            # answer was not found
-            raise NotFound
-        else:
-            # find it's answers
-            answers = AnswerModel().get_answers_by_answer_id(int(answer_id))
-            answer_id, user_id, text, description, date_created = answer
-            user = UserModel().get_user_by_id(int(user_id))
-            resp = dict(user=user,
-                        text=text,
-                        description=description,
-                        date_created=date_created,
-                        answers=answers)
-            return jsonify(resp), 200
-
-    def delete(self, answer_id):
+    def delete(self, question_id, answer_id):
         """This function deletes a answer, given the id"""
         auth_header = request.headers.get('Authorization')
         if not auth_header:
@@ -89,11 +57,13 @@ class GetAnswer(MethodView):
             raise Unauthorized
         else:
             # user is authorized
+            questions = QuestionModel()
+            question = questions.get_question_by_id(int(question_id))
             answers = AnswerModel()
             answer = answers.get_answer_by_id(int(answer_id))
-            if not answer:
-                # the answer was not found
-                raise NotFound
+            if not answer or not question:
+                # the answer or question was not found
+                raise NotFound("The details of the question or the answer could not be located.")
             answer_id, user_id, text, description, date_created = answer           
             # check if user ids match
             if int(user_id) == int(response):
@@ -105,5 +75,41 @@ class GetAnswer(MethodView):
             resp = {
                 "message":"success",
                 "description":"answer deleted succesfully"
+            }
+            return jsonify(resp), 200
+
+    def put(self, question_id, answer_id):
+        """This function edits an answer, given the id"""
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not request.data:
+            raise BadRequest
+        auth_token = auth_header.split(" ")[1]
+        response = UserModel().decode_auth_token(auth_token)
+
+        if isinstance(response, str):
+            # the user is not authorized to view this endpoint
+            raise Unauthorized
+        else:
+            # user is authorized
+            questions = QuestionModel()
+            question = questions.get_question_by_id(int(question_id))
+            answers = AnswerModel()
+            answer = answers.get_answer_by_id(int(answer_id))
+            if not answer or not question:
+                # the answer or question was not found
+                raise NotFound("Details of the question answer not found.")
+            text = ""          
+            # check if user ids match
+            if int(user_id) == int(response):
+                # edit answer
+                new_text = json.loads(request.data.decode().replace("'", '"'))['text']
+                text = answers.update_answer(new_text, answer_id)
+            else:
+                # it is not the same user who asked the answer
+                raise Forbidden
+            resp = {
+                "message":"success",
+                "description":"answer updated succesfully",
+                "text":text
             }
             return jsonify(resp), 200

@@ -18,7 +18,7 @@ SET default_tablespace = '';
 
 SET default_with_oids = false;
 
-CREATE TABLE answers (
+CREATE TABLE IF NOT EXISTS answers (
     answer_id numeric DEFAULT nextval('increment_pkey'::regclass) NOT NULL,
     question_id numeric NOT NULL,
     user_id numeric NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE answers (
 
 COMMENT ON TABLE answers IS 'This tables stores the answers given by users on the platform';
 
-CREATE TABLE comments (
+CREATE TABLE IF NOT EXISTS comments (
     comment_id numeric DEFAULT nextval('increment_pkey'::regclass) NOT NULL,
     answer_id numeric NOT NULL,
     user_id numeric NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE comments (
     date_created timestamp with time zone DEFAULT ('now'::text)::date NOT NULL
 );
 
-CREATE TABLE questions (
+CREATE TABLE IF NOT EXISTS questions (
     question_id numeric DEFAULT nextval('increment_pkey'::regclass) NOT NULL,
     user_id numeric NOT NULL,
     text character varying(200) NOT NULL,
@@ -48,7 +48,7 @@ CREATE TABLE questions (
 
 COMMENT ON TABLE questions IS 'This tables stores the details of a question asked on the platform';
 
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     user_id numeric DEFAULT nextval('increment_pkey'::regclass) NOT NULL,
     first_name character varying(50) NOT NULL,
     last_name character varying(50),
@@ -87,3 +87,4 @@ ALTER TABLE ONLY answers
 ALTER TABLE ONLY comments
     ADD CONSTRAINT users_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(user_id) ON UPDATE CASCADE;
 
+ALTER TABLE users ADD UNIQUE (email, username);
