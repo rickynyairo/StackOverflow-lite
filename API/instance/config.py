@@ -9,8 +9,7 @@ class Config(object):
     DEBUG = False
     CSRF_ENABLED = True
     SECRET_KEY = os.getenv("SECRET_KEY", "kalongo")
-    DATABASE_URL="dbname='stackoverflow-lite' host='localhost'\
-                 port='5432' user='rickynyairo' password='aces4890'"
+    DATABASE_URL = os.getenv("DATABASE_URL")
 
 class DevelopmentConfig(Config):
     """Development phase configurations"""
@@ -20,6 +19,7 @@ class TestingConfig(Config):
     """Testing Configurations."""
     TESTING = True
     DEBUG = True
+    DATABASE_URL = os.getenv("DATABASE_TEST_URL")
 
 class ReleaseConfig(Config):
     """Release Configurations."""

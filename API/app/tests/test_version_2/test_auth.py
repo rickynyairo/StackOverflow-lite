@@ -9,13 +9,14 @@ import string
 from random import choice, randint
 
 # local imports
-from ... import create_app, init_db
+from ... import create_app
+from ...databse import init_test_db, destroy_test
 
 class AuthTest(unittest.TestCase):
     """This class collects all the test cases for the users"""
     def setUp(self):
         """Performs variable definition and app initialization"""
-        self.app = create_app()
+        self.app = create_app('testing')
         self.client = self.app.test_client()
         self.user = {
             "first_name":"ugali",
@@ -28,7 +29,8 @@ class AuthTest(unittest.TestCase):
         self.error_msg = "The path accessed / resource requested cannot be found, please check"
         
         with self.app.app_context():
-            self.db = init_db()
+            self.db = init_test_db()
+            self.dbdestroy = destroy_test
 
     def post_data(self, path='/api/v2/auth/signup', data={}):
         """This function performs a POST request using the testing client"""
@@ -48,7 +50,15 @@ class AuthTest(unittest.TestCase):
     def test_sign_up_user(self):
         """Test that a new user can sign up using a POST request
         """
-        new_user = self.post_data("/api/v2/auth/signup", data=self.user)
+        user = {
+            "first_name":"ugali",
+            "last_name":"mayai",
+            "email":"testemail@gmail.com",
+            "username":"".join(choice(
+                                string.ascii_letters) for x in range (randint(7,10))),
+            "password":"password"
+        }
+        new_user = self.post_data("/api/v2/auth/signup", data=user)
         # test that the server responds with the correct status code
         self.assertEqual(new_user.status_code, 201)
         username =  new_user.json['username']
@@ -77,11 +87,7 @@ class AuthTest(unittest.TestCase):
 
     def test_user_login(self):
         """Test that the user can login and make requests"""
-        # create user in the database:
-        new_user = self.post_data()
-        self.assertTrue(new_user.json)
-        user_id = new_user.json['user_id']
-        username = new_user.json['username']
+        username = self.user['username']
         password = self.user['password']
         payload = dict(
             username=username,
@@ -115,6 +121,7 @@ class AuthTest(unittest.TestCase):
         del self.user
         with self.app.app_context():
             self.db.close()
+            self.dbdestroy()
 
 
 if __name__ == "__main__":

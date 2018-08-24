@@ -76,7 +76,27 @@ class TestUserModel(unittest.TestCase):
 
     def test_that_existing_user_cannot_be_created(self):
         """Test that an existing user cannot be created """
-        
+        user1 = {
+            "username":"testusername",
+            "first_name":"ugali",
+            "last_name":"mayai",
+            "email":"ugalimayai@gmail.com",
+            "password":"password"
+            }
+        user2 = {
+            "username":"testusername",
+            "first_name":"ugali",
+            "last_name":"mayai",
+            "email":"mayaiugali@gmail.com",
+            "password":"password"
+            }
+
+        # create user 1:
+        user1_model = UserModel(**user1)
+        user1_model.save_user()
+        user2_model = UserModel(**user2)
+        self.assertEqual(user2_model.save_user(), False)
+
     def tearDown(self):
         """This function destroys objests created during the test run"""
         curr = self.db.cursor()
@@ -87,7 +107,6 @@ class TestUserModel(unittest.TestCase):
         del self.user
         with self.app.app_context():
             self.db.close()
-
 if __name__ == "__main__":
     unittest.main()
 

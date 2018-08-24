@@ -7,9 +7,8 @@ import json
 # third party imports
 from flask.views import MethodView
 from flask import request, jsonify
-from werkzeug.exceptions import BadRequest, NotFound, Unauthorized
+from werkzeug.exceptions import BadRequest, NotFound, Unauthorized, Forbidden
 from werkzeug.security import generate_password_hash, check_password_hash
-from .... import init_db
 
 from ..users.user_models import UserModel
 
@@ -71,7 +70,13 @@ class AuthSignup(MethodView):
             "password":password
         }
         user_model = UserModel(**user)
-        user_model.save_user()
+        try:
+            user_model.save_user()
+            if not user_model.save_user():
+                raise ValueError
+        except ValueError:
+            raise Forbidden("The username already exists")
+
         user_id = int(user_model.get_id()[0])
         token = user_model.encode_auth_token(user_id)
         resp = {
