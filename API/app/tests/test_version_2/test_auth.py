@@ -9,8 +9,7 @@ import string
 from random import choice, randint
 
 # local imports
-from ... import create_app
-from ...database import init_test_db, destroy_test
+from ... import create_app, init_db
 
 class AuthTest(unittest.TestCase):
     """This class collects all the test cases for the users"""
@@ -29,8 +28,7 @@ class AuthTest(unittest.TestCase):
         self.error_msg = "The path accessed / resource requested cannot be found, please check"
         
         with self.app.app_context():
-            self.db = init_test_db()
-            self.dest = destroy_test
+            self.db = init_db()
 
     def post_data(self, path='/api/v2/auth/signup', data={}):
         """This function performs a POST request using the testing client"""
@@ -117,7 +115,6 @@ class AuthTest(unittest.TestCase):
         del self.user
         with self.app.app_context():
             self.db.close()
-            self.dest()
 
 
 if __name__ == "__main__":
