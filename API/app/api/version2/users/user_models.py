@@ -32,6 +32,13 @@ class UserModel(object):
         curr.close()
         return data
 
+    def check_exists(self, username):
+        """Check if the records exist"""
+        curr = self.db.cursor()
+        query = "SELECT username FROM users WHERE username = '%s'" % (username)
+        curr.execute(query)
+        return curr.fetchone() is not None
+
     def save_user(self):
         """Add user details to the database"""
         user = {
@@ -41,8 +48,9 @@ class UserModel(object):
             "email": self.email,
             "password": self.password
         }
-        # "date_created": self.date_created,
-
+        # check if user exists
+        if self.check_exists(user['username']):
+            return False
         database = self.db
         curr = database.cursor()
         query = """INSERT INTO users \

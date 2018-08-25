@@ -15,14 +15,14 @@ class AuthTest(unittest.TestCase):
     """This class collects all the test cases for the users"""
     def setUp(self):
         """Performs variable definition and app initialization"""
-        self.app = create_app()
+        self.app = create_app('testing')
         self.client = self.app.test_client()
+
         self.user = {
             "first_name":"ugali",
             "last_name":"mayai",
             "email":"testemail@gmail.com",
-            "username":"".join(choice(
-                                string.ascii_letters) for x in range (randint(7,10))),
+            "username":"testuser",
             "password":"password"
         }
         self.error_msg = "The path accessed / resource requested cannot be found, please check"
@@ -47,13 +47,22 @@ class AuthTest(unittest.TestCase):
 
     def test_sign_up_user(self):
         """Test that a new user can sign up using a POST request
-        """
-        new_user = self.post_data("/api/v2/auth/signup", data=self.user)
+        """ 
+        uname = "".join(choice(
+                           string.ascii_letters) for x in range (randint(7,10)))
+        user = {
+            "first_name":"test",
+            "last_name":"user",
+            "email":"testemail@gmail.com",
+            "username":uname,
+            "password":"password"
+        }     
+        new_user = self.post_data(data=user)
         # test that the server responds with the correct status code
         self.assertEqual(new_user.status_code, 201)
         username =  new_user.json['username']
         # test that the correct user is created
-        self.assertEqual(self.user['username'], username)
+        self.assertEqual(user['username'], username)
         # test that the correct response is sent back
         self.assertTrue(new_user.json['AuthToken'])
         self.assertTrue(new_user.json['message'])
@@ -76,16 +85,19 @@ class AuthTest(unittest.TestCase):
         self.assertEqual(empty_params.status_code, 400)
 
     def test_user_login(self):
-        """Test that the user can login and make requests"""
-        # create user in the database:
-        new_user = self.post_data()
-        self.assertTrue(new_user.json)
-        user_id = new_user.json['user_id']
-        username = new_user.json['username']
-        password = self.user['password']
+        uname = "".join(choice(
+                           string.ascii_letters) for x in range (randint(7,10)))
+        user = {
+            "first_name":"test",
+            "last_name":"user",
+            "email":"testemail@gmail.com",
+            "username":uname,
+            "password":"password"
+        }
+        self.post_data(data=user)
         payload = dict(
-            username=username,
-            password=password
+            username=user['username'],
+            password=user['password']
         )
         # attempt to log in
         login = self.post_data('/api/v2/auth/login', data=payload)
@@ -107,11 +119,6 @@ class AuthTest(unittest.TestCase):
 
     def tearDown(self):
         """This function destroys objests created during the test run"""
-        curr = self.db.cursor()
-        exit_query = "DELETE FROM users WHERE email = '%s';" % (self.user['email'])
-        curr.execute(exit_query)
-        curr.close
-        self.db.commit()
         del self.user
         with self.app.app_context():
             self.db.close()
