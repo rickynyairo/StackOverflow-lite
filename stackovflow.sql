@@ -7,7 +7,7 @@ SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
 
-CREATE SEQUENCE increment_pkey
+CREATE SEQUENCE IF NOT EXISTS increment_pkey
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE

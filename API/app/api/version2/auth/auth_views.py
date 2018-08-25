@@ -71,8 +71,8 @@ class AuthSignup(MethodView):
         }
         user_model = UserModel(**user)
         try:
-            user_model.save_user()
-            if not user_model.save_user():
+            saved = user_model.save_user()
+            if not saved:
                 raise ValueError
         except ValueError:
             raise Forbidden("The username already exists")

@@ -10,7 +10,7 @@ from random import choice, randint
 
 # local imports
 from ... import create_app
-from ...databse import init_test_db, destroy_test
+from ...database import init_test_db, destroy_test
 
 class AuthTest(unittest.TestCase):
     """This class collects all the test cases for the users"""
@@ -18,19 +18,19 @@ class AuthTest(unittest.TestCase):
         """Performs variable definition and app initialization"""
         self.app = create_app('testing')
         self.client = self.app.test_client()
+
         self.user = {
             "first_name":"ugali",
             "last_name":"mayai",
             "email":"testemail@gmail.com",
-            "username":"".join(choice(
-                                string.ascii_letters) for x in range (randint(7,10))),
+            "username":"testuser",
             "password":"password"
         }
         self.error_msg = "The path accessed / resource requested cannot be found, please check"
         
         with self.app.app_context():
             self.db = init_test_db()
-            self.dbdestroy = destroy_test
+            self.dest = destroy_test
 
     def post_data(self, path='/api/v2/auth/signup', data={}):
         """This function performs a POST request using the testing client"""
@@ -49,21 +49,22 @@ class AuthTest(unittest.TestCase):
 
     def test_sign_up_user(self):
         """Test that a new user can sign up using a POST request
-        """
+        """ 
+        uname = "".join(choice(
+                           string.ascii_letters) for x in range (randint(7,10)))
         user = {
-            "first_name":"ugali",
-            "last_name":"mayai",
+            "first_name":"test",
+            "last_name":"user",
             "email":"testemail@gmail.com",
-            "username":"".join(choice(
-                                string.ascii_letters) for x in range (randint(7,10))),
+            "username":uname,
             "password":"password"
-        }
-        new_user = self.post_data("/api/v2/auth/signup", data=user)
+        }     
+        new_user = self.post_data(data=user)
         # test that the server responds with the correct status code
         self.assertEqual(new_user.status_code, 201)
         username =  new_user.json['username']
         # test that the correct user is created
-        self.assertEqual(self.user['username'], username)
+        self.assertEqual(user['username'], username)
         # test that the correct response is sent back
         self.assertTrue(new_user.json['AuthToken'])
         self.assertTrue(new_user.json['message'])
@@ -113,15 +114,10 @@ class AuthTest(unittest.TestCase):
 
     def tearDown(self):
         """This function destroys objests created during the test run"""
-        curr = self.db.cursor()
-        exit_query = "DELETE FROM users WHERE email = '%s';" % (self.user['email'])
-        curr.execute(exit_query)
-        curr.close
-        self.db.commit()
         del self.user
         with self.app.app_context():
             self.db.close()
-            self.dbdestroy()
+            self.dest()
 
 
 if __name__ == "__main__":

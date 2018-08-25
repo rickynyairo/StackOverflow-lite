@@ -21,6 +21,7 @@ def connect_to(url):
 def init_test_db():
     conn = connect_to(os.getenv('DATABASE_TEST_URL'))
     with closing(conn) as conn, conn.cursor() as cursor:
+        destroy_test()
         with APP.open_resource('stackovflow.sql', mode='r') as sql:
             cursor.execute(sql.read())
         conn.commit()
@@ -28,7 +29,8 @@ def init_test_db():
 
 def destroy_test():
     test_url = os.getenv('DATABASE_TEST_URL')
-    curr = connect_to(test_url).cursor()   
+    conn = connect_to(test_url)
+    curr = conn.cursor()   
     queries = [
         "DROP TABLE IF EXISTS comments CASCADE",
         "DROP TABLE IF EXISTS answers CASCADE",
@@ -37,3 +39,4 @@ def destroy_test():
     ]
     for query in queries:
         curr.execute(query)
+    conn.commit()
