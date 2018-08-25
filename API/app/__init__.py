@@ -66,14 +66,14 @@ def error_handler(error, message):
 
 def not_found(error):
     """This function returns a custom JSON response when a resource is not found"""
-    message = "The path or resource requested could not be located"
+    message = "The path accessed / resource requested cannot be found, please check"
     error_dict = error_handler(error, message)
     response = make_response(jsonify(error_dict), 404)
     return response
 
 def bad_request(error):
     """This function creates a custom JSON response when a bad request is made"""
-    message = "The request made had errors, please check the headers or or parameters"   
+    message = "The request made had errors, please check the headers or parameters"   
     response = make_response(jsonify(error_handler(error, message)), 400)
     return response
 

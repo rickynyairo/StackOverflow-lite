@@ -174,7 +174,7 @@ class QuestionsTests(unittest.TestCase):
             self.assertEqual(result.status_code, 400)
             # assert correct error message
             self.assertEqual(result.json["message"],
-                             "The request made had errors, please check the headers or params")
+                             "The request made had errors, please check the headers or parameters")
 
     def tearDown(self):
         """This function destroys all the variables
