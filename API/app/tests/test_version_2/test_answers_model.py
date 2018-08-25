@@ -9,12 +9,13 @@ from random import choice, randint
 
 # local imports
 from ... import create_app, init_db
-from ...api.version2.users.user_models import UserModel
-from ...api.version2.questions.question_models import QuestionModel
-from ...api.version2.answers.answers_models import AnswerModel
+from ...api.version2.models.user_model import UserModel
+from ...api.version2.models.question_model import QuestionModel
+from ...api.version2.models.answer_model import AnswerModel
 
 class TestAnswerModel(unittest.TestCase):
-    """This class encapsulates the tests for the answer model
+    """
+    This class encapsulates the tests for the answer model
     """
     def create_user(self):
         """create a fictitious user"""
@@ -65,6 +66,7 @@ class TestAnswerModel(unittest.TestCase):
         """Define the data to be used for the test
         """
         self.user_id = self.create_user()
+        self.question_id = self.create_question()
         self.answer = {
             "question_id":self.create_question(),
             "user_id":self.user_id,
@@ -96,7 +98,7 @@ class TestAnswerModel(unittest.TestCase):
         params = self.answer
         answer = AnswerModel(**params)       
         answer_id = answer.save_answer()
-        answer.delete_answer(answer_id)
+        answer.delete_item(answer_id)
         curr = self.db.cursor()
         query = "SELECT answer_id FROM answers\
                  WHERE answer_id = %d;" % (answer_id)
@@ -104,10 +106,10 @@ class TestAnswerModel(unittest.TestCase):
         data = curr.fetchone()
         self.assertEqual(None, data)
 
-    def test_get_answer_by_user_id(self):
-        """Test that the model can return all answers with a given id"""
-        user_id = self.create_user()
-        question_id = self.create_question()
+    def test_get_answer_by_question_id(self):
+        """Test that the model can return all answers with a given question id"""
+        user_id = self.user_id
+        question_id = self.question_id
         random_ans_1 = "".join(choice(
                              string.ascii_letters) for x in range (randint(20,50)))
         answer1 = {
@@ -125,10 +127,10 @@ class TestAnswerModel(unittest.TestCase):
         answer_id_1 = AnswerModel(**answer1).save_answer()
         ans2 = AnswerModel(**answer2)
         answer_id_2 = ans2.save_answer()
-        answers_by_user = ans2.get_answers_by_user_id(user_id)
+        answers_by_question = ans2.get_items_by_id(item='question', item_id=user_id)
 
-        for answer in answers_by_user:
-            self.assertEqual(int(answer['user_id']), user_id)
+        for answer in answers_by_question:
+            self.assertTrue(int(answer['question_id']))
 
 
     def tearDown(self):

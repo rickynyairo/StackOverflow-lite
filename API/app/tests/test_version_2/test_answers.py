@@ -8,9 +8,10 @@ from random import choice, randint
 
 # local imports
 from ... import create_app, init_db
-from ...api.version2.users.user_models import UserModel
-from ...api.version2.questions.question_models import QuestionModel
-from ...api.version2.answers.answers_models import AnswerModel
+
+from ...api.version2.models.user_model import UserModel
+from ...api.version2.models.question_model import QuestionModel
+from ...api.version2.models.answer_model import AnswerModel
 
 class TestAnswers(unittest.TestCase):
     """This class collects all the test cases for the questions"""

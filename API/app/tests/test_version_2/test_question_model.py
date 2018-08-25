@@ -9,8 +9,10 @@ from random import choice, randint
 
 # local imports
 from ... import create_app, init_db
-from ...api.version2.users.user_models import UserModel
-from ...api.version2.questions.question_models import QuestionModel
+
+from ...api.version2.models.user_model import UserModel
+from ...api.version2.models.question_model import QuestionModel
+
 
 class TestQuestionModel(unittest.TestCase):
     """This class encapsulates the tests for the user model
@@ -75,7 +77,7 @@ class TestQuestionModel(unittest.TestCase):
         params = self.question
         question = QuestionModel(**params)       
         question_id = question.save_question()
-        question.delete_question(question_id)
+        question.delete_item(question_id)
         curr = self.db.cursor()
         query = "SELECT question_id FROM questions\
                  WHERE question_id = %d;" % (question_id)
@@ -107,10 +109,10 @@ class TestQuestionModel(unittest.TestCase):
         question_id_1 = QuestionModel(**question1).save_question()
         que2 = QuestionModel(**question2)
         question_id_2 = que2.save_question()
-        questions_by_user = que2.get_questions_by_user_id(user_id)
+        questions_by_user = que2.get_items_by_id(item='user', item_id=user_id)
 
         for question in questions_by_user:
-            self.assertEqual(int(question['user_id']), user_id)
+            self.assertTrue(int(question['question_id']))
 
 
     def tearDown(self):

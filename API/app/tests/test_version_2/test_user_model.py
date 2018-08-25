@@ -9,7 +9,7 @@ from random import choice, randint
 
 # local imports
 from ... import create_app, init_db
-from ...api.version2.users.user_models import UserModel
+from ...api.version2.models.user_model import UserModel
 
 class TestUserModel(unittest.TestCase):
     """This class encapsulates the tests for the user model
@@ -48,7 +48,7 @@ class TestUserModel(unittest.TestCase):
         username = self.user['username']
         user = UserModel(**params)
         user_id = user.save_user()
-        user.delete_user(user_id)
+        user.delete_item(user_id)
         curr = self.db.cursor()
         query = "SELECT user_id FROM users WHERE user_id = %d;" % (int(user_id))
         curr.execute(query)
@@ -107,6 +107,6 @@ class TestUserModel(unittest.TestCase):
         del self.user
         with self.app.app_context():
             self.db.close()
+
 if __name__ == "__main__":
     unittest.main()
-

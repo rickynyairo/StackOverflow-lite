@@ -8,9 +8,9 @@ from flask import Blueprint
 
 version2 = Blueprint('version2', __name__)
 
-from .auth.auth_views import AuthSignup, AuthLogin
-from .questions.question_views import Questions, GetQuestion, GetUserQuestion
-from .answers.answers_views import Answers, GetAnswer
+from .endpoints.answer_endpoints import Answers, GetAnswer 
+from .endpoints.auth_endpoints import AuthLogin, AuthSignup
+from .endpoints.question_endpoints import Questions, GetQuestion, GetUserQuestion
 
 version2.add_url_rule('/auth/signup', view_func=AuthSignup.as_view('signup'))
 version2.add_url_rule('/auth/login', view_func=AuthLogin.as_view('login'))

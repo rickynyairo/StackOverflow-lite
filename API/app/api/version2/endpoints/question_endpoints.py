@@ -10,9 +10,9 @@ from flask import request, jsonify
 from werkzeug.exceptions import BadRequest, NotFound, Unauthorized, Forbidden
 from .... import init_db
 
-from ..users.user_models import UserModel
-from ..questions.question_models import QuestionModel
-from ..answers.answers_models import AnswerModel
+from ..models.user_model import UserModel
+from ..models.question_model import QuestionModel
+from ..models.answer_model import AnswerModel
 
 class Questions(MethodView):
     """This class collects the methods for the questions endpoint"""
@@ -116,33 +116,30 @@ class GetQuestion(MethodView):
 class GetUserQuestion(MethodView):
     """question views associated with users"""
     def get(self, username):
-        """returns all the questions associated with a particulart user"""
+        """returns all the questions associated with a particular user"""
         """This function deletes a question, given the id"""
-        auth_header = request.headers.get('Authorization')
-        if not auth_header:
-            raise BadRequest
-        auth_token = auth_header.split(" ")[1]
-        response = UserModel().decode_auth_token(auth_token)
-        
-        if isinstance(response, str):
-            # the user is not authorized to view this endpoint
-            raise Unauthorized
+        users = UserModel()
+        user_id  = users.get_user_by_username(username)[0]
+        if not user_id:
+            # user does not exist
+            raise NotFound("The username provided does not exist")
+        quest = QuestionModel()
+        questions = quest.get_items_by_id(item='user',
+                                          item_id=int(user_id))
+        list_of_questions = []
+
+        if not questions:
+            # no question was not found
+            raise NotFound
+    
+        if not isinstance(questions, list):
+            list_of_questions.append(questions)
         else:
-            # user is authorized
-            users = UserModel()
-            user_id  = users.get_id(username)
-            if not user_id:
-                # user does not exist
-                raise NotFound("The username provided does not exist")
-            quest = QuestionModel()
-            questions = quest.get_questions_by_user_id(int(user_id[0]))
-            if not questions:
-                # no question was not found
-                raise NotFound     
-            # check if user ids match            
-            resp = {
-                "message":"success",
-                "username":username,
-                "questions":questions
-            }
-            return jsonify(resp), 200
+            list_of_questions = questions[:]
+         
+        resp = {
+            "message":"success",
+            "username":username,
+            "questions":questions
+        }
+        return jsonify(resp), 200

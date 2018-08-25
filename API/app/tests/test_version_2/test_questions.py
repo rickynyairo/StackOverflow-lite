@@ -8,8 +8,9 @@ from random import choice, randint
 
 # local imports
 from ... import create_app, init_db
-from ...api.version2.users.user_models import UserModel
-from ...api.version2.questions.question_models import QuestionModel
+from ...api.version2.models.user_model import UserModel
+
+
 
 class TestQuestions(unittest.TestCase):
     """This class collects all the test cases for the questions"""
@@ -118,16 +119,10 @@ class TestQuestions(unittest.TestCase):
     def test_get_questions_associated_to_user(self):
         """Test that the API responds with all the questions of a particular user"""
         user_id, user = self.create_user()
-        auth_token = user.encode_auth_token(user_id).decode('utf-8')
         question = self.post_data(headers={"Authorization":"Bearer {}".format(self.auth_token)})
-        username = self.user.get_user_by_id(self.user_id)
+        username = self.user.get_username_by_id(self.user_id)
         path = "/api/v2/questions/{}".format(username)
-
-        req = self.client.get(
-            path=path,
-            headers={"Authorization":"Bearer {}".format(self.auth_token)},
-            content_type="application/json"
-        )
+        req = self.get_data(path=path)
         self.assertEqual(req.status_code, 200)
         self.assertEqual(username, req.json["username"])
 

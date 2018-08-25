@@ -1,5 +1,5 @@
 """
-This module collects the views for the authentication resource
+This module collects the endpoints for the authentication resource
 
 """
 import json
@@ -10,7 +10,7 @@ from flask import request, jsonify
 from werkzeug.exceptions import BadRequest, NotFound, Unauthorized, Forbidden
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from ..users.user_models import UserModel
+from ..models.user_model import UserModel
 
 class AuthLogin(MethodView):
     """This class collects the methods for the auth/login endpoint"""
@@ -77,7 +77,7 @@ class AuthSignup(MethodView):
         except ValueError:
             raise Forbidden("The username already exists")
 
-        user_id = int(user_model.get_id()[0])
+        user_id = saved
         token = user_model.encode_auth_token(user_id)
         resp = {
             "message":"User signed up successfully",

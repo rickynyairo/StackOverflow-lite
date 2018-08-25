@@ -10,9 +10,9 @@ from flask import request, jsonify
 from werkzeug.exceptions import BadRequest, NotFound, Unauthorized, Forbidden
 from .... import init_db
 
-from ..users.user_models import UserModel
-from ..questions.question_models import QuestionModel
-from ..answers.answers_models import AnswerModel
+from ..models.user_model import UserModel
+from ..models.question_model import QuestionModel
+from ..models.answer_model import AnswerModel
 
 class Answers(MethodView):
     """This class collects the methods for the answers endpoint"""
