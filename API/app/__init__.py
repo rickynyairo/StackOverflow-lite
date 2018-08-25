@@ -40,12 +40,6 @@ def _locate(item_id, items):
 
     return responce
 
-def init_test_db():
-    with closing(init_db()) as conn, conn.cursor() as cursor:
-        with APP.open_resource('stackovflow.sql', mode='r') as sql:
-            cursor.execute(sql.read())
-        conn.commit()
-
 def init_db():
     """Set up the database to stode the user data
     """
@@ -53,19 +47,8 @@ def init_db():
     db = psycopg2.connect(db_url)
     return db
 
-
-def not_found(error):
-    """This function returns a custom JSON response when a resource is not found"""
-    error_dict = {
-        "path_accessed":str(request.path),
-        "message":"The path accessed / resource requested cannot be found, please check",
-        "error":str(error)
-    }
-    response = make_response(jsonify(error_dict), 404)
-    return response
-
-def bad_request(error):
-    """This function creates a custom JSON response when a bad request is made"""
+def error_handler(error, message):
+    """This function creates a custom dictonary for the error functions"""
     request_data = ""
     if not request.data.decode():
         request_data = "Request body is empty"
@@ -74,50 +57,41 @@ def bad_request(error):
     
     error_dict = {
         "path_accessed":str(request.path),
-        "message":"The request made had errors, please check the headers or params",
+        "message":message,
         "request_data":request_data,
         "error":str(error)
     }
-    response = make_response(jsonify(error_dict), 400)
+    
+    return error_dict
+
+def not_found(error):
+    """This function returns a custom JSON response when a resource is not found"""
+    message = "The path or resource requested could not be located"
+    error_dict = error_handler(error, message)
+    response = make_response(jsonify(error_dict), 404)
+    return response
+
+def bad_request(error):
+    """This function creates a custom JSON response when a bad request is made"""
+    message = "The request made had errors, please check the headers or or parameters"   
+    response = make_response(jsonify(error_handler(error, message)), 400)
     return response
 
 def method_not_allowed(error):
     """This function creates a custom JSON response if the request method is not allowed."""
-    error_dict = {
-        "path_accessed":str(request.path),
-        "message":"The request method used is not allowed",
-        "request_method":request.method,
-        "error":str(error)
-    }
-    response = make_response(jsonify(error_dict), 400)
-    return response
+    message = "The request method used is not allowed"
+    return jsonify(error_handler(error, message)), 400
 
 def forbidden(error):
     """Return an error message if the request is forbidden"""
-    error_dict = {
-        "path_accessed":str(request.path),
-        "message":"Sorry, You are not allowed to do that",
-        "request_data":request.data.decode('utf-8'),
-        "error":str(error)
-    }
-    return jsonify(error_dict), 403
+    message = "Sorry, You are not allowed to do that"
+    return jsonify(error_handler(error, message)), 403
 
 def unauthorized(error):
     """This function creates a custom JSON response when an unauthorized request is made"""
-    request_data = ""
-    if not request.data.decode():
-        request_data = "Request body is empty"
-    else:
-        request_data = json.loads(request.data.decode().replace("'", '"'))
-    error_dict = {
-        "path_accessed":str(request.path),
-        "message":"You are not authorized to access this resource, please confirm credentials",
-        "request_data":request_data,
-        "error":str(error)
-    }
-    response = make_response(jsonify(error_dict), 400)
+    message = "You are not authorized to access this resource, please confirm credentials"
+    response = make_response(jsonify(error_handler(error, message)), 400)
     return response
-
 
 def create_app(config_name='development'):
     """This function sets up and returns the application"""
