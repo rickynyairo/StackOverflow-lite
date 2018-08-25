@@ -85,6 +85,7 @@ class AuthTest(unittest.TestCase):
         self.assertEqual(empty_params.status_code, 400)
 
     def test_user_login(self):
+        """Test that a user can login using a POST request"""
         uname = "".join(choice(
                            string.ascii_letters) for x in range (randint(7,10)))
         user = {
