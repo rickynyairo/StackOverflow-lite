@@ -26,13 +26,10 @@ class BaseModel(object):
         database = self.db
         item_name = table_name[:-1]
         curr = database.cursor()
-        curr.execute(
-                    """
-                    SELECT %s_id, user_id, text, date_created\
-                    FROM %s WHERE %s_id = %d;""" % (item_name,
-                                                    table_name,
-                                                    item,
-                                                    item_id)
+        curr.execute("""SELECT %s_id, user_id, text, date_created\
+                     FROM %s WHERE %s_id = %d;""" % (item_name, table_name,
+                                                     item,
+                                                     item_id)
                     )
         data = curr.fetchall()
         curr.close()

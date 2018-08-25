@@ -43,9 +43,7 @@ class AnswerModel(BaseModel):
         data = curr.fetchall()
         data_items = []
         if not isinstance(data, list):
-            # only one answer exists
             data_items.append(data)
-
         else:
             data_items = data[:]
         self.close_db()

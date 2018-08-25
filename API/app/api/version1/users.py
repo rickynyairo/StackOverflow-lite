@@ -50,12 +50,10 @@ def signup_users():
     try:
         user_id = int(data["users"][-1]['user_id']) + 1
     except IndexError:
-        # there are no existing users, create first user.
         user_id = "1"
     if not request.data.decode():
         raise BadRequest
     req_data = json.loads(request.data.decode('utf-8').replace("'", '"'))
-    # validation
     try:
         username = req_data['username']
         email = req_data['email']
@@ -64,26 +62,19 @@ def signup_users():
         raise BadRequest
     if not username or not email:
         raise BadRequest
-    # validate the email structure
     if not re.match(r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$',
                     email):
         raise BadRequest
-
     date_created = '{:%B %d, %Y}'.format(datetime.now())
     new_user = {
-        "user_id":str(user_id),
-        "username":username,
-        "email":email,
-        "date_created":date_created,
-        "no_of_answers":"0",
-        "password":password
+        "user_id":str(user_id), "username":username,
+        "email":email, "date_created":date_created,
+        "no_of_answers":"0","password":password
     }
     data['users'].append(new_user)
-    # remove password from response
     del new_user["password"]
     new_user["message"] = "User signed up successfully"
     response = make_response(jsonify(new_user), 201)
-
     return response
 
 @version1.route('/users/signin', methods=['POST'], strict_slashes=False)

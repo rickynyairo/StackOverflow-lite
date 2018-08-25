@@ -84,12 +84,10 @@ class GetAnswer(MethodView):
             raise BadRequest
         auth_token = auth_header.split(" ")[1]
         response = UserModel().decode_auth_token(auth_token)
-
         if isinstance(response, str):
             # the user is not authorized to view this endpoint
             raise Unauthorized
         else:
-            # user is authorized
             questions = QuestionModel()
             question = questions.get_question_by_id(int(question_id))
             answers = AnswerModel()
@@ -100,11 +98,9 @@ class GetAnswer(MethodView):
             text = ""          
             # check if user ids match
             if int(user_id) == int(response):
-                # edit answer
                 new_text = json.loads(request.data.decode().replace("'", '"'))['text']
                 text = answers.update_answer(new_text, answer_id)
             else:
-                # it is not the same user who asked the answer
                 raise Forbidden
             resp = {
                 "message":"success",

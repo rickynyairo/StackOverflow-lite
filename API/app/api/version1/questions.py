@@ -26,16 +26,13 @@ def get_questions():
         # return all questions in the db
         response = make_response(jsonify(data['questions']), 200)
     elif request.method == 'POST':
-        # return the new question with the assigned question id
-        try:
-            question_id = int(data["questions"][-1]['question_id']) + 1
-            # if that fails, there is no data in the data store
-        except IndexError:
-            question_id = "1"
         if not request.data.decode():
             raise BadRequest
         req_data = json.loads(request.data.decode('utf-8').replace("'", '"'))
-        # validation
+        try:
+            question_id = int(data["questions"][-1]['question_id']) + 1
+        except IndexError:
+            question_id = "1"
         try:
             question_text = req_data['text']
             asked_by = req_data['asked_by']
@@ -65,16 +62,13 @@ def get_question(ques_id):
     # locate the question
     question, index = _locate(int(ques_id), "questions")
     if question is None:
-        # question not found
         raise NotFound
     if request.method == 'GET':
         response = make_response(jsonify(question), 200)
     elif request.method == 'PUT':
         if not request.data:
             raise BadRequest
-        # obtain the required edit
         edited_question = json.loads(request.data.decode('utf-8').replace("'", '"'))['text']
-        # edit the question in the data store
         question['text'] = edited_question
         response = make_response(jsonify({
             "question_id":ques_id,
