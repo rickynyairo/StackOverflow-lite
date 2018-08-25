@@ -85,12 +85,19 @@ class AuthTest(unittest.TestCase):
         self.assertEqual(empty_params.status_code, 400)
 
     def test_user_login(self):
-        """Test that the user can login and make requests"""
-        username = self.user['username']
-        password = self.user['password']
+        uname = "".join(choice(
+                           string.ascii_letters) for x in range (randint(7,10)))
+        user = {
+            "first_name":"test",
+            "last_name":"user",
+            "email":"testemail@gmail.com",
+            "username":uname,
+            "password":"password"
+        }
+        self.post_data(data=user)
         payload = dict(
-            username=username,
-            password=password
+            username=user['username'],
+            password=user['password']
         )
         # attempt to log in
         login = self.post_data('/api/v2/auth/login', data=payload)
