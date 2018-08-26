@@ -46,15 +46,17 @@ class BaseModel(object):
             }
             resp.append(item_dict)
         return resp
-    
-    def get_item_by_id(self, table_name, item_id):
+
+    def get_item_by_id(self, item_id):
         """returns an entire record by searching for the id number"""
         try:
             dbconn = self.db
             curr = dbconn.cursor()
+            table_name = "%ss" % (self._type().lower()[:-5])
             item_name = table_name[:-1]
             curr.execute(
-                """SELECT * FROM %s WHERE %s_id = %d;""" % (item_name,
+                """SELECT * FROM %s WHERE %s_id = %d;""" % (table_name, 
+                                                            item_name,
                                                             int(item_id)))
             data = curr.fetchone()
             curr.close()
@@ -93,7 +95,7 @@ class BaseModel(object):
                                                               field,
                                                               data,
                                                               item_name,
-                                                              answer_id))
+                                                              item_id))
             updated_field = curr.fetchone()
             return updated_field
         except ValueError:

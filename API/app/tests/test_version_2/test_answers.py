@@ -55,7 +55,7 @@ class TestAnswers(unittest.TestCase):
             "description":"I am looking for the fastest programming language in terms\
                             of memory management for a very high performance project."
         }
-        self.question_id, ques = self.create_question(self.user_id)
+        self.question_id = self.create_question(self.user_id)[0]
         self.answer = {
             "text":"Julia. It has everything awesome about every great programming language, and more."
         }
@@ -84,7 +84,7 @@ class TestAnswers(unittest.TestCase):
         # test that the server responds with the correct status code
         self.assertEqual(new_answer.status_code, 201)
         self.assertTrue(new_answer.json['message'])
-        
+
     def test_error_messages(self):
         """Test that the endpoint responds with the correct error message"""
         path = "/api/v2/questions/{}/answers".format(self.question_id)
@@ -94,13 +94,52 @@ class TestAnswers(unittest.TestCase):
         self.assertEqual(empty_req.status_code, 400)
         empty_req = self.post_data(question_id=self.question_id, data={"":""})
         self.assertEqual(empty_req.status_code, 400)
-    
+
     def test_unauthorized_request(self):
         """Test that the endpoint rejects unauthorized requests"""
         # test false token
         false_token = self.post_data(self.question_id, headers=dict(Authorization="Bearer wrongtoken"))
         self.assertEqual(false_token.status_code, 400)
-   
+
+    def test_mark_answer_as_preferred(self):
+        """Test that the author of a particular question can mark an answer as preferred."""
+        user_id = self.create_user()[0] # question author user id
+        user_id_2 = self.create_user()[0] # answer author user id 
+        question_id, question = self.create_question(int(user_id))
+        # token should be encoded with the id of the answer author
+        auth_token = question.encode_auth_token(int(user_id_2)).decode('utf-8')
+        new_answer = self.post_data(question_id, auth_token=auth_token).json
+        answer_id = int(new_answer['answer_id'])
+        # obtain the token for the question author
+        auth_token_2 = question.encode_auth_token(int(user_id)).decode('utf-8')
+        headers = {"Authorization":"Bearer {}".format(auth_token_2)}
+        path  = "/api/v2/questions/{}/answers/{}".format(int(question_id),
+                                                         int(answer_id))
+        result = self.client.put(path,
+                                 headers=headers,
+                                 content_type='applicaton/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json['value'], 'True')
+    
+    def test_edit_answer(self):
+        """Test that the author of a particular answer can edit it"""
+        user_id = self.create_user()[0] # answer author user id
+        question_id = self.question_id
+        # token should be encoded with the id of the answer author
+        auth_token = QuestionModel().encode_auth_token(int(user_id)).decode('utf-8')
+        new_answer = self.post_data(question_id, auth_token=auth_token).json
+        answer_id = int(new_answer['answer_id'])
+        headers = {"Authorization":"Bearer {}".format(auth_token)}
+        path  = "/api/v2/questions/{}/answers/{}".format(question_id,
+                                                         int(answer_id))
+        data = {"text":"edited answer"}
+        result = self.client.put(path,
+                                 headers=headers,
+                                 data=json.dumps(data),
+                                 content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json['value'], data['text'])
+
     def tearDown(self):
         """This function destroys objests created during the test run"""
         curr = self.db.cursor()

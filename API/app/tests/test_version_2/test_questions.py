@@ -125,6 +125,30 @@ class TestQuestions(unittest.TestCase):
         req = self.get_data(path=path)
         self.assertEqual(req.status_code, 200)
         self.assertEqual(username, req.json["username"])
+    
+    def test_edit_question(self):
+        """Test that a user can edit the text of a question that they've posted"""
+        question_id = int(self.post_data().json['question_id'])
+        headers = {"Authorization":"Bearer {}".format(self.auth_token)}
+        path  = "/api/v2/questions/{}".format(question_id)
+        data = {"text":"edited question"}
+        result = self.client.put(path,
+                                 headers=headers,
+                                 data=json.dumps(data),
+                                 content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json['text'], data['text'])
+
+    def test_delete_question(self):
+        """Test that a user can delete a question that they have posted"""
+        question_id = int(self.post_data().json['question_id'])
+        headers = {"Authorization":"Bearer {}".format(self.auth_token)}
+        path  = "/api/v2/questions/{}".format(question_id)
+        result = self.client.delete(path,
+                                    headers=headers,
+                                    content_type='application/json')
+        self.assertEqual(result.status_code, 202)
+        self.assertEqual(result.json['message'], 'success')
 
     def tearDown(self):
         """This function destroys objests created during the test run"""

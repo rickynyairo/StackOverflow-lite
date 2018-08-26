@@ -37,8 +37,12 @@ class Questions(MethodView):
             # save question in db
             question = QuestionModel(int(user_id), text, description)
             question_id = question.save_question()
+            username = question.get_username_by_id(int(user_id))
             question.close_db() 
-            resp = dict(message="success", text=text, question_id=str(question_id))
+            resp = dict(message="success",
+                        text=text, 
+                        asked_by=username,
+                        question_id=str(question_id))
 
             return jsonify(resp), 201
         else:
@@ -57,7 +61,6 @@ class Questions(MethodView):
 
 class GetQuestion(MethodView):
     """This class collects the views for a particular question"""
-
     def get(self, question_id):
         """Returns a question and all it's answers"""
         # no auth required
@@ -69,49 +72,70 @@ class GetQuestion(MethodView):
             # find it's answers
             answers = AnswerModel().get_answers_by_question_id(int(question_id))
             question_id, user_id, text, description, date_created = question
-            user = UserModel().get_user_by_id(int(user_id)) # returns the username
-            resp = dict(user=user,
+            user = UserModel().get_username_by_id(int(user_id)) # returns the username
+            resp = dict(username=user,
                         text=text,
                         description=description,
                         date_created=date_created,
                         answers=answers)
             return jsonify(resp), 200
 
-    def put(self):
-        """This function creates the method to allow users to vote for answers"""
-        pass
+    def put(self, question_id):
+        """This function edits a question, given the id"""
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or len(auth_header) < 8 or " " not in auth_header:
+            raise BadRequest
+        auth_token = auth_header.split(" ")[1]
+        request_id = UserModel().decode_auth_token(auth_token)
+        if isinstance(request_id, str):
+            raise Unauthorized
+        else:
+            # confirm user request
+            questions = QuestionModel()
+            question = questions.get_item_by_id(int(question_id))
+            if question == "Not found":
+                raise NotFound
+            question_id = question[0]
+            user_id = question[1] 
+            try:
+                text = request.get_json()['text']
+            except Exception:
+                raise BadRequest
+            if int(user_id) == int(request_id):
+                # update question
+                questions.update_item(field='text', data=text,
+                                      item_id=int(question_id))
+            else:
+                raise Forbidden("You are not allowed to edit the question")
+            resp = {"message":"success", "text":text}
+            return jsonify(resp), 200
 
     def delete(self, question_id):
         """This function deletes a question, given the id"""
         auth_header = request.headers.get('Authorization')
-        if not auth_header:
+        if not auth_header or len(auth_header) < 8 or " " not in auth_header:
             raise BadRequest
         auth_token = auth_header.split(" ")[1]
         response = UserModel().decode_auth_token(auth_token)
-
         if isinstance(response, str):
-            # the user is not authorized to view this endpoint
             raise Unauthorized
         else:
             # user is authorized
             questions = QuestionModel()
-            question = questions.get_question_by_id(int(question_id))
-            if not question:
-                # the question was not found
+            question = questions.get_item_by_id(int(question_id))
+            if question == "Not found":
                 raise NotFound
-            question_id, user_id, text, description, date_created = question           
+            question_id = question[0]
+            user_id = question[1]           
             # check if user ids match
             if int(user_id) == int(response):
                 # delete question
-                questions.delete_question(int(question_id))
+                questions.delete_item(int(question_id))
             else:
-                # it is not the same user who asked the question
-                raise Forbidden("You are not authorized to delete the question")
-            resp = {
-                "message":"success",
-                "description":"question deleted succesfully"
-            }
-            return jsonify(resp), 200
+                raise Forbidden("You are not allowed to delete the question")
+            resp = {"message":"success", 
+                    "description":"question deleted succesfully"}
+            return jsonify(resp), 202
 
 class GetUserQuestion(MethodView):
     """question views associated with users"""

@@ -1,5 +1,7 @@
 # StackOverflow-lite
+
 ## Introduction
+
 StackOverflow-Lite is a platform for sharing questions and answers. 
 
 [![Coverage Status](https://coveralls.io/repos/github/rickynyairo/StackOverflow-lite/badge.svg?branch=development)](https://coveralls.io/github/rickynyairo/StackOverflow-lite?branch=development)
@@ -9,9 +11,11 @@ StackOverflow-Lite is a platform for sharing questions and answers.
 [![Build Status](https://travis-ci.org/rickynyairo/StackOverflow-lite.svg?branch=development)](https://travis-ci.org/rickynyairo/StackOverflow-lite)
 
 ### Code Climate
+
 [![Maintainability](https://api.codeclimate.com/v1/badges/13a7eb6d1036b235a820/maintainability)](https://codeclimate.com/github/rickynyairo/StackOverflow-lite/maintainability)
 
 ### Features
+
 1. Users can create an account and log in.
 2. Users can post questions.
 3. Users can delete the questions they post.
@@ -20,9 +24,11 @@ StackOverflow-Lite is a platform for sharing questions and answers.
 6. Users can accept an answer out of all the answers to his/her question as the preferred answer. 
 
 ### Installing
+
 Clone the repository [```here```](https://github.com/rickynyairo/StackOverflow-lite/)
 
 ### Testing
+
 *To test the UI:*
 Navigate to the UI directory
 On your preferred browser, open index.html
@@ -41,11 +47,16 @@ In a virtual environment, perform the following:
 >python run.py
 
 ### API-Endpoints
-#### Version 1 : /api/v2/
+
+#### Heroku Hosting link
+
+```https://stackoverflow-lite99.herokuapp.com/api/v2```
+
+#### Version 1 
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/479da9f494c39acebfd6)
 
-#### Users Endpoints
+#### Users Endpoints : /api/v1/
 
 Method | Endpoint | Functionality
 --- | --- | ---
@@ -66,6 +77,7 @@ PUT | /api/v1/questions/int:ques_id | Edit a question
 
 
 #### Version 2
+
 #### Users Endpoints : /api/v2/
 
 Method | Endpoint | Functionality
@@ -84,7 +96,7 @@ GET | /questions/int:ques_id | Get a question using its id
 PUT | /questions/int:ques_id | Edit a question
 DELETE | /questions/int:ques_id | Delete a question using its id
 POST | /questions/int:ques_id/answers | Post an answer to a question
-PUT | /questions/int:ques_id/answers | Edit an answer
+PUT | /questions/int:ques_id/answers/int:ans_id | Edit an answer
 
 ### Questions
 [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://GitHub.com/Naereen/ama)

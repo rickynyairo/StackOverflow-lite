@@ -38,73 +38,50 @@ class Answers(MethodView):
             resp = dict(message="success", text=text, answer_id=str(answer_id))
             return jsonify(resp), 201
         else:
-            # token is either invalid or expired, right now, we don't care
+            # token is either invalid or expired
             raise Unauthorized
 
 class GetAnswer(MethodView):
-    """This class collects the views gor a particular answer"""
-    def delete(self, question_id, answer_id):
-        """This function deletes a answer, given the id"""
+    """This class encapsulates the method functions for a particular answer"""
+
+    def put(self, question_id, answer_id):
+        """
+        This function is restricted to the author of the answer and the
+        author of the question. 
+        The ```answer_author_id``` is allowed to edit the answer. 
+        The ```question_author_id``` is allowed to mark the answer as preferred
+        """
         auth_header = request.headers.get('Authorization')
         if not auth_header:
             raise BadRequest
         auth_token = auth_header.split(" ")[1]
         response = UserModel().decode_auth_token(auth_token)
-
-        if isinstance(response, str):
-            # the user is not authorized to view this endpoint
-            raise Unauthorized
-        else:
-            # user is authorized
-            questions = QuestionModel()
-            question = questions.get_question_by_id(int(question_id))
-            answers = AnswerModel()
-            answer = answers.get_answer_by_id(int(answer_id))
-            if not answer or not question:
-                # the answer or question was not found
-                raise NotFound("The details of the question or the answer could not be located.")
-            answer_id, user_id, text, description, date_created = answer           
-            # check if user ids match
-            if int(user_id) == int(response):
-                # delete answer
-                answers.delete_answer(int(answer_id))
-            else:
-                # it is not the same user who asked the answer
-                raise Forbidden
-            resp = {
-                "message":"success",
-                "description":"answer deleted succesfully"
-            }
-            return jsonify(resp), 200
-
-    def put(self, question_id, answer_id):
-        """This function edits an answer, given the id"""
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or not request.data:
-            raise BadRequest
-        auth_token = auth_header.split(" ")[1]
-        response = UserModel().decode_auth_token(auth_token)
         if isinstance(response, str):
             # the user is not authorized to view this endpoint
             raise Unauthorized
         else:
             questions = QuestionModel()
-            question = questions.get_question_by_id(int(question_id))
+            question_author_id = questions.get_item_by_id(int(question_id))[1]
             answers = AnswerModel()
-            answer = answers.get_answer_by_id(int(answer_id))
-            if not answer or not question:
+            answer_author_id = answers.get_item_by_id(int(answer_id))[2]
+            if not question_author_id or not answer_author_id:
                 # the answer or question was not found
-                raise NotFound("Details of the question answer not found.")
-            text = ""          
+                raise NotFound("Details of the question or answer not found.")
+            value = ""          
             # check if user ids match
-            if int(user_id) == int(response):
+            user_id = int(response)
+            if user_id == int(answer_author_id) and user_id != int(question_author_id):
                 new_text = json.loads(request.data.decode().replace("'", '"'))['text']
-                text = answers.update_answer(new_text, answer_id)
+                value = answers.update_item(field="text", 
+                                            data=new_text,
+                                            item_id=answer_id)[0]
+            elif user_id == int(question_author_id) and user_id != int(answer_author_id):
+                value = "{}".format(answers.toggle_user_preferred(answer_id))
             else:
                 raise Forbidden
             resp = {
                 "message":"success",
                 "description":"answer updated succesfully",
-                "text":text
+                "value":value
             }
             return jsonify(resp), 200

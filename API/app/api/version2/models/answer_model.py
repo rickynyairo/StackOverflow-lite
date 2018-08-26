@@ -34,6 +34,16 @@ class AnswerModel(BaseModel):
         curr.close()
         return int(answer_id)
 
+    def toggle_user_preferred(self, answer_id):
+        """this function marks a given answer as the preferred"""
+        dbconn = self.db
+        curr = dbconn.cursor()
+        curr.execute("""UPDATE answers SET user_preferred = \
+                     NOT user_preferred WHERE answer_id = %d \
+                     RETURNING user_preferred;""" % (int(answer_id))) 
+        data = curr.fetchone()[0]
+        return data
+
     def get_answers_by_question_id(self, question_id):
         """return a list of all the answers with the given question_id"""
         dbconn = self.db
@@ -50,11 +60,12 @@ class AnswerModel(BaseModel):
         resp = []     
         for i, items in enumerate(data_items):
             answer_id, question_id, user_id, text, up_votes, date, user_preferred = items
+            username = BaseModel().get_username_by_id(int(user_id))
             answer = dict(
                answer_id=int(answer_id),
-               user_id=int(user_id),
-               text=text,
                question_id=int(question_id),
+               username=username,
+               text=text,
                date_created=date,
                up_votes=int(up_votes),
                user_preferred=user_preferred

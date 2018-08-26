@@ -66,7 +66,7 @@ class TestAnswerModel(unittest.TestCase):
         """Define the data to be used for the test
         """
         self.user_id = self.create_user()
-        self.question_id = self.create_question()
+        self.question_id = int(self.create_question())
         self.answer = {
             "question_id":self.create_question(),
             "user_id":self.user_id,
@@ -106,7 +106,7 @@ class TestAnswerModel(unittest.TestCase):
         data = curr.fetchone()
         self.assertEqual(None, data)
 
-    def test_get_answer_by_question_id(self):
+    def test_get_answers_by_question_id(self):
         """Test that the model can return all answers with a given question id"""
         user_id = self.user_id
         question_id = self.question_id
@@ -127,12 +127,20 @@ class TestAnswerModel(unittest.TestCase):
         answer_id_1 = AnswerModel(**answer1).save_answer()
         ans2 = AnswerModel(**answer2)
         answer_id_2 = ans2.save_answer()
-        answers_by_question = ans2.get_items_by_id(item='question', item_id=user_id)
+        answers_to_question = ans2.get_answers_by_question_id(question_id)
 
-        for answer in answers_by_question:
-            self.assertTrue(int(answer['question_id']))
+        for answer in answers_to_question:
+            self.assertEqual(int(answer['question_id']), question_id)
 
+    def test_toggle_user_preferred(self):
+        """Test that the user model can toggle the ```user_preferred``` field"""
+        answer_id = self.create_answer()
+        ans_model = AnswerModel()
+        toggled = ans_model.toggle_user_preferred(int(answer_id))
+        new_value = ans_model.get_item_by_id(int(answer_id))[6]
+        self.assertTrue(new_value)
 
+        
     def tearDown(self):
         """This function destroys objests created during the test run"""
         curr = self.db.cursor()
