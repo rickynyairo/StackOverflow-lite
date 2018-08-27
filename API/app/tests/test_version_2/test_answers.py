@@ -71,16 +71,17 @@ class TestAnswers(unittest.TestCase):
             auth_token = self.auth_token
         if not headers:
             headers = {"Authorization":"Bearer {}".format(auth_token)}
-        path = "/api/v2/questions/{}/answers".format(question_id)
+        path = "/api/v2/questions/{}/answers".format(int(question_id))
         result = self.client.post(path, data=json.dumps(data),
                                   headers=headers,
-                                  content_type='applicaton/json')
+                                  content_type='application/json')
         return result
 
     def test_post_answer(self):
-        """Test that a user can post a answer
+        """Test that a user can post an answer
         """
         new_answer = self.post_data(self.question_id)
+        # import pdb;pdb.set_trace()
         # test that the server responds with the correct status code
         self.assertEqual(new_answer.status_code, 201)
         self.assertTrue(new_answer.json['message'])
@@ -99,7 +100,7 @@ class TestAnswers(unittest.TestCase):
         """Test that the endpoint rejects unauthorized requests"""
         # test false token
         false_token = self.post_data(self.question_id, headers=dict(Authorization="Bearer wrongtoken"))
-        self.assertEqual(false_token.status_code, 400)
+        self.assertEqual(false_token.status_code, 401)
 
     def test_mark_answer_as_preferred(self):
         """Test that the author of a particular question can mark an answer as preferred."""
@@ -117,7 +118,7 @@ class TestAnswers(unittest.TestCase):
                                                          int(answer_id))
         result = self.client.put(path,
                                  headers=headers,
-                                 content_type='applicaton/json')
+                                 content_type='application/json')
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json['value'], 'True')
     

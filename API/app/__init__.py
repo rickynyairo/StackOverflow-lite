@@ -15,6 +15,7 @@ from contextlib import closing
 from flask import Flask, jsonify, request, make_response
 from instance.config import app_config
 import psycopg2
+from werkzeug.contrib.fixers import ProxyFix
 
 # local imports
 from .data import data
@@ -100,12 +101,13 @@ def create_app(config_name='development'):
     app.config.from_object(app_config[config_name])
     app.config.from_pyfile('config.py')
 
+    app.wsgi_app = ProxyFix(app.wsgi_app)
+    
     from .api.version1 import version1 as version1_blueprint
-    app.register_blueprint(version1_blueprint, url_prefix="/api/v1")
-
     from .api.version2 import version2 as version2_blueprint
-    app.register_blueprint(version2_blueprint, url_prefix="/api/v2")
-
+    
+    app.register_blueprint(version1_blueprint)
+    app.register_blueprint(version2_blueprint)
     app.register_error_handler(400, bad_request)
     app.register_error_handler(401, unauthorized)
     app.register_error_handler(404, not_found)

@@ -3,19 +3,40 @@ This module collects the views for the questions resource
 
 """
 import json
+import re
 
 # third party imports
-from flask.views import MethodView
+from flask_restplus import Resource
 from flask import request, jsonify
 from werkzeug.exceptions import BadRequest, NotFound, Unauthorized, Forbidden
 from .... import init_db
 
+# local imports
 from ..models.user_model import UserModel
 from ..models.question_model import QuestionModel
 from ..models.answer_model import AnswerModel
 
-class Questions(MethodView):
+from ..utils.serializers import QuestionDTO, QuestionUserDTO
+
+api = QuestionDTO().api
+uapi = QuestionUserDTO.api
+_n_question = QuestionDTO().n_question
+_n_question_resp = QuestionDTO().n_question_resp
+_get_questions_resp = QuestionDTO().get_questions_resp
+_get_question_resp = QuestionDTO().get_question_resp
+_get_edit_resp = QuestionDTO().get_edit_resp
+_delete_resp = QuestionDTO().delete_resp
+_get_by_user_resp = QuestionUserDTO().get_by_user_resp
+
+
+@api.route('/')
+class Questions(Resource):
     """This class collects the methods for the questions endpoint"""
+    
+    docu_string = "This endpoint allows a registered user to post a question."
+    @api.doc(docu_string)
+    @api.expect(_n_question, validate=False)
+    @api.marshal_with(_n_question_resp, code=201)
     def post(self):
         """This function handles post requests"""
         auth_header = request.headers.get('Authorization')
@@ -44,11 +65,14 @@ class Questions(MethodView):
                         asked_by=username,
                         question_id=str(question_id))
 
-            return jsonify(resp), 201
+            return resp, 201
         else:
-            # token is either invalid or expired, right now, we don't care
+            # token is either invalid or expired
             raise Unauthorized
 
+    docu_string = "This endpoint allows a registered user to post a question."
+    @api.doc(docu_string)
+    @api.marshal_with(_get_questions_resp, code=200)
     def get(self):
         """This function handles get requests"""
         # get questions from db
@@ -57,10 +81,15 @@ class Questions(MethodView):
             "message":"success",
             "questions":questions
         }
-        return jsonify(resp), 200
+        return resp, 200
 
-class GetQuestion(MethodView):
+@api.route('/<int:question_id>')
+class GetQuestion(Resource):
     """This class collects the views for a particular question"""
+
+    docu_string = "This endpoint allows a user to get all the details to a question."
+    @api.doc(docu_string)
+    @api.marshal_with(_get_question_resp, code=200)
     def get(self, question_id):
         """Returns a question and all it's answers"""
         # no auth required
@@ -78,8 +107,12 @@ class GetQuestion(MethodView):
                         description=description,
                         date_created=date_created,
                         answers=answers)
-            return jsonify(resp), 200
+            return resp, 200
 
+    docu_string = "This endpoint allows a user to edit the details of a question."
+    @api.doc(docu_string)
+    @api.expect(validate=False)
+    @api.marshal_with(_get_edit_resp, code=200)
     def put(self, question_id):
         """This function edits a question, given the id"""
         auth_header = request.headers.get('Authorization')
@@ -108,8 +141,12 @@ class GetQuestion(MethodView):
             else:
                 raise Forbidden("You are not allowed to edit the question")
             resp = {"message":"success", "text":text}
-            return jsonify(resp), 200
+            return resp, 200
 
+    docu_string = "This endpoint allows a user to delete a question."
+    @api.doc(docu_string)
+    @api.expect(validate=False)
+    @api.marshal_with(_delete_resp, code=202)
     def delete(self, question_id):
         """This function deletes a question, given the id"""
         auth_header = request.headers.get('Authorization')
@@ -135,13 +172,20 @@ class GetQuestion(MethodView):
                 raise Forbidden("You are not allowed to delete the question")
             resp = {"message":"success", 
                     "description":"question deleted succesfully"}
-            return jsonify(resp), 202
+            return resp, 202
 
-class GetUserQuestion(MethodView):
+@uapi.route("/")
+class GetUserQuestion(Resource):
     """question views associated with users"""
+
+    docu_string = "This endpoint allows a user to get all the questions by a user"
+    @uapi.doc(docu_string)
+    @uapi.expect(validate=False)
+    @uapi.marshal_with(_get_by_user_resp, code=200)
     def get(self, username):
         """returns all the questions associated with a particular user"""
         """This function deletes a question, given the id"""
+        # import pdb;pdb.set_trace()
         users = UserModel()
         user_id  = users.get_user_by_username(username)[0]
         if not user_id:
@@ -160,10 +204,9 @@ class GetUserQuestion(MethodView):
             list_of_questions.append(questions)
         else:
             list_of_questions = questions[:]
-         
         resp = {
             "message":"success",
             "username":username,
             "questions":questions
         }
-        return jsonify(resp), 200
+        return resp, 200

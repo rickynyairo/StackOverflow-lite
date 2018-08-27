@@ -104,7 +104,7 @@ class TestQuestions(unittest.TestCase):
         """Test that the endpoint rejects unauthorized requests"""
         # test false token
         false_token = self.post_data(headers=dict(Authorization="Bearer wrongtoken"))
-        self.assertEqual(false_token.status_code, 400)
+        self.assertEqual(false_token.status_code, 401)
         # test correct token
         correct_token = self.post_data()
         self.assertEqual(correct_token.status_code, 201)
@@ -122,7 +122,8 @@ class TestQuestions(unittest.TestCase):
         question = self.post_data(headers={"Authorization":"Bearer {}".format(self.auth_token)})
         username = self.user.get_username_by_id(self.user_id)
         path = "/api/v2/questions/{}".format(username)
-        req = self.get_data(path=path)
+        req = self.client.get(path=path)
+        # import pdb;pdb.set_trace()
         self.assertEqual(req.status_code, 200)
         self.assertEqual(username, req.json["username"])
     

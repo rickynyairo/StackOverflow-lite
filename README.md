@@ -38,42 +38,44 @@ Alternatively, the site is [```hosted here```](https://rickynyairo.github.io/Sta
 Navigate to the API/ directory
 In a virtual environment, perform the following:
 
->git checkout development
+```$ git checkout development```
 
->pip install -r requirements.txt
+```$ pip install -r requirements.txt```
 
->nosetests app/tests
+```$ nosetests app/tests```
 
->python run.py
+```$ python run.py```
 
 ### API-Endpoints
 
 #### Heroku Hosting link
 
-```https://stackoverflow-lite99.herokuapp.com/api/v2```
+```https://stackoverflow-lite99.herokuapp.com/api/```
 
-#### Version 1 
+#### Postman
 
 [![Run in Postman](https://run.pstmn.io/button.svg)](https://app.getpostman.com/run-collection/479da9f494c39acebfd6)
 
-#### Users Endpoints : /api/v1/
+#### Version 1
+
+#### Users Endpoints : /api/v1
 
 Method | Endpoint | Functionality
 --- | --- | ---
-POST | /api/v1/users/signup | Creates a user account
-POST | /api/v1/users/signin | Sign in a user
-GET | /api/v1/users | Get a list of all users
+POST | /users/signup | Creates a user account
+POST | /users/signin | Sign in a user
+GET | /users | Get a list of all users
 
 
-#### Questions Endpoints
+#### Questions Endpoints : /api/v1
 
 Method | Endpoint | Functionality
 --- | --- | ---
-POST | /api/v1/questions | Post a question
-POST | /api/v1/questions/int:ques_id/answers | post an answer to a question
-GET | /api/v1/questions | Get a List of all questions
-GET | /api/v1/questions/int:ques_id | Get a question using its id
-PUT | /api/v1/questions/int:ques_id | Edit a question
+POST | /questions | Post a question
+POST | /questions/int:ques_id/answers | post an answer to a question
+GET | /questions | Get a List of all questions
+GET | /questions/int:ques_id | Get a question using its id
+PUT | /questions/int:ques_id | Edit a question
 
 
 #### Version 2
@@ -83,7 +85,7 @@ PUT | /api/v1/questions/int:ques_id | Edit a question
 Method | Endpoint | Functionality
 --- | --- | ---
 POST | /auth/signup | Creates a user account
-POST | /users/login | Sign in a user
+POST | /auth/login | Sign in a user
 
 #### Questions Endpoints : /api/v2/
 
@@ -97,10 +99,9 @@ PUT | /questions/int:ques_id | Edit a question
 DELETE | /questions/int:ques_id | Delete a question using its id
 POST | /questions/int:ques_id/answers | Post an answer to a question
 PUT | /questions/int:ques_id/answers/int:ans_id | Edit an answer
+PUT | /questions/int:ques_id/answers/int:ans_id | Mark an answer as preferred
 
 ### Questions
+
 [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://GitHub.com/Naereen/ama)
-
-
-
 

@@ -62,6 +62,7 @@ class AuthTest(unittest.TestCase):
         self.assertEqual(new_user.status_code, 201)
         username =  new_user.json['username']
         # test that the correct user is created
+        # import pdb;pdb.set_trace()
         self.assertEqual(user['username'], username)
         # test that the correct response is sent back
         self.assertTrue(new_user.json['AuthToken'])

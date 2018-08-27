@@ -61,14 +61,14 @@ class AnswerModel(BaseModel):
         for i, items in enumerate(data_items):
             answer_id, question_id, user_id, text, up_votes, date, user_preferred = items
             username = BaseModel().get_username_by_id(int(user_id))
-            answer = dict(
-               answer_id=int(answer_id),
-               question_id=int(question_id),
-               username=username,
-               text=text,
-               date_created=date,
-               up_votes=int(up_votes),
-               user_preferred=user_preferred
-            )
+            answer = {
+               "answer_id":int(answer_id),
+               "question_id":int(question_id),
+               "username":username,
+               "text":text,
+               "date_created":date,
+               "up_votes":int(up_votes),
+               "user_preferred":user_preferred
+            }
             resp.append(answer)
         return resp
