@@ -69,8 +69,7 @@ class GetAnswer(Resource):
     @api.marshal_with(_edit_answer_resp)
     def put(self, question_id, answer_id):
         """
-        This function is restricted to the author of the answer and the
-        author of the question. 
+        This function is restricted to the author of the answer and the author of the question. 
         The ```answer_author_id``` is allowed to edit the answer. 
         The ```question_author_id``` is allowed to mark the answer as preferred
         """

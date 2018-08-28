@@ -93,7 +93,7 @@ class GetQuestion(Resource):
     def get(self, question_id):
         """Returns a question and all it's answers"""
         # no auth required
-        question = QuestionModel().get_question_by_id(int(question_id))
+        question = QuestionModel().get_item_by_id(int(question_id))
         if not question:
             # question was not found
             raise NotFound

@@ -99,6 +99,7 @@ POST | questions | Post a question
 POST | /questions/int:ques_id/answers | post an answer to a question
 GET | /questions | Get a List of all questions
 GET | /questions/int:ques_id | Get a question using its id
+GET | /questions/str:username | Get all questions posted by a particular user
 PUT | /questions/int:ques_id | Edit a question
 DELETE | /questions/int:ques_id | Delete a question using its id
 POST | /questions/int:ques_id/answers | Post an answer to a question
@@ -108,4 +109,3 @@ PUT | /questions/int:ques_id/answers/int:ans_id | Mark an answer as preferred
 ### Questions
 
 [![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://GitHub.com/Naereen/ama)
-

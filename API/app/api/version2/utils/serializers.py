@@ -76,7 +76,7 @@ class QuestionDTO(object):
     })
     delete_resp = api.model('response to delete question', {
         'message': fields.String(required=True, description="success or fail message"),
-        'text': fields.String(required=True, description="The string of the edited question")
+        'description': fields.String(required=True, description="The string of the edited question")
     })
     answer_by_question_id = api.model('answers to a question', {
         "answer_id":fields.Integer(required=True, description="the identifier of the answer"),
