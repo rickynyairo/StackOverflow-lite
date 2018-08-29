@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <script src="{{ url_for('static', filename='js/index.js') }}"></script>
+  <title>StackOverflow</title>
+</head>
+
+<body>
+  <div class="container">
+    <header class = "item-1" id = "myHeader">
+      <div id="header_div">
+        <a href="index.html"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" id="logoImage" class = "headerElements"></a>
+        <h1 class = "headerElements">StackOverflow Lite</h1>
+        <a href=""><button class = "buttons signingButton">Sign In</button></a>
+        {% block signout %}
+        {% endblock %}
+      </div>
+    </header>
+    {% block body %}
+    {% endblock %}
+  </div>
+</body>
+
+</html>

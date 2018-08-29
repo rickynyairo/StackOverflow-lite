@@ -1,0 +1,10 @@
+{
+  "tests/test_version_1/test_questions.py": true,
+  "tests/test_version_1/test_users.py": true,
+  "tests/test_version_2/test_answer_model.py": true,
+  "tests/test_version_2/test_answers.py": true,
+  "tests/test_version_2/test_auth.py": true,
+  "tests/test_version_2/test_question_model.py": true,
+  "tests/test_version_2/test_questions.py": true,
+  "tests/test_version_2/test_user_model.py": true
+}
