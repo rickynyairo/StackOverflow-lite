@@ -30,14 +30,6 @@ CREATE TABLE IF NOT EXISTS answers (
 
 COMMENT ON TABLE answers IS 'This tables stores the answers given by users on the platform';
 
-CREATE TABLE IF NOT EXISTS comments (
-    comment_id numeric DEFAULT nextval('increment_pkey'::regclass) NOT NULL,
-    answer_id numeric NOT NULL,
-    user_id numeric NOT NULL,
-    text character varying(200) NOT NULL,
-    date_created timestamp with time zone DEFAULT ('now'::text)::date NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS questions (
     question_id numeric DEFAULT nextval('increment_pkey'::regclass) NOT NULL,
     user_id numeric NOT NULL,
@@ -63,17 +55,11 @@ COMMENT ON TABLE users IS 'Store user details';
 ALTER TABLE ONLY answers
     ADD CONSTRAINT answers_pkey PRIMARY KEY (answer_id);
 
-ALTER TABLE ONLY comments
-    ADD CONSTRAINT comments_pkey PRIMARY KEY (comment_id);
-
 ALTER TABLE ONLY questions
     ADD CONSTRAINT questions_pkey PRIMARY KEY (question_id);
 
 ALTER TABLE ONLY users
     ADD CONSTRAINT users_pkey PRIMARY KEY (user_id);
-
-ALTER TABLE ONLY comments
-    ADD CONSTRAINT answers_answer_id_fkey FOREIGN KEY (answer_id) REFERENCES answers(answer_id) ON UPDATE CASCADE;
 
 ALTER TABLE ONLY answers
     ADD CONSTRAINT questions_question_id_fkey FOREIGN KEY (question_id) REFERENCES questions(question_id) ON UPDATE CASCADE NOT VALID;
@@ -83,8 +69,5 @@ ALTER TABLE ONLY questions
 
 ALTER TABLE ONLY answers
     ADD CONSTRAINT users_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(user_id) ON UPDATE CASCADE NOT VALID;
-
-ALTER TABLE ONLY comments
-    ADD CONSTRAINT users_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(user_id) ON UPDATE CASCADE;
 
 ALTER TABLE users ADD UNIQUE (email, username);

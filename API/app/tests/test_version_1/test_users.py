@@ -142,7 +142,7 @@ class UserTests(unittest.TestCase):
         unauthorized_user['password'] = user['password'][::-1]
 
         unauthorized_user_signin = self.post_data('/api/v1/users/signin', data=unauthorized_user)
-        self.assertEqual(unauthorized_user_signin.status_code, 400)
+        self.assertEqual(unauthorized_user_signin.status_code, 401)
         self.assertEqual(unauthorized_user_signin.json['message'],
                          "You are not authorized to access this resource, please confirm credentials")
 

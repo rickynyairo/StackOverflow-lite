@@ -10,4 +10,3 @@ function postAnswer(button){
     liElement.appendChild(textNode);
     ulELement.appendChild(liElement);
 }
-loadQuestions();

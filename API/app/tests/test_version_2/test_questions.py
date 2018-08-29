@@ -141,7 +141,7 @@ class TestQuestions(unittest.TestCase):
                                  data=json.dumps(data),
                                  content_type='application/json')
         self.assertEqual(result.status_code, 200)
-        self.assertEqual(result.json['text'], data['text'])
+        self.assertIn(data['text'], result.json['text'])
 
     def test_delete_question(self):
         """Test that a user can delete a question that they have posted"""

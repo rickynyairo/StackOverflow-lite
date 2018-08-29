@@ -45,6 +45,18 @@ class AnswerModel(BaseModel):
                      NOT user_preferred WHERE answer_id = %d \
                      RETURNING user_preferred;""" % (int(answer_id))) 
         data = curr.fetchone()[0]
+        dbconn.commit()
+        return data
+    
+    def upvote_answer(self, answer_id):
+        """This function increments the upvote field"""
+        dbconn = self.db
+        curr = dbconn.cursor()
+        curr.execute("""UPDATE answers SET up_votes = \
+                     up_votes + 1 WHERE answer_id = %d \
+                     RETURNING up_votes;""" % (int(answer_id))) 
+        data = curr.fetchone()[0]
+        dbconn.commit()
         return data
 
     def get_answers_by_question_id(self, question_id):

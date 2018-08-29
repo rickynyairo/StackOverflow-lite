@@ -2,10 +2,10 @@
 This module defines the base model and associated functions
 """
 from datetime import datetime, timedelta
-from flask import current_app
 import jwt
-
+import os
 from .... import create_app
+
 from ....database import init_db
 
 class BaseModel(object):
@@ -64,13 +64,18 @@ class BaseModel(object):
         except Exception as e:
             return "Not Found"
 
-    def delete_item(self, item_id):
+    def delete_item(self, item_id, foreign_key):
         """This function takes an id and removes the corresponding item from the database"""
         try:
             table_name = "%ss" % (self._type().lower()[:-5])
             item_name = table_name[:-1]
             dbconn = self.db
             curr = dbconn.cursor()
+            fk_query = "DELETE FROM %s WHERE %s_id = %d;"%(foreign_key,
+                                                           item_name,
+                                                           int(item_id))
+            curr.execute(fk_query)
+            dbconn.commit()
             query = "DELETE FROM %s WHERE %s_id = %d;" % (table_name,
                                                           item_name,
                                                           int(item_id))
@@ -97,11 +102,12 @@ class BaseModel(object):
                                                               item_name,
                                                               item_id))
             updated_field = curr.fetchone()
+            dbconn.commit()
             return updated_field
         except ValueError:
             return "Data must be a string"
-        except Exception:
-            return "Not found"
+        except Exception as e:
+            return e
         
     def get_username_by_id(self, user_id):
         """returns a username given the id"""

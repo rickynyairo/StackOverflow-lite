@@ -4,6 +4,7 @@ This module collects the endpoints for the authentication resource
 """
 import json
 import re
+import string
 
 # third party imports
 from flask_restplus import Resource
@@ -25,26 +26,37 @@ _user_resp = UserDTO().user_resp
 class AuthSignup(Resource):
     """This class collects the methods for the auth/signup method"""
 
+    def _validate_user(self, user):
+        """This function validates the user input and rejects or accepts it"""
+        for key, value in user.items():
+            # ensure keys have values
+            if not value:
+                raise BadRequest("{} is lacking. It is a required field".format(key))
+            if key == "first_name" or key=="last_name":
+                for i in value:
+                    if i not in string.ascii_letters:
+                        raise BadRequest("{} cannot have non-alphabetic characters.".format(key))
+
     docu_string = "This endpoint allows an unregistered user to sign up."
     @api.doc(docu_string)
-    @api.expect(_n_user)
+    @api.expect(_n_user, validate=True)
     @api.marshal_with(_n_user_resp, code=201)
     def post(self):
-        """This function handles a post request"""
+        """This endpoint allows an unregistered user to sign up."""
         req_data = request.data.decode().replace("'", '"')
         if not req_data:
-            raise BadRequest
+            raise BadRequest("Provide data in the request")
         user_details = json.loads(req_data)
         try:
-            username = user_details['username']
-            first_name = user_details['first_name']
-            last_name = user_details['last_name']
-            email = user_details['email']
-            password = user_details['password']
+            username = user_details['username'].strip()
+            first_name = user_details['first_name'].strip()
+            last_name = user_details['last_name'].strip()
+            email = user_details['email'].strip()
+            password = user_details['password'].strip()
             if not re.match(r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$',
                     email):
                 raise BadRequest("The email provided is invalid")
-        except (KeyError, IndexError):
+        except (KeyError, IndexError) as e:
             raise BadRequest
         user = {
             "username":username,
@@ -53,6 +65,7 @@ class AuthSignup(Resource):
             "email":email,
             "password":password
         }
+        self._validate_user(user)
         user_model = UserModel(**user)
         try:
             saved = user_model.save_user()
@@ -75,12 +88,12 @@ class AuthSignup(Resource):
 class AuthLogin(Resource):
     """This class collects the methods for the auth/login endpoint"""
 
-    docu_string = "This endpoint allows a registered user to log in."
+    docu_string = "This endpoint accepts POST requests to allow a registered user to log in."
     @api.doc(docu_string)
-    @api.expect(_user)
+    @api.expect(_user, validate=True)
     @api.marshal_with(_user_resp, code=200)
     def post(self):
-        """This function handles post requests"""       
+        """This endpoint accepts POST requests to allow a registered user to log in."""       
         if not request.data:
             raise BadRequest
         req_data = json.loads(request.data.decode().replace("'", '"'))
@@ -96,10 +109,10 @@ class AuthLogin(Resource):
             raise Unauthorized('Your details were not found, please sign up')
 
         user_id, fname, lname, pwordhash, date_created = record
-        name = "{}, {}".format(lname, fname)
+        
         if not check_password_hash(pwordhash, password):
-            raise Unauthorized
-
+            raise Unauthorized("The username or password is incorrect")
+        name = "{}, {}".format(lname, fname)
         token = user.encode_auth_token(int(user_id))
 
         resp = dict(

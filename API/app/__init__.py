@@ -40,7 +40,6 @@ def _locate(item_id, items):
         responce = (None, None)
 
     return responce
-
 def error_handler(error, message):
     """This function creates a custom dictonary for the error functions"""
     request_data = ""
@@ -84,7 +83,7 @@ def forbidden(error):
 def unauthorized(error):
     """This function creates a custom JSON response when an unauthorized request is made"""
     message = "You are not authorized to access this resource, please confirm credentials"
-    response = make_response(jsonify(error_handler(error, message)), 400)
+    response = make_response(jsonify(error_handler(error, message)), 401)
     return response
 
 def create_app(config_name='development'):
@@ -96,12 +95,15 @@ def create_app(config_name='development'):
 
     app.wsgi_app = ProxyFix(app.wsgi_app)
     
-    from .api.version1 import version1 as version1_blueprint
     from .api.version2 import version2 as version2_blueprint
+    app.register_blueprint(version2_blueprint)
+    
+    from .api.version1 import version1 as version1_blueprint
+    
     from .user_interface import ui as ui_blueprint
 
     app.register_blueprint(version1_blueprint)
-    app.register_blueprint(version2_blueprint)
+    
     app.register_blueprint(ui_blueprint)
     app.register_error_handler(400, bad_request)
     app.register_error_handler(401, unauthorized)

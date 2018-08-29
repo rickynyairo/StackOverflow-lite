@@ -121,7 +121,7 @@ class TestAnswers(unittest.TestCase):
         question_id = int(self.create_question(user_id)[0])
         false_token = self.post_data(question_id, headers={"Authorization":"Bearer wrongtoken"})
         self.assertEqual(false_token.status_code, 401)
-    
+
     def test_edit_answer(self):
         """Test that the author of a particular answer can edit it"""
         user = self.create_user()

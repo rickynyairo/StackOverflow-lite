@@ -26,14 +26,13 @@ class Answers(Resource):
 
     docu_string = "This endpoint handles POST requests to the answers resource"
     @api.doc(docu_string)
-    @api.expect(_n_answer, validate=False)
+    @api.expect(_n_answer, validate=True)
     @api.marshal_with(_n_answer_resp, code=201)
     def post(self, question_id):
-        """This function handles post requests"""
-        # import pdb;pdb.set_trace()
+        """This endpoint handles POST requests to the answers resource"""
         auth_header = request.headers.get('Authorization')
         if not auth_header or not request.data:
-            raise BadRequest
+            raise BadRequest("The request is malformed. Attach missing fields")
         auth_token = auth_header.split(" ")[1]
         response = UserModel().decode_auth_token(auth_token)
         if not isinstance(response, str):
@@ -43,7 +42,7 @@ class Answers(Resource):
             try:
                 text = req_data['text']
             except (KeyError, IndexError):
-                raise BadRequest
+                raise BadRequest("Missing text field")
             # save answer in db
             answer = AnswerModel(int(question_id), int(user_id), text)
             answer_id = int(answer.save_answer())
@@ -74,13 +73,12 @@ class GetAnswer(Resource):
         """
         auth_header = request.headers.get('Authorization')
         if not auth_header:
-            raise BadRequest
+            raise BadRequest("This endpoint requires authorization")
         auth_token = auth_header.split(" ")[1]
         response = UserModel().decode_auth_token(auth_token)
-        #import pdb;pdb.set_trace()
         if isinstance(response, str):
             # the user is not authorized to view this endpoint
-            raise Unauthorized
+            raise Unauthorized("You are not allowed to access this resource")
         else:
             questions = QuestionModel()
             question_author_id = questions.get_item_by_id(int(question_id))[1]
@@ -100,10 +98,11 @@ class GetAnswer(Resource):
             elif user_id == int(question_author_id) and user_id != int(answer_author_id):
                 value = "{}".format(answers.toggle_user_preferred(answer_id))
             else:
-                raise Forbidden
+                raise Forbidden("You are not athorized to edit this answer")
             resp = {
                 "message":"success",
                 "description":"answer updated succesfully",
                 "value":value
             }
             return resp, 200
+

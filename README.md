@@ -5,13 +5,8 @@
 StackOverflow-Lite is a platform for sharing questions and answers. 
 
 [![Coverage Status](https://coveralls.io/repos/github/rickynyairo/StackOverflow-lite/badge.svg?branch=development)](https://coveralls.io/github/rickynyairo/StackOverflow-lite?branch=development)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://GitHub.com/Naereen/StrapDown.js/graphs/commit-activity)
 [![Website naereen.github.io](https://img.shields.io/website-up-down-green-red/https/naereen.github.io.svg)](https://rickynyairo.github.io/StackOverflow-lite/)
-[![PyPI version](https://badge.fury.io/py/Flask.svg)](https://badge.fury.io/py/Flask)
 [![Build Status](https://travis-ci.org/rickynyairo/StackOverflow-lite.svg?branch=development)](https://travis-ci.org/rickynyairo/StackOverflow-lite)
-
-### Code Climate
-
 [![Maintainability](https://api.codeclimate.com/v1/badges/13a7eb6d1036b235a820/maintainability)](https://codeclimate.com/github/rickynyairo/StackOverflow-lite/maintainability)
 
 ### Features
@@ -108,4 +103,4 @@ PUT | /questions/int:ques_id/answers/int:ans_id | Mark an answer as preferred
 
 ### Questions
 
-[![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)](https://GitHub.com/Naereen/ama)
+[![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)]
