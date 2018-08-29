@@ -2,11 +2,11 @@
 This module defines the base model and associated functions
 """
 from datetime import datetime, timedelta
-
+from flask import current_app
 import jwt
 
-from .... import init_db, create_app
-
+from .... import create_app
+from ....database import init_db
 
 class BaseModel(object):
     """

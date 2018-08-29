@@ -4,11 +4,12 @@ This module defines the user model and associated functions
 from datetime import datetime, timedelta
 
 import jwt
-from flask_bcrypt import Bcrypt
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import current_app
 
 # local imports
-from .... import init_db, create_app
+from .... import create_app
+from ....database import init_db
 from .base_model import BaseModel
 
 class UserModel(BaseModel):

@@ -27,9 +27,33 @@ th{
   height:40px;
 }
 .container{
-  padding:5px;
+  width:100%;
+  height:100%;
+  display:grid;
+  grid-template-columns: [first-col] 150px [second-col] 150px [third-col] auto [fourth-col] 150px [fifth-col] 150px [sixth-col];
+  grid-template-rows: [first-row] 100px [second-row] auto [third-row] 50px [fourth-row];
+  grid-row-gap: 20px;
 }
 
+/*navbar grid item*/
+.item-1{
+  grid-column-start: first-col;
+  grid-column-end: sixth-col;
+  grid-row-start: first-row;
+  grid-row-end: second-row;
+}
+.item-2{
+  grid-column-start: third-col;
+  grid-column-end: fourth-col;
+  grid-row-start: second-row;
+  grid-row-end: third-row;
+}
+.item-3{
+  grid-column-start: third-col;
+  grid-column-end: fourth-col;
+  grid-row-start: third-row;
+  grid-row-end: fourth-row;
+}
 /*Specific styling*/
 header{
   padding:0 10px 0 0;
@@ -43,11 +67,14 @@ header{
   padding: 20px 20px 20px 0;
   
 }
-input:hover{
+input{
   outline: 1px solid rgb(117, 104, 240);
 }
-input:invalid:not(:focus) {
-  outline: 1px solid #f00;
+input:hover{
+  outline: 1px solid #000;
+}
+.linkSpan{
+  text-align: right;
 }
 #submitButton{
   height:40px;
@@ -66,15 +93,6 @@ legend {
   margin-left:10px;
 }
 
-#midSectionDiv{
-  background-image: url("../img/baloons.jpg");
-  background-size: cover;
-  background-repeat: no-repeat;
-  position: relative;
-  display:block;
-  width:100vw;
-  height:100vh;
-}
 .fieldsets{
   border:solid 3px rgb(117, 104, 240);
   position:absolute;
@@ -116,53 +134,45 @@ ul{
 #searchButton:hover{
   background-color: rgb(117, 104, 240);
 }
-
 #search{
-  padding:0px;
+  padding:3px;
   margin:0px;
 }
-/*Style the questions*/
-.container{
-  position:absolute;
-  width:550px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-}
+
 .stats{
-  height:80px;
-  width:180px;
+  padding:7px;
+  width:150px;
+  margin:7px;
   border:solid 3px #000;
 }
-.sticky {
-  position: fixed;
-  top: 0;
-  width: 100%;
-}
-.sticky body{
-  padding-top: 102px;
-}
+
 textarea{
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-size:12px;
   width:100%;
+  border:solid 2px rgb(117, 104, 240);
 }
-textarea:hover{
-  outline:solid 2px rgb(117, 104, 240);
-}
-.questions p{
+
+.questionsMeta{
   text-align: right;
   font-weight: normal;
   font-size: 12px;
   font-style: italic;
 }
-.questions{
+.question{
   border-left:solid 3px rgb(117, 104, 240);
   border-right:solid 3px rgb(117, 104, 240);
   background-color: rgba(255, 127, 80, 0.6);
   margin:5px 0 5px 0;
   padding:5px 3px 5px 3px;
   font-weight: bold;
+}
+.answer{
+  border-left:solid 3px rgb(117, 104, 240);
+  border-right:solid 3px rgb(117, 104, 240);
+  background-color: rgba(255, 127, 80, 0.6);
+  margin:5px 0 5px 0;
+  padding:5px 3px 5px 3px;
 }
 /*CSS Reset*/
 * {

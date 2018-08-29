@@ -9,7 +9,6 @@ from flask_restplus import Resource
 from flask import request, jsonify
 from werkzeug.exceptions import BadRequest, NotFound, Unauthorized, Forbidden
 
-from .... import init_db
 from ..models.user_model import UserModel
 from ..models.question_model import QuestionModel
 from ..models.answer_model import AnswerModel

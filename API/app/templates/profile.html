@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block profile %}
+<a href="profile.html"><button class = "buttons signingButton" >Profile</button></a>
+{% endblock %}
+
+{% block body %}
+
+<div class="item-2">
+  <fieldset>
+    <legend>Nancy</legend>
+    <h5>Questions asked on the platform:</h5>
+    <p>
+      Who was the first Kenyan president?
+    </p>
+    <p>
+      What code editor is better for linux than vim?
+    </p>
+    <p class = "stats">Questions Asked: 2</p>
+    <p class = "stats">Answers Given: 19</p>
+  </fieldset>  
+  <fieldset>
+    <legend>Post a Question:</legend>
+    <textarea name="question" id="questionText"></textarea>
+    <button id = "postQuestion" onclick="postQuestion(this)">Post</button>
+  </fieldset>
+</div>
+
+{% endblock %}

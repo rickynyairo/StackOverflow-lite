@@ -7,7 +7,11 @@ import string
 from random import choice, randint
 
 # local imports
-from ... import create_app, init_db
+from ... import create_app
+
+from ...database import _init_db
+from ...database import destroy
+
 from ...api.version2.models.user_model import UserModel
 
 
@@ -19,42 +23,45 @@ class TestQuestions(unittest.TestCase):
         username = "".join(choice(
                            string.ascii_letters) for x in range (randint(7,10)))
         params = {
-                "username":username,
                 "first_name":"ugali",
                 "last_name":"mayai",
                 "email":"ugalimayai@gmail.com",
+                "username":username,
                 "password":"password"
-            }       
-        user = UserModel(**params)
-        user_id = user.save_user()
-        return user_id, user
+            }
+        path = "/api/v2/auth/signup"
+        user = self.client.post(path,
+                                data=json.dumps(params),
+                                content_type="application/json")
+        
+        user_id = user.json['user_id']
+        auth_token = user.json['AuthToken']
+        return int(user_id), auth_token
 
     def setUp(self):
         """Performs variable definition and app initialization"""
-        self.app = create_app()
+        self.app = create_app("testing")
         self.client = self.app.test_client()
-        self.user_id, self.user = self.create_user()
-        self.auth_token = self.user.encode_auth_token(self.user_id).decode('utf-8')
         self.question = {
             "text":"What is the fastest programming language and why?",
             "description":"I am looking for the fastest programming language in terms\
                             of memory management for a very high performance project."
         }
-        self.app = create_app()
         with self.app.app_context():
-            self.db = init_db()
+            self.db = _init_db()
 
     def post_data(self, path='/api/v2/questions', auth_token=2, data={}, headers=0):
         """This function performs a POST request using the testing client"""
         if not data:
             data = self.question
         if auth_token is 2:
-            auth_token = self.auth_token
+            user = self.create_user()
+            auth_token = user[1]
         if not headers:
             headers = {"Authorization":"Bearer {}".format(auth_token)}
         result = self.client.post(path, data=json.dumps(data),
                                   headers=headers,
-                                  content_type='applicaton/json')
+                                  content_type='application/json')
         return result
 
     def get_data(self, path='/api/v2/questions'):
@@ -71,19 +78,14 @@ class TestQuestions(unittest.TestCase):
         # test that the server responds with the correct status code
         self.assertEqual(new_question.status_code, 201)
         self.assertTrue(new_question.json['message'])
-        question_id =  new_question.json['question_id']
-        # test that the correct question is created
-        dbconn = self.db
-        curr = dbconn.cursor()
-        curr.execute("SELECT text FROM questions\
-                     WHERE question_id = %d" % (int(question_id)))
-        question_text = curr.fetchone()[0]
-        self.assertEqual(self.question['text'], question_text)
+        self.assertTrue(new_question.json['question_id'])
+
         
     def test_error_messages(self):
         """Test that the endpoint responds with the correct error message"""
+        auth_token = self.create_user()[1]
         empty_req = self.client.post("/api/v2/questions",
-                                     headers=dict(Authorization="Bearer {}".format(self.auth_token)),
+                                     headers=dict(Authorization="Bearer {}".format(auth_token)),
                                      data={})
         self.assertEqual(empty_req.status_code, 400)
         bad_data = self.question
@@ -118,9 +120,9 @@ class TestQuestions(unittest.TestCase):
 
     def test_get_questions_associated_to_user(self):
         """Test that the API responds with all the questions of a particular user"""
-        user_id, user = self.create_user()
-        question = self.post_data(headers={"Authorization":"Bearer {}".format(self.auth_token)})
-        username = self.user.get_username_by_id(self.user_id)
+        user_id, auth_token = self.create_user()
+        question = self.post_data(headers={"Authorization":"Bearer {}".format(auth_token)})
+        username = question.json['asked_by']
         path = "/api/v2/questions/{}".format(username)
         req = self.client.get(path=path)
         # import pdb;pdb.set_trace()
@@ -129,8 +131,9 @@ class TestQuestions(unittest.TestCase):
     
     def test_edit_question(self):
         """Test that a user can edit the text of a question that they've posted"""
-        question_id = int(self.post_data().json['question_id'])
-        headers = {"Authorization":"Bearer {}".format(self.auth_token)}
+        user_id, auth_token = self.create_user()
+        question_id = int(self.post_data(auth_token=auth_token).json['question_id'])
+        headers = {"Authorization":"Bearer {}".format(auth_token)}
         path  = "/api/v2/questions/{}".format(question_id)
         data = {"text":"edited question"}
         result = self.client.put(path,
@@ -142,8 +145,9 @@ class TestQuestions(unittest.TestCase):
 
     def test_delete_question(self):
         """Test that a user can delete a question that they have posted"""
-        question_id = int(self.post_data().json['question_id'])
-        headers = {"Authorization":"Bearer {}".format(self.auth_token)}
+        user_id, auth_token = self.create_user()
+        question_id = int(self.post_data(auth_token=auth_token).json['question_id'])
+        headers = {"Authorization":"Bearer {}".format(auth_token)}
         path  = "/api/v2/questions/{}".format(question_id)
         result = self.client.delete(path,
                                     headers=headers,
@@ -153,15 +157,8 @@ class TestQuestions(unittest.TestCase):
 
     def tearDown(self):
         """This function destroys objests created during the test run"""
-        curr = self.db.cursor()
-        exit_query = "DELETE FROM questions WHERE user_id = %d;" % (self.user_id)
-        curr.execute(exit_query)
-        exit_query = "DELETE FROM users WHERE user_id = %d;" % (self.user_id)
-        curr.execute(exit_query)
-        curr.close
-        self.db.commit()
-        del self.question
         with self.app.app_context():
+            destroy()
             self.db.close()
 
 if __name__ == "__main__":

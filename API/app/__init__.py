@@ -41,13 +41,6 @@ def _locate(item_id, items):
 
     return responce
 
-def init_db():
-    """Set up the database to stode the user data
-    """
-    db_url = os.getenv("DATABASE_URL")  
-    db = psycopg2.connect(db_url)
-    return db
-
 def error_handler(error, message):
     """This function creates a custom dictonary for the error functions"""
     request_data = ""
@@ -105,9 +98,11 @@ def create_app(config_name='development'):
     
     from .api.version1 import version1 as version1_blueprint
     from .api.version2 import version2 as version2_blueprint
-    
+    from .user_interface import ui as ui_blueprint
+
     app.register_blueprint(version1_blueprint)
     app.register_blueprint(version2_blueprint)
+    app.register_blueprint(ui_blueprint)
     app.register_error_handler(400, bad_request)
     app.register_error_handler(401, unauthorized)
     app.register_error_handler(404, not_found)
@@ -116,5 +111,4 @@ def create_app(config_name='development'):
 
     return app
 
-db = init_db()
 APP = create_app()

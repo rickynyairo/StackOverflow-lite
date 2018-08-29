@@ -9,7 +9,6 @@ import re
 from flask_restplus import Resource
 from flask import request, jsonify
 from werkzeug.exceptions import BadRequest, NotFound, Unauthorized, Forbidden
-from .... import init_db
 
 # local imports
 from ..models.user_model import UserModel
@@ -195,11 +194,9 @@ class GetUserQuestion(Resource):
         questions = quest.get_items_by_id(item='user',
                                           item_id=int(user_id))
         list_of_questions = []
-
         if not questions:
             # no question was not found
             raise NotFound
-    
         if not isinstance(questions, list):
             list_of_questions.append(questions)
         else:

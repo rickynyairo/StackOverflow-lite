@@ -3,8 +3,11 @@ This module defines the questions model and associated functions
 """
 from datetime import datetime, timedelta
 
+from flask import current_app
+
 # local imports
-from .... import init_db
+from .... import create_app
+from ....database import init_db
 from .base_model import BaseModel
 
 class QuestionModel(BaseModel):
@@ -40,7 +43,6 @@ class QuestionModel(BaseModel):
         curr = dbconn.cursor()
         curr.execute("""SELECT * FROM questions;""")
         data = curr.fetchall()
-        self.close_db()
         resp = []
         
         for i, items in enumerate(data):

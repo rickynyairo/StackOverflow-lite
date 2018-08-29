@@ -3,7 +3,10 @@ This module defines the answers model and associated functions
 """
 from datetime import datetime, timedelta
 
-from .... import init_db, create_app
+from flask import current_app
+
+from .... import create_app
+from ....database import init_db
 from .base_model import BaseModel
 
 class AnswerModel(BaseModel):
@@ -56,7 +59,6 @@ class AnswerModel(BaseModel):
             data_items.append(data)
         else:
             data_items = data[:]
-        self.close_db()
         resp = []     
         for i, items in enumerate(data_items):
             answer_id, question_id, user_id, text, up_votes, date, user_preferred = items
