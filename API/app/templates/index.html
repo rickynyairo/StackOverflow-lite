@@ -1,5 +1,9 @@
 {% extends "base.html" %}
 
+{% block login%}
+<a href="{{ url_for('login') }}"><button class = "buttons signingButton">Sign In</button></a>
+{%  endblock %}
+
 {% block body %}
 <section>
   <div id="midSectionDiv">
@@ -16,8 +20,6 @@
     </div>
 </section>
 {% endblock %}
-
-
 
 {% block script %}
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>

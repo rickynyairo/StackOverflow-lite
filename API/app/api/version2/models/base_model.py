@@ -13,6 +13,8 @@ class BaseModel(object):
     This class encapsulates the functions of the base model
     that will be shared across all other models
     """
+
+   
     def __init__(self):
         """initialize the database"""
         self.db = init_db()
@@ -154,17 +156,29 @@ class BaseModel(object):
 
         return resp
 
-    @staticmethod
-    def decode_auth_token(auth_token):
+    def blacklisted(self, token):
+        dbconn  = self.db
+        curr = dbconn.cursor()
+        query = """
+                SELECT * FROM blacklist WHERE tokens = %s;
+                """
+        curr.execute(query, [token])
+        if curr.fetchone():
+            return True
+        return False
+
+    def decode_auth_token(self, auth_token):
         """This function takes in an auth 
         token and decodes it
         """
+        if self.blacklisted(auth_token):
+            return "Token has been blacklisted"
         APP = create_app()
         secret = APP.config.get("SECRET_KEY")
         try:
             payload = jwt.decode(auth_token, secret)
             return payload['sub'] # user id
         except jwt.ExpiredSignatureError:
-            return "Expired"
+            return "The token has expired"
         except jwt.InvalidTokenError:
-            return "Invalid"
+            return "The token is invalid"

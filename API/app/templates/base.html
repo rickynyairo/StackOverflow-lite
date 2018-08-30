@@ -11,9 +11,11 @@
   <div class="container">
     <header class = "item-1" id = "myHeader">
       <div id="header_div">
-        <a href="index.html"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" id="logoImage" class = "headerElements"></a>
+        <a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" id="logoImage" class = "headerElements"></a>
         <h1 class = "headerElements">StackOverflow Lite</h1>
-        <a href=""><button class = "buttons signingButton">Sign In</button></a>
+        <a href="{{ url_for('questions') }}"><button class = "buttons">Home</button></a>
+        {% block login %}
+        {% endblock %}
         {% block signout %}
         {% endblock %}
       </div>

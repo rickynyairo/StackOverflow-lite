@@ -30,6 +30,9 @@ class UserDTO(object):
         'username': fields.String(required=True, description="user's username"),  
         'password': fields.String(required=True, description="user's password")
     })
+    user_logout = api.model('logout request', {
+        'message': fields.String(required=True, description="success message")
+    })
 
 class QuestionUserDTO(object):
     """Questions by user Data Transfer Object"""

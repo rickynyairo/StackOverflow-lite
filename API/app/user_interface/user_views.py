@@ -16,3 +16,9 @@ class QuestionsPage(MethodView):
     def get(self):
         """return the questions page"""
         return render_template('questions.html')
+
+class LoginPage(MethodView):
+    """Encapsulates the views for the login page"""
+    def get(self):
+        """return the login page"""
+        return render_template('login.html')

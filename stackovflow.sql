@@ -30,6 +30,12 @@ CREATE TABLE IF NOT EXISTS answers (
 
 COMMENT ON TABLE answers IS 'This tables stores the answers given by users on the platform';
 
+CREATE TABLE IF NOT EXISTS blacklist (
+    tokens character varying(200) NOT NULL
+);
+
+COMMENT ON TABLE blacklist IS 'This tables stores the blacklisted tokens';
+
 CREATE TABLE IF NOT EXISTS questions (
     question_id numeric DEFAULT nextval('increment_pkey'::regclass) NOT NULL,
     user_id numeric NOT NULL,

@@ -2,7 +2,7 @@
 
 ## Introduction
 
-StackOverflow-Lite is a platform for sharing questions and answers. 
+StackOverflow-Lite is a platform for sharing questions and answers.
 
 [![Coverage Status](https://coveralls.io/repos/github/rickynyairo/StackOverflow-lite/badge.svg?branch=development)](https://coveralls.io/github/rickynyairo/StackOverflow-lite?branch=development)
 [![Website naereen.github.io](https://img.shields.io/website-up-down-green-red/https/naereen.github.io.svg)](https://rickynyairo.github.io/StackOverflow-lite/)
@@ -16,7 +16,7 @@ StackOverflow-Lite is a platform for sharing questions and answers.
 3. Users can delete the questions they post.
 4. Users can post answers.
 5. Users can view the answers to questions.
-6. Users can accept an answer out of all the answers to his/her question as the preferred answer. 
+6. Users can accept an answer out of all the answers to his/her question as the preferred answer.
 
 ### Installing
 
@@ -65,7 +65,6 @@ POST | /users/signup | Creates a user account
 POST | /users/signin | Sign in a user
 GET | /users | Get a list of all users
 
-
 #### Questions Endpoints : /api/v1
 
 Method | Endpoint | Functionality
@@ -76,7 +75,6 @@ GET | /questions | Get a List of all questions
 GET | /questions/int:ques_id | Get a question using its id
 PUT | /questions/int:ques_id | Edit a question
 
-
 #### Version 2
 
 #### Users Endpoints : /api/v2/
@@ -85,6 +83,7 @@ Method | Endpoint | Functionality
 --- | --- | ---
 POST | /auth/signup | Creates a user account
 POST | /auth/login | Sign in a user
+POST | /auth/logout | Siign out a user
 
 #### Questions Endpoints : /api/v2/
 

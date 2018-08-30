@@ -21,6 +21,7 @@ _user = UserDTO().user
 _n_user = UserDTO().n_user
 _n_user_resp = UserDTO().n_user_resp
 _user_resp = UserDTO().user_resp
+_logout_user_resp = UserDTO().user_logout
 
 @api.route("/signup/")
 class AuthSignup(Resource):
@@ -123,3 +124,28 @@ class AuthLogin(Resource):
         )
 
         return resp, 200
+@api.route('/logout')
+class AuthLogout(Resource):
+    """This class collects the methods for the questions endpoint"""
+    
+    docu_string = "This endpoint allows a registered user to logout."
+    @api.doc(docu_string)
+    @api.marshal_with(_logout_user_resp, code=200)
+    def post(self):
+        """This endpoint allows a registered user to logout."""
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            raise BadRequest(
+                "No authorization header provided. This resource is secured.")
+        auth_token = auth_header.split(" ")[1]
+        response = UserModel().decode_auth_token(auth_token)
+        if isinstance(response, str):
+            # token is either invalid or expired
+            raise Unauthorized(
+                "You are not authorized to access this resource. %s" % (response))
+        else:
+            # the token decoded succesfully
+            # logout the user
+            user_token = UserModel().logout_user(auth_token)
+            resp = dict()
+            return {"message":"logout successful. {}".format(user_token)}, 200

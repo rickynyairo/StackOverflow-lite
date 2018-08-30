@@ -46,7 +46,6 @@ class AuthTest(unittest.TestCase):
         """
         result = self.client.get(path)
         return result
-
     def test_sign_up_user(self):
         """Test that a new user can sign up using a POST request
         """    
@@ -89,6 +88,20 @@ class AuthTest(unittest.TestCase):
         login = self.post_data('/api/v2/auth/login', data=payload)
         self.assertEqual(login.json['message'], 'success')
         self.assertTrue(login.json['AuthToken'])
+    def test_user_logout(self):
+        """Test that the user can logout using a POST request"""
+        new_user = self.post_data().json
+        path = "/api/v2/auth/logout"
+        token = new_user['AuthToken']
+        headers = {"Authorization":"Bearer {}".format(token)}
+        logout = self.client.post(path=path,
+                                  headers=headers,
+                                  content_type="application/json")
+        self.assertEqual(logout.status_code, 200)
+        logout_again = self.client.post(path=path,
+                                  headers=headers,
+                                  content_type="application/json")
+        self.assertEqual(logout_again.status_code, 401)
 
     def test_an_unregistered_user(self):
         """Test that an unregistered user cannot log in"""
