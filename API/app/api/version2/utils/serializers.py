@@ -100,7 +100,7 @@ class QuestionDTO(object):
 
 class AnswerDTO(object):
     """Data transfer object for the answers resource"""
-    api = Namespace('new answer', description='answers resource')
+    api = Namespace('Answer endpoint', description='answers resource')
     n_answer = api.model('createanswer', {
         "text":fields.String(required=True, description="the title of the answer")
     })
@@ -114,6 +114,12 @@ class AnswerDTO(object):
         "description":fields.String(required=True, description="request status"),
         "value":fields.String(required=True, description="the edit response")
     })
-    up_votes = api.model('the request structure for a up/downvote', {
+    votes = api.model('the request structure for a up/downvote', {
         "vote":fields.String(required=True, description="the vote value")
     })
+    vote_answer_resp = api.model('response to editing or marking an answer as preferred', {
+        "message":fields.String(required=True, description="request status"),
+        "description":fields.String(required=True, description="request status"),
+        "value":fields.String(required=True, description="the new answer upvotes")
+    })
+    

@@ -19,7 +19,8 @@ api = AnswerDTO().api
 _n_answer = AnswerDTO().n_answer
 _n_answer_resp = AnswerDTO().n_answer_resp
 _edit_answer_resp = AnswerDTO().edit_answer_resp
-_vote_ans = AnswerDTO().up_votes
+_vote_ans = AnswerDTO().votes
+_vote_resp = AnswerDTO.vote_answer_resp
 
 @api.route('/')
 class Answers(Resource):
@@ -30,7 +31,7 @@ class Answers(Resource):
     @api.expect(_n_answer, validate=True)
     @api.marshal_with(_n_answer_resp, code=201)
     def post(self, question_id):
-        """This endpoint handles POST requests to the answers resource"""
+        """This endpoint handles post requests to enable a user to post an answer to a question"""
         auth_header = request.headers.get('Authorization')
         if not auth_header or not request.data:
             raise BadRequest("The request is malformed. Attach missing fields")
@@ -109,12 +110,12 @@ class GetAnswer(Resource):
             return resp, 200
 
 @api.route("/<int:answer_id>/vote")
-class GetAnswer(Resource):
+class VoteAnswer(Resource):
     """This class encapsulates the vote function for a particular answer"""
     docu_string = "This endpoint handles PUT requests to the answers resource"
     @api.doc(docu_string)
     @api.expect(_vote_ans, validate=True)
-    @api.marshal_with(_edit_answer_resp, 200)
+    @api.marshal_with(_vote_resp)
     def put(self, question_id, answer_id):
         """
         This endpoint allows an authorized user to upvote or downvote an answer
