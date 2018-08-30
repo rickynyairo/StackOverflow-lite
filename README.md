@@ -81,9 +81,9 @@ PUT | /questions/int:ques_id | Edit a question
 
 Method | Endpoint | Functionality
 --- | --- | ---
-POST | /auth/signup | Creates a user account
+POST | /auth/signup | Create a user account
 POST | /auth/login | Sign in a user
-POST | /auth/logout | Siign out a user
+POST | /auth/logout | Sign out a user
 
 #### Questions Endpoints : /api/v2/
 
@@ -99,6 +99,28 @@ DELETE | /questions/int:ques_id | Delete a question using its id
 POST | /questions/int:ques_id/answers | Post an answer to a question
 PUT | /questions/int:ques_id/answers/int:ans_id | Edit an answer
 PUT | /questions/int:ques_id/answers/int:ans_id | Mark an answer as preferred
+
+### Screenshots
+
+#### Sign Up
+
+![Sign Up](https://image.ibb.co/gzMzhp/signup.png)
+
+#### Log in
+
+![Log in](https://image.ibb.co/kABwv9/login.png)
+
+#### Get questions
+
+![Get questions](https://image.ibb.co/j5HQoU/get_questions.png)
+
+### Get questions by username
+
+![Get questions by username](https://image.ibb.co/hiOWTU/questions_by_a_user.png)
+
+### Get question by id
+
+![Get question using id](https://image.ibb.co/b8Wwv9/get_question_using_id.png)
 
 ### Questions
 
