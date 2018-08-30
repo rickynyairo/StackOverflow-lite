@@ -1,3 +1,4 @@
 API/flask-env
-*.env
-API/__pycache__/
+API/.env
+*/__pycache__/
+*.pyc

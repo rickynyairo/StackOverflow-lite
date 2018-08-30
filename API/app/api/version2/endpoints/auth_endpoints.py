@@ -23,21 +23,21 @@ _n_user_resp = UserDTO().n_user_resp
 _user_resp = UserDTO().user_resp
 _logout_user_resp = UserDTO().user_logout
 
-@api.route("/signup/")
-class AuthSignup(Resource):
-    """This class collects the methods for the auth/signup method"""
-
-    def _validate_user(self, user):
+def _validate_user(user):
         """This function validates the user input and rejects or accepts it"""
         for key, value in user.items():
             # ensure keys have values
             if not value:
                 raise BadRequest("{} is lacking. It is a required field".format(key))
-            if key == "first_name" or key=="last_name":
+            if key == "first_name" or key=="last_name" or key=="username":
                 for i in value:
                     if i not in string.ascii_letters:
                         raise BadRequest("{} cannot have non-alphabetic characters.".format(key))
 
+
+@api.route("/signup/")
+class AuthSignup(Resource):
+    """This class collects the methods for the auth/signup method"""
     docu_string = "This endpoint allows an unregistered user to sign up."
     @api.doc(docu_string)
     @api.expect(_n_user, validate=True)
@@ -66,7 +66,7 @@ class AuthSignup(Resource):
             "email":email,
             "password":password
         }
-        self._validate_user(user)
+        _validate_user(user)
         user_model = UserModel(**user)
         try:
             saved = user_model.save_user()
@@ -95,34 +95,28 @@ class AuthLogin(Resource):
     @api.marshal_with(_user_resp, code=200)
     def post(self):
         """This endpoint accepts POST requests to allow a registered user to log in."""       
-        if not request.data:
-            raise BadRequest
         req_data = json.loads(request.data.decode().replace("'", '"'))
-        try:
-            username = req_data['username']
-            password = req_data['password']
-        except (KeyError, IndexError):
-            raise BadRequest
+        login_details = {
+            "username":req_data['username'],
+            "password":req_data['password']
+        }
+        _validate_user(login_details)
         # locate user in db
-        user = UserModel(username=username, password=password)
-        record = user.get_user_by_username(username)
+        user = UserModel(**login_details)
+        record = user.get_user_by_username(login_details["username"])
         if not record:
             raise Unauthorized('Your details were not found, please sign up')
-
         user_id, fname, lname, pwordhash, date_created = record
-        
-        if not check_password_hash(pwordhash, password):
+        if not check_password_hash(pwordhash, login_details["password"]):
             raise Unauthorized("The username or password is incorrect")
         name = "{}, {}".format(lname, fname)
         token = user.encode_auth_token(int(user_id))
-
         resp = dict(
             message="success",
             AuthToken=token.decode('utf-8'),
             name=name,
             date_created=date_created
         )
-
         return resp, 200
 @api.route('/logout')
 class AuthLogout(Resource):

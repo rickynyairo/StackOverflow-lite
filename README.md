@@ -102,4 +102,4 @@ PUT | /questions/int:ques_id/answers/int:ans_id | Mark an answer as preferred
 
 ### Questions
 
-[![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)]
+![Ask Me Anything !](https://img.shields.io/badge/Ask%20me-anything-1abc9c.svg)
