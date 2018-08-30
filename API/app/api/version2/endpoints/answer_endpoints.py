@@ -19,6 +19,7 @@ api = AnswerDTO().api
 _n_answer = AnswerDTO().n_answer
 _n_answer_resp = AnswerDTO().n_answer_resp
 _edit_answer_resp = AnswerDTO().edit_answer_resp
+_vote_ans = AnswerDTO().up_votes
 
 @api.route('/')
 class Answers(Resource):
@@ -37,14 +38,15 @@ class Answers(Resource):
         response = UserModel().decode_auth_token(auth_token)
         if not isinstance(response, str):
             # the token decoded succesfully
-            user_id = response           
+            user_id = response
             req_data = json.loads(request.data.decode().replace("'", '"'))
-            try:
-                text = req_data['text']
-            except (KeyError, IndexError):
-                raise BadRequest("Missing text field")
+            text = req_data['text']
             # save answer in db
             answer = AnswerModel(int(question_id), int(user_id), text)
+            check = answer.check_text_exists(text)
+            if isinstance(check, int):
+                # asnwer exists in the db
+                raise Forbidden("The answer exists in the database with id: %d"%(check))
             answer_id = int(answer.save_answer())
             answer.close_db() 
             resp = {
@@ -67,7 +69,7 @@ class GetAnswer(Resource):
     @api.marshal_with(_edit_answer_resp)
     def put(self, question_id, answer_id):
         """
-        This function is restricted to the author of the answer and the author of the question. 
+        This function is restricted to the author of the answer and the author of the question to edit or mark an answer as preferred. 
         The ```answer_author_id``` is allowed to edit the answer. 
         The ```question_author_id``` is allowed to mark the answer as preferred
         """
@@ -106,3 +108,35 @@ class GetAnswer(Resource):
             }
             return resp, 200
 
+@api.route("/<int:answer_id>/vote")
+class GetAnswer(Resource):
+    """This class encapsulates the vote function for a particular answer"""
+    docu_string = "This endpoint handles PUT requests to the answers resource"
+    @api.doc(docu_string)
+    @api.expect(_vote_ans, validate=True)
+    @api.marshal_with(_edit_answer_resp, 200)
+    def put(self, question_id, answer_id):
+        """
+        This endpoint allows an authorized user to upvote or downvote an answer
+        """
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            raise BadRequest("This endpoint requires authorization")
+        auth_token = auth_header.split(" ")[1]
+        response = UserModel().decode_auth_token(auth_token)
+        if isinstance(response, str):
+            # the user is not authorized to access this endpoint
+            raise Unauthorized("You are not allowed to access this resource")
+        else:
+            # vote for the answer
+            answers = AnswerModel()
+            vote = int(request.get_json()["vote"])
+            if vote not in [-1, 1]:
+                raise BadRequest("You are only allowed to upvote or downvote once")
+            votes_for_answer = answers.vote_answer(answer_id, vote)
+            resp = {
+                "message":"success",
+                "description":"answer updated succesfully",
+                "value":str(votes_for_answer)
+            }
+            return resp, 200

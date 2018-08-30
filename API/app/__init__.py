@@ -102,9 +102,9 @@ def create_app(config_name='development'):
     
     from .user_interface import ui as ui_blueprint
 
-    app.register_blueprint(version1_blueprint)
-    
+    app.register_blueprint(version1_blueprint)   
     app.register_blueprint(ui_blueprint)
+
     app.register_error_handler(400, bad_request)
     app.register_error_handler(401, unauthorized)
     app.register_error_handler(404, not_found)

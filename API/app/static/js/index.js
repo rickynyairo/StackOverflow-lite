@@ -32,34 +32,37 @@ function getRequest(path){
   });
 }
 
-function postRequest(path, data, token="token"){
+async function postRequest(path, data, token="token"){
   url = path;
   fetch(url, {
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization":"Bearer " + token
-    },
-    body:JSON.stringify(data)
-    })
-  .then(
-    //success function
-    function(response) {
-      if (response.status == 201) {
-        console.log('Status Code: ' + response.status);
-        return response;
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer " + token
+      },
+      body:JSON.stringify(data)
+      })
+    .then(
+      //success function
+      async function(response) {
+        if (response.status == 201) {
+          console.log('Status Code: ' + response.status);
+          json = await response.json();
+          // console.log(json);
+          return json;
+        }
+        else{
+          response.json().then(function(data) {
+            console.log("Failed: \n"+data);
+            return "Failed";
+          });
+        }
       }
-      else{
-        response.json().then(function(data) {
-          console.log(data);
-          return "Failed"
-        });
-      }
-    }
-  )
-  .catch(function(err) {
-    console.log('Fetch Error :-S', err);
-  });
+    )
+    .catch(function(err) {
+      console.log('Fetch Error :-S', err);
+      return "Failed";
+    });
 }
 function thisElem(id){
   return document.getElementById(id);
@@ -83,13 +86,13 @@ function signUp(form){
 
   path = "/api/v2/auth/signup"
 
-  resp = postRequest(path, data)
-  console.log(resp)
-  if (resp.json['AuthToken']){
-    localStorage.setItem('AuthToken', resp.json['AuthToken'])
+  const resp = postRequest(path, data)
+  if (resp !== "Failed"){
+    //reload page ans store token
+    console.log(resp)
+    localStorage.setItem("AuthToken", resp["AuthToken"])
+    //window.location.href = window.location.href + "login"
   }
-  alert(resp)
-  return false
 }
 
 function signIn(form){

@@ -114,3 +114,6 @@ class AnswerDTO(object):
         "description":fields.String(required=True, description="request status"),
         "value":fields.String(required=True, description="the edit response")
     })
+    up_votes = api.model('the request structure for a up/downvote', {
+        "vote":fields.String(required=True, description="the vote value")
+    })

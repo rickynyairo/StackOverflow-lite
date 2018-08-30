@@ -1,6 +1,5 @@
 """
 This module collects the endpoints for the authentication resource
-
 """
 import json
 import re
@@ -29,11 +28,16 @@ def _validate_user(user):
             # ensure keys have values
             if not value:
                 raise BadRequest("{} is lacking. It is a required field".format(key))
+            #validate length
+            if key == "username" or key == "password":
+                if len(value) < 5:
+                    raise BadRequest("The {} provided is too short".format(key))
+                elif len(value) > 15:
+                    raise BadRequest("The {} provided is too long".format(key))
             if key == "first_name" or key=="last_name" or key=="username":
                 for i in value:
                     if i not in string.ascii_letters:
                         raise BadRequest("{} cannot have non-alphabetic characters.".format(key))
-
 
 @api.route("/signup/")
 class AuthSignup(Resource):

@@ -33,8 +33,8 @@ def _validate_input(req):
         # ensure keys have values
         if not value:
             raise BadRequest("{} is lacking. It is a required field".format(key))
-        if key != "text" or key=="description":
-            raise BadRequest("{} is an unknown field.".format(key))
+        elif len(value) < 10:
+            raise BadRequest("The {} is too short. Please add more content.".format(key))
 
 @api.route('/')
 class Questions(Resource):
@@ -57,13 +57,16 @@ class Questions(Resource):
             if not request.data:
                 raise BadRequest("The request body is empty, restructure.")
             req_data = json.loads(request.data.decode().replace("'", '"'))
-            try:
-                text = req_data['text']
-                description = req_data['description']
-            except (KeyError, IndexError):
-                raise BadRequest("The question is lacking a description or a title.")
+            text = req_data['text']
+            description = req_data['description']
+            data = dict(text=text, description=description)
             # save question in db
+            _validate_input(data)
             question = QuestionModel(int(user_id), text, description)
+            check = question.check_text_exists(text)
+            if isinstance(check, int):
+                # question exists in the db
+                raise Forbidden("The question exists in the database with id: %d"%(check))
             question_id = question.save_question()
             username = question.get_username_by_id(int(user_id))
             question.close_db() 

@@ -182,3 +182,19 @@ class BaseModel(object):
             return "The token has expired"
         except jwt.InvalidTokenError:
             return "The token is invalid"
+    
+    def check_text_exists(self, text):
+        """Checks if the question or answer passed by the user exists"""
+        table_name = "%ss" % (self._type().lower()[:-5])
+        item_name = item_name = table_name[:-1]
+        conn = self.db
+        curr = conn.cursor()
+        query = """
+                SELECT %s_id FROM %s WHERE text = '%s';
+                """ % (item_name, table_name, text)
+        curr.execute(query)
+        item = curr.fetchone()
+        if not item:
+            # no question exists with that username
+            return "Not Found"
+        return int(item[0])

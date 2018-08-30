@@ -24,7 +24,8 @@ class TestAnswers(unittest.TestCase):
         self.client = self.app.test_client()
 
         self.answer = {
-            "text":"Julia. It has everything awesome about every great programming language, and more."
+            "text":"".join(choice(
+                           string.ascii_letters) for x in range (randint(16,20)))
         }
 
         with self.app.app_context():
@@ -141,6 +142,38 @@ class TestAnswers(unittest.TestCase):
                                  content_type='application/json')
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json['value'], data['text'])
+
+    def test_upvote_and_downvote(self):
+        """Test that an answer can be upvoted or downvoted"""
+        user = self.create_user()
+        user_id = user[0] # answer author user id
+        question_id = int(self.create_question()[0])
+        # token should be encoded with the id of the answer author
+        auth_token = user[1]
+        new_answer = self.post_data(question_id, auth_token=auth_token).json
+        answer_id = int(new_answer['answer_id'])
+        headers = {"Authorization":"Bearer {}".format(auth_token)}
+        path  = "/api/v2/questions/{}/answers/{}/vote".format(question_id,
+                                                         answer_id)
+        result = self.client.put(path,
+                                 headers=headers,
+                                 data=json.dumps({"vote":"+1"}),
+                                 content_type='application/json')
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json['value'], "1")
+        result = self.client.put(path,
+                                 headers=headers,
+                                 data=json.dumps({"vote":"-1"}),
+                                 content_type='application/json')
+        self.assertEqual(result.json['value'], "0")
+        # test that the endpoint rejects more than one vote.
+        result = self.client.put(path,
+                                 headers=headers,
+                                 data=json.dumps({"vote":"5"}),
+                                 content_type='application/json')
+        self.assertEqual(result.status_code, 400)
+        self.assertTrue(result.json['message'])
+
 
     def tearDown(self):
         """
