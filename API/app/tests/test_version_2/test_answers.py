@@ -60,7 +60,7 @@ class TestAnswers(unittest.TestCase):
 
         params = {
             "user_id":user_id,
-            "text":"What is the fastest programming language and why?",
+            "text":"What is the fastest programming language and why do you think so?",
             "description":"I am looking for the fastest programming language in terms\
                             of memory management for a very high performance project."
         }

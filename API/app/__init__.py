@@ -88,6 +88,7 @@ def unauthorized(error):
 
 def create_app(config_name='development'):
     """This function sets up and returns the application"""
+
     app = Flask(__name__, instance_relative_config=True)
     app.url_map.strict_slashes = False
     app.config.from_object(app_config[config_name])

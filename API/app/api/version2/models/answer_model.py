@@ -47,7 +47,7 @@ class AnswerModel(BaseModel):
         return data
 
     def vote_answer(self, answer_id, vote):
-        """This function increments or decrements the upvote field"""
+        """This function increments or decrements the up_vote field"""
         dbconn = self.db
         curr = dbconn.cursor()
         curr.execute("""UPDATE answers SET up_votes = \

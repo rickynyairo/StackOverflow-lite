@@ -129,10 +129,16 @@ class GetAnswer(Resource):
             raise Unauthorized("You are not allowed to access this resource")
         else:
             # vote for the answer
+            # find the question and answer 
             answers = AnswerModel()
+            find_qstn = QuestionModel().get_item_by_id(question_id)
+            find_ans = answers.get_item_by_id(answer_id)
+            if find_qstn == "Not Found" or find_ans == "Not Found":
+                # the question or answer was not found
+                raise NotFound("the question or answer was not found")
             vote = int(request.get_json()["vote"])
             if vote not in [-1, 1]:
-                raise BadRequest("You are only allowed to upvote or downvote once")
+                raise BadRequest("Upvote value not allowed")
             votes_for_answer = answers.vote_answer(answer_id, vote)
             resp = {
                 "message":"success",

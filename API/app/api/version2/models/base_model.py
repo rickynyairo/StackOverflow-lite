@@ -124,15 +124,6 @@ class BaseModel(object):
         except Exception:
             return "Not Found"
   
-    def _type(self):
-        """returns the name of the inheriting class"""
-        return self.__class__.__name__
-
-    def close_db(self):
-        """This function closes the database"""
-        self.db.close()
-        pass
-
     @staticmethod
     def encode_auth_token(user_id):
         """Function to generate Auth token
@@ -182,7 +173,7 @@ class BaseModel(object):
             return "The token has expired"
         except jwt.InvalidTokenError:
             return "The token is invalid"
-    
+
     def check_text_exists(self, text):
         """Checks if the question or answer passed by the user exists"""
         table_name = "%ss" % (self._type().lower()[:-5])
@@ -198,3 +189,12 @@ class BaseModel(object):
             # no question exists with that username
             return "Not Found"
         return int(item[0])
+
+    def _type(self):
+        """returns the name of the inheriting class"""
+        return self.__class__.__name__
+
+    def close_db(self):
+        """This function closes the database"""
+        self.db.close()
+        pass

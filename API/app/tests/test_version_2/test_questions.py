@@ -156,7 +156,7 @@ class TestQuestions(unittest.TestCase):
         self.assertEqual(result.json['message'], 'success')
 
     def tearDown(self):
-        """This function destroys objests created during the test run"""
+        """This function destroys items created during the test run"""
         with self.app.app_context():
             destroy()
             self.db.close()
