@@ -43,7 +43,8 @@ class TestQuestions(unittest.TestCase):
         self.app = create_app("testing")
         self.client = self.app.test_client()
         self.question = {
-            "text":"What is the fastest programming language and why?",
+            "text":"".join(choice(
+                           string.ascii_letters) for x in range (randint(20,25))),
             "description":"I am looking for the fastest programming language in terms\
                             of memory management for a very high performance project."
         }
@@ -154,6 +155,25 @@ class TestQuestions(unittest.TestCase):
                                     content_type='application/json')
         self.assertEqual(result.status_code, 202)
         self.assertEqual(result.json['message'], 'success')
+
+    def test_most_answered(self):
+        """Test that the API can respond with the most answered question"""
+        auth_token = self.create_user()[1]
+        qstn_1 = int(self.post_data(auth_token=auth_token).json['question_id'])
+        # post 5 answers to question 1
+        path  = "/api/v2/questions/{}/answers".format(qstn_1)
+        for x in range(6):
+            random_answer ={
+            "text":"".join(choice(
+                           string.ascii_letters) for x in range (randint(20,25)))
+            }
+            ans = self.post_data(path=path,
+                                 data=random_answer,
+                                 auth_token=auth_token)
+        path = "/api/v2/questions/answers/most"
+        result = self.get_data(path=path)
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json["question_id"], qstn_1)
 
     def tearDown(self):
         """This function destroys items created during the test run"""

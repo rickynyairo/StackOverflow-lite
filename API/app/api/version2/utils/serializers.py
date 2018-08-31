@@ -97,6 +97,15 @@ class QuestionDTO(object):
         'date_created': fields.String(required=True, description="user's username"),      
         'answers': fields.List(fields.Nested(answer_by_question_id), required=False, description="question's answers")
     })
+    get_most_answered = api.model('response to get questions', {
+        'username': fields.String(required=True, description="username of the one who asked the question"),
+        "question_id":fields.Integer(required=True, description="identifier of the question"),
+        "number":fields.Integer(required=True, description="Number of answers the question has"),
+        'text': fields.String(required=True, description="title of the created question"),
+        'description': fields.String(required=True, description="a description of the question"),
+        'date_created': fields.String(required=True, description="user's username"),      
+        'answers': fields.List(fields.Nested(answer_by_question_id), required=False, description="question's answers")
+    })
 
 class AnswerDTO(object):
     """Data transfer object for the answers resource"""

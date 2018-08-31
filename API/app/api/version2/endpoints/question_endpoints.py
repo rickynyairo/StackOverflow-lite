@@ -25,6 +25,7 @@ _get_questions_resp = QuestionDTO().get_questions_resp
 _get_question_resp = QuestionDTO().get_question_resp
 _get_edit_resp = QuestionDTO().get_edit_resp
 _delete_resp = QuestionDTO().delete_resp
+_get_most_answered = QuestionDTO().get_most_answered
 _get_by_user_resp = QuestionUserDTO().get_by_user_resp
 
 def _validate_input(req):
@@ -182,6 +183,32 @@ class GetQuestion(Resource):
             resp = {"message":"success", 
                     "description":"question deleted succesfully"}
             return resp, 202
+
+@api.route("/answers/most")
+class MostAnswered(Resource):
+    """This class collects the endpoint for the most answered question"""
+
+    docu_string = "This endpoint allows a user to get all the details to the question with the most answers."
+    @api.doc(docu_string)
+    @api.marshal_with(_get_most_answered, code=200)
+    def get(self):
+        """This endpoint allows a user to get all the details to the question with the most answers"""
+        question = QuestionModel()
+        most_answered = question.most_answered()
+        question_id, number = most_answered
+        # find it's answers
+        most_answered_question = question.get_item_by_id(int(question_id))
+        answers = AnswerModel().get_answers_by_question_id(int(question_id))
+        question_id, user_id, text, description, date_created = most_answered_question
+        user = UserModel().get_username_by_id(int(user_id)) # returns the username
+        resp = dict(username=user,
+                    question_id=question_id,
+                    number=number,
+                    text=text,
+                    description=description,
+                    date_created=date_created,
+                    answers=answers)
+        return resp, 200
 
 @uapi.route("/")
 class GetUserQuestion(Resource):

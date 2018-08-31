@@ -22,6 +22,15 @@ _edit_answer_resp = AnswerDTO().edit_answer_resp
 _vote_ans = AnswerDTO().votes
 _vote_resp = AnswerDTO.vote_answer_resp
 
+def _validate_input(req):
+    """This function validates the user input and rejects or accepts it"""
+    for key, value in req.items():
+        # ensure keys have values
+        if not value:
+            raise BadRequest("{} is lacking. It is a required field".format(key))
+        elif len(value) < 10:
+            raise BadRequest("The {} is too short. Please add more content.".format(key))
+
 @api.route('/')
 class Answers(Resource):
     """This class collects the methods for the answers endpoint"""
@@ -94,7 +103,10 @@ class GetAnswer(Resource):
             # check if user ids match
             user_id = int(response)
             if user_id == int(answer_author_id) and user_id != int(question_author_id):
-                new_text = json.loads(request.data.decode().replace("'", '"'))['text']
+                try:
+                    new_text = json.loads(request.data.decode().replace("'", '"'))['text']  
+                except Exception as error:
+                    raise BadRequest("You have to include a text field")  
                 value = answers.update_item(field="text", 
                                             data=new_text,
                                             item_id=answer_id)[0]
