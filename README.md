@@ -94,11 +94,13 @@ POST | /questions/int:ques_id/answers | post an answer to a question
 GET | /questions | Get a List of all questions
 GET | /questions/int:ques_id | Get a question using its id
 GET | /questions/str:username | Get all questions posted by a particular user
+GET | /questions/answers/most | Get the question with the most answers
 PUT | /questions/int:ques_id | Edit a question
 DELETE | /questions/int:ques_id | Delete a question using its id
 POST | /questions/int:ques_id/answers | Post an answer to a question
 PUT | /questions/int:ques_id/answers/int:ans_id | Edit an answer
 PUT | /questions/int:ques_id/answers/int:ans_id | Mark an answer as preferred
+PUT | /questions/int:ques_id/answers/int:ans_id/vote | Up/Downvote an answer
 
 ### Screenshots
 
