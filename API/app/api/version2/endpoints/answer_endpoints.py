@@ -31,6 +31,15 @@ def _validate_input(req):
         elif len(value) < 10:
             raise BadRequest("The {} is too short. Please add more content.".format(key))
 
+def _locate_question_and_answer(question_id, answer_id):
+    """Check if the question id and answer id passed in the url exist in the db"""
+    answers = AnswerModel()
+    find_qstn = QuestionModel().get_item_by_id(question_id)
+    find_ans = answers.get_item_by_id(answer_id)
+    if find_qstn == "Not Found" or find_ans == "Not Found":
+        # the question or answer was not found
+        raise NotFound("the question or answer was not found")
+
 @api.route('/')
 class Answers(Resource):
     """This class collects the methods for the answers endpoint"""
@@ -57,7 +66,7 @@ class Answers(Resource):
             check = answer.check_text_exists(text)
             if isinstance(check, int):
                 # asnwer exists in the db
-                raise Forbidden("The answer exists in the database with id: %d"%(check))
+                raise Forbidden("The answer exists in the database.")
             answer_id = int(answer.save_answer())
             answer.close_db() 
             resp = {
@@ -93,6 +102,7 @@ class GetAnswer(Resource):
             # the user is not authorized to view this endpoint
             raise Unauthorized("You are not allowed to access this resource")
         else:
+            _locate_question_and_answer(question_id, answer_id)
             questions = QuestionModel()
             question_author_id = questions.get_item_by_id(int(question_id))[1]
             answers = AnswerModel()
@@ -144,12 +154,8 @@ class VoteAnswer(Resource):
         else:
             # vote for the answer
             # find the question and answer 
+            _locate_question_and_answer(question_id, answer_id)
             answers = AnswerModel()
-            find_qstn = QuestionModel().get_item_by_id(question_id)
-            find_ans = answers.get_item_by_id(answer_id)
-            if find_qstn == "Not Found" or find_ans == "Not Found":
-                # the question or answer was not found
-                raise NotFound("the question or answer was not found")
             try:           
                 vote = int(request.get_json()["vote"])
             except ValueError:

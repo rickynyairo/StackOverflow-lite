@@ -54,7 +54,7 @@ class Questions(Resource):
         response = UserModel().decode_auth_token(auth_token)
         if not isinstance(response, str):
             # the token decoded succesfully
-            user_id = response       
+            user_id = response
             if not request.data:
                 raise BadRequest("The request body is empty, restructure.")
             req_data = json.loads(request.data.decode().replace("'", '"'))
@@ -67,7 +67,7 @@ class Questions(Resource):
             check = question.check_text_exists(text)
             if isinstance(check, int):
                 # question exists in the db
-                raise Forbidden("The question exists in the database with id: %d"%(check))
+                raise Forbidden("The question exists in the database.")
             question_id = question.save_question()
             username = question.get_username_by_id(int(user_id))
             question.close_db() 
