@@ -160,12 +160,12 @@ class TestAnswers(unittest.TestCase):
                                  data=json.dumps({"vote":"+1"}),
                                  content_type='application/json')
         self.assertEqual(result.status_code, 200)
-        self.assertEqual(result.json['value'], "1")
+        self.assertEqual(result.json['new_votes'], "1")
         result = self.client.put(path,
                                  headers=headers,
                                  data=json.dumps({"vote":"-1"}),
                                  content_type='application/json')
-        self.assertEqual(result.json['value'], "0")
+        self.assertEqual(result.json['new_votes'], "0")
         # test that the endpoint rejects more than one vote.
         result = self.client.put(path,
                                  headers=headers,
@@ -173,7 +173,6 @@ class TestAnswers(unittest.TestCase):
                                  content_type='application/json')
         self.assertEqual(result.status_code, 400)
         self.assertTrue(result.json['message'])
-
 
     def tearDown(self):
         """

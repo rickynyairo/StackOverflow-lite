@@ -129,6 +129,6 @@ class AnswerDTO(object):
     vote_answer_resp = api.model('response to editing or marking an answer as preferred', {
         "message":fields.String(required=True, description="request status"),
         "description":fields.String(required=True, description="request status"),
-        "value":fields.String(required=True, description="the new answer upvotes")
+        "new_votes":fields.String(required=True, description="the new value for upvotes field")
     })
     

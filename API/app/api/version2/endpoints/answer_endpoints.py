@@ -50,6 +50,7 @@ class Answers(Resource):
             # the token decoded succesfully
             user_id = response
             req_data = json.loads(request.data.decode().replace("'", '"'))
+            _validate_input(req_data)
             text = req_data['text']
             # save answer in db
             answer = AnswerModel(int(question_id), int(user_id), text)
@@ -149,13 +150,16 @@ class VoteAnswer(Resource):
             if find_qstn == "Not Found" or find_ans == "Not Found":
                 # the question or answer was not found
                 raise NotFound("the question or answer was not found")
-            vote = int(request.get_json()["vote"])
+            try:           
+                vote = int(request.get_json()["vote"])
+            except ValueError:
+                raise BadRequest("The value of vote is irregular")
             if vote not in [-1, 1]:
                 raise BadRequest("Upvote value not allowed")
             votes_for_answer = answers.vote_answer(answer_id, vote)
             resp = {
                 "message":"success",
                 "description":"answer updated succesfully",
-                "value":str(votes_for_answer)
+                "new_votes":str(votes_for_answer)
             }
             return resp, 200
