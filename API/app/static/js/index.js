@@ -22,6 +22,17 @@ function postData(path, data, token="token"){
 function getData(path){
   return fetch(path);
 }
+
+function makeElement(elementType, attr, value, parentId, inner){
+  let elem = document.createElement(elementType);
+  elem.setAttribute(attr, value);
+  elem.innerHTML = inner;
+  parentElem = document.getElementById(parentId);
+  parentElem.append(elem);
+  
+  return elem;
+}
+
 function signUp(){
   let email = thisElem("email").value;
   let fname = thisElem("fname").value;
