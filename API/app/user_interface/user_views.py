@@ -3,7 +3,9 @@ This module renders the templates for the user interface
 """
 from flask import render_template, url_for
 from flask.views import MethodView
+from werkzeug.exceptions import NotFound
 
+from ..api.version2.models.question_model import QuestionModel
 
 class LandingPage(MethodView):
     """Encapsulates the views for the landing page"""
@@ -21,6 +23,8 @@ class QuestionPage(MethodView):
     """Encapsulates the views for the questions page"""
     def get(self, question_id):
         """return the questions page"""
+        if not QuestionModel().get_item_by_id(question_id):
+            raise NotFound("The specified resource cannot be located.")
         return render_template('question.html', questionId=question_id)
 
 class QuestionsPage(MethodView):

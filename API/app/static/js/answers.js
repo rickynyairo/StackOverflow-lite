@@ -16,12 +16,10 @@ function getAnswers(){
                     let upvotes = element["up_votes"];
                     makeElement("div", "id", answerId, "answersDiv", "");
                     makeElement("p", "class", "answer", answerId, text);
-                    let votes = `Total votes: ${upvotes}`;
-                    makeElement("p", "class", "votes", answerId, votes);
+                    let meta = `Total votes: ${upvotes}<br/>Answered by ${username} on ${dateCreated}`;
+                    makeElement("p", "class", "answerMeta", answerId, meta);
                     makeElement("button", "class", "buttons", answerId, "Upvote");
                     makeElement("button", "class", "buttons", answerId, "Downvote");
-                    let meta = `Answered by ${username} on ${dateCreated}`;
-                    makeElement("p", "class", "answerMeta", answerId, meta);
                 });
             });
         }

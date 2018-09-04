@@ -62,7 +62,7 @@ class AnswerModel(BaseModel):
         dbconn = self.db
         curr = dbconn.cursor()
         curr.execute("""SELECT * FROM answers WHERE \
-                     question_id = %d;""" % (int(question_id)))
+                     question_id = %d ORDER BY up_votes DESC;""" % (int(question_id)))
         data = curr.fetchall()
         data_items = []
         if not isinstance(data, list):

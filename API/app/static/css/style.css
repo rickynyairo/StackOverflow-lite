@@ -159,6 +159,12 @@ textarea{
   font-size: 12px;
   font-style: italic;
 }
+.answerMeta{
+  text-align: right;
+  font-weight: normal;
+  font-size: 12px;
+  font-style: italic;
+}
 .questionTitle{
   border-left:solid 3px rgb(117, 104, 240);
   border-right:solid 3px rgb(117, 104, 240);
