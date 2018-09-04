@@ -64,7 +64,7 @@ class QuestionDTO(object):
     })
     question_list_response = api.model('list of questions', {
         "question_id":fields.String(required=True, description="question's id"),
-        "user_id":fields.String(required=True, description="the id of the user who asked the question"),
+        "username":fields.String(required=True, description="the user who asked the question"),
         "text":fields.String(required=True, description="question's title"),
         "description":fields.String(required=True, description="a description of the question"),
         "date_created":fields.String(required=True, description="date the question was created")

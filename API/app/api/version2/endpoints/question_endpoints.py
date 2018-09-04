@@ -81,16 +81,16 @@ class Questions(Resource):
             # token is either invalid or expired
             raise Unauthorized("You are not authorized to access this resource.")
 
-    docu_string = "This endpoint allows a registered user to post a question."
+    docu_string = "This endpoint returs a list of the most recently asked questions"
     @api.doc(docu_string)
     @api.marshal_with(_get_questions_resp, code=200)
     def get(self):
-        """This endpoint allows a registered user to post a question."""
+        """This endpoint returs a list of the most recently asked questions"""
         # get questions from db
         questions = QuestionModel().get_all()
         resp = {
             "message":"success",
-            "questions":questions
+            "questions":questions[:10]
         }
         return resp, 200
 
@@ -102,8 +102,7 @@ class GetQuestion(Resource):
     @api.doc(docu_string)
     @api.marshal_with(_get_question_resp, code=200)
     def get(self, question_id):
-        """Returns a question and all it's answers
-        This endpoint allows a user to get all the details to a question."""
+        """This endpoint returns a question and all it's answers."""
         # no auth required
         question = QuestionModel().get_item_by_id(int(question_id))
         if not question:
@@ -126,7 +125,7 @@ class GetQuestion(Resource):
     @api.expect(validate=False)
     @api.marshal_with(_get_edit_resp, code=200)
     def put(self, question_id):
-        """This function edits a question, given the id"""
+        """This endpoint allows a user to edit the details of a question."""
         auth_header = request.headers.get('Authorization')
         if not auth_header or len(auth_header) < 8 or " " not in auth_header:
             raise BadRequest("Authorization not provided or inadequate.")
@@ -158,7 +157,7 @@ class GetQuestion(Resource):
     @api.doc(docu_string)
     @api.marshal_with(_delete_resp, code=202)
     def delete(self, question_id):
-        """This function deletes a question, given the id"""
+        """This endpoint allows a user to delete a question."""
         auth_header = request.headers.get('Authorization')
         if not auth_header or len(auth_header) < 8 or " " not in auth_header:
             raise BadRequest("Authorization not provided or inadequate.")

@@ -13,7 +13,7 @@
       <div id="header_div">
         <a href="{{ url_for('ui.index') }}"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" id="logoImage" class = "headerElements"></a>
         <h1 class = "headerElements">StackOverflow Lite</h1>
-        <a href="{{ url_for('ui.questions') }}"><button class = "buttons">Home</button></a>
+        <a href="{{ url_for('ui.home') }}"><button class = "buttons">Home</button></a>
         {% block login %}
         {% endblock %}
         {% block signout %}

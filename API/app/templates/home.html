@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block login %}
-<button class = "buttons" id="signoutButton">Sign Out</button>
+<a href="{{ url_for('ui.login') }}"><button class = "buttons" id="signinButton">Sign In</button></a>
 {%  endblock %}
 
 {% block body %}
@@ -9,11 +9,11 @@
 
   <h1>Recent Questions</h1>
 
+
 </div>    
 {% endblock %}
 
 {% block script %}
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 <script src="{{ url_for('static', filename='js/home.js') }}"></script>
-<script src="{{ url_for('static', filename='js/questions.js') }}"></script>
 {% endblock %}

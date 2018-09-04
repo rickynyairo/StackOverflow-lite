@@ -1,34 +1,20 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="css/style.css" />
-  <script src="js/index.js"></script>
-  <title>Sign In</title>
-</head>
+{% extends "base.html" %}
 
-<body>
-  <header>
-    <div id="header_div">
-      <a href="index.html"><img src="img/logo.png" alt="logo" id="logoImage"></a>
-      <h1>StackOverflow Lite</h1>
-    </div>
-  </header>
-  <section>
-    <div id="midSectionDiv">
-      <fieldset class="fieldsets">
-        <legend>Sign In:</legend>
-        <form action="" onsubmit="return signIn(this)" id="signInForm" method="GET">
-          <input type="email" placeholder="john_doe@gmail.com" name="email" id = "email" required>
-          <input type="password" placeholder="password" name="password" id = "password" required>
-          <p id="warnings"></p>
-          <input type="submit" value="Log In" id= "submitButton">
-        </form>
-      </fieldset>
-    </div>
-  </section>
+{% block body %}
+<section>
+  <div id="midSectionDiv">
+    <fieldset class="fieldsets">
+      <legend>Sign In:</legend>
+        <input type="text" placeholder="username" name="username" id = "username" required>
+        <input type="password" placeholder="password" name="password" id = "password" required>
+        <p id="warnings"></p>
+        <input type="submit" value="Log In" id= "loginButton">
+    </fieldset>
   </div>
-</body>
+</section>
+{% endblock %}
 
-</html>
+{% block script %}
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endblock %}

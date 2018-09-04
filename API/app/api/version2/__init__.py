@@ -5,7 +5,6 @@ Authored by: Ricky Nyairo
 """
 from flask_restplus import Api
 from flask import Blueprint
-from werkzeug.exceptions import NotFound
 
 version2 = Blueprint('version2', __name__, url_prefix="/api/v2")
 

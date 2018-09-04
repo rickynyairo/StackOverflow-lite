@@ -49,7 +49,7 @@ class QuestionModel(BaseModel):
         """This function returns a list of all the questions"""
         dbconn = self.db
         curr = dbconn.cursor()
-        curr.execute("""SELECT * FROM questions;""")
+        curr.execute("""SELECT * FROM questions ORDER BY date_created DESC;""")
         data = curr.fetchall()
         resp = []
         
@@ -57,7 +57,7 @@ class QuestionModel(BaseModel):
             question_id, user_id, text, description, date = items
             question = dict(
                question_id=int(question_id),
-               user_id=int(user_id),
+               username=self.get_username_by_id(int(user_id)),
                text=text,
                description=description,
                date_created=date

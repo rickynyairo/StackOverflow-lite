@@ -96,6 +96,11 @@ def create_app(config_name='development'):
 
     app.wsgi_app = ProxyFix(app.wsgi_app)
     
+    def identity():
+        """return the user object of the payload"""
+        user_id = int(payload['identity'])
+        return UserModel().get_item_by_id(user_id)
+
     from .api.version2 import version2 as version2_blueprint
     app.register_blueprint(version2_blueprint)
     
