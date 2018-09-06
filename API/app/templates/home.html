@@ -1,19 +1,20 @@
 {% extends "base.html" %}
 
-{% block login %}
-<a href="{{ url_for('ui.login') }}"><button class = "buttons" id="signinButton">Sign In</button></a>
-{%  endblock %}
 
 {% block body %}
 <div class="item-2" id="questionsDiv">
 
   <h1>Recent Questions</h1>
-
-
+  <fieldset>
+    <legend>Post a Question:</legend>
+    <textarea name="question" id="questionText"></textarea>
+    <button id = "postQuestion" onclick="postQuestion(this)">Post</button>
+  </fieldset>
 </div>    
 {% endblock %}
 
 {% block script %}
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+<script src="{{ url_for('static', filename='js/questions.js') }}"></script>
 {% endblock %}

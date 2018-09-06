@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% block profile %}
-<a href="profile.html"><button class = "buttons signingButton" >Profile</button></a>
-{% endblock %}
+{% block login %}
+<button class = "buttons" id="signoutButton">Sign Out</button>
+{%  endblock %}
 
 {% block body %}
 
@@ -19,11 +19,7 @@
     <p class = "stats">Questions Asked: 2</p>
     <p class = "stats">Answers Given: 19</p>
   </fieldset>  
-  <fieldset>
-    <legend>Post a Question:</legend>
-    <textarea name="question" id="questionText"></textarea>
-    <button id = "postQuestion" onclick="postQuestion(this)">Post</button>
-  </fieldset>
+  
 </div>
 
 {% endblock %}

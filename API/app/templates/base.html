@@ -9,17 +9,13 @@
 
 <body>
   <div class="container">
-    <header class = "item-1" id = "myHeader">
-      <div id="header_div">
-        <a href="{{ url_for('ui.index') }}"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" id="logoImage" class = "headerElements"></a>
-        <h1 class = "headerElements">StackOverflow Lite</h1>
-        <a href="{{ url_for('ui.home') }}"><button class = "buttons">Home</button></a>
-        {% block login %}
-        {% endblock %}
-        {% block signout %}
-        {% endblock %}
-      </div>
-    </header>
+    <nav class = "item-1" id = "myHeader">
+        <a href="{{ url_for('ui.home') }}"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" id="logoImage" class = "headerElements"></a>
+        <a id="headerLink"><h1>StackOverflow Lite</h1></a>
+        <a href="{{ url_for('ui.home') }}">Home</a>
+        <a href="#" id="signOutLink">Sign Out</a>
+        <a href="{{ url_for('ui.login') }}" id="signInLink">Sign In</a>
+    </nav>
     {% block body %}
     {% endblock %}
   </div>

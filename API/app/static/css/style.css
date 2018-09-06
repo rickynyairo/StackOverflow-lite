@@ -30,7 +30,7 @@ th{
   width:100%;
   height:100%;
   display:grid;
-  grid-template-columns: [first-col] 150px [second-col] 150px [third-col] auto [fourth-col] 150px [fifth-col] 150px [sixth-col];
+  grid-template-columns: [first-col] 1fr [second-col] 1fr [third-col] 4fr [fourth-col] 1fr [fifth-col] 1fr [sixth-col];
   grid-template-rows: [first-row] 100px [second-row] auto [third-row] 50px [fourth-row];
   grid-row-gap: 20px;
 }
@@ -55,17 +55,22 @@ th{
   grid-row-end: fourth-row;
 }
 /*Specific styling*/
-header{
+nav{
   padding:0 10px 0 0;
   height:100px;
   background-color: rgb(117, 104, 240);
 }
+#headerLink{
+  color: #000;
+  text-decoration: none;
+}
+#headerLink:hover{
+  cursor: inherit;
+}
 #logoImage{
   width: 60px;
   height: 60px;
-  float: left;
   padding: 20px 20px 20px 0;
-  
 }
 input{
   outline: 1px solid rgb(117, 104, 240);
@@ -107,23 +112,26 @@ fieldset{
   padding:3px;
   border:solid 3px rgb(117, 104, 240);
 }
-#header_div{
-  margin: 0;
-  padding: 0;
-}
-.signingButton{
+.signinButton{
   margin: 30px 0 0 0;
   float:right;
 }
-header div h1{
-  float: left;
-  width: 500px;
-  font-size:40px;
-  padding: 25px 0 40px 0;
+.signoutButton{
+  margin: 30px 0 0 0;
+  float:right;
 }
 ul{
   font-weight: normal;
   margin-left:40px;
+}
+nav *{
+  float: left;
+}
+nav a{
+  text-decoration: none;
+  color:inherit;
+  height: 100%;
+  position: relative;
 }
 #searchButton{
   width:40px;
