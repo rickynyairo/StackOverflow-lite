@@ -1,7 +1,7 @@
 """
 This module renders the templates for the user interface
 """
-from flask import render_template, url_for
+from flask import render_template, url_for, redirect
 from flask.views import MethodView
 from werkzeug.exceptions import NotFound
 
@@ -31,7 +31,7 @@ class QuestionsPage(MethodView):
     """Encapsulates the views for the questions page"""
     def get(self):
         """return the questions page"""
-        return render_template('home.html')
+        return redirect(url_for('ui.home'), 303)
 
 class LoginPage(MethodView):
     """Encapsulates the views for the login page"""

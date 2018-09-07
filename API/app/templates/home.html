@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 
-
 {% block body %}
 <div class="item-2" id="questionsDiv">
 
@@ -10,7 +9,13 @@
     <textarea name="question" id="questionText"></textarea>
     <button id = "postQuestion" onclick="postQuestion(this)">Post</button>
   </fieldset>
-</div>    
+</div>
+<div class="item-4">
+  <fieldset>
+    <legend>Most answered question:</legend>
+    <button id = "mostAnswered">See the most answered question</button>
+  </fieldset>
+</div>  
 {% endblock %}
 
 {% block script %}
