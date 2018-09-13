@@ -85,6 +85,7 @@ class AuthTest(unittest.TestCase):
         login = self.post_data('/api/v2/auth/login', data=payload)
         self.assertEqual(login.json['message'], 'success')
         self.assertTrue(login.json['AuthToken'])
+
     def test_user_logout(self):
         """Test that the user can logout using a POST request"""
         new_user = self.post_data().json
@@ -112,6 +113,27 @@ class AuthTest(unittest.TestCase):
         # attempt to log in
         login = self.post_data('/api/v2/auth/login', data=un_user)
         self.assertEqual(login.status_code, 400)
+
+    def test_validate_user(self):
+        """Test that the api responds with a validation object when the validate endpoint is hit"""
+        new_user = self.post_data().json
+        token = new_user['AuthToken']
+        headers = {
+            "Content-Type":"application/json",
+            "Authorization":"Bearer {}".format(token)
+            }
+        path = "api/v2/auth/validate"
+        validate = self.client.post(path=path, headers=headers)
+        self.assertEqual(validate.status_code, 200)
+        self.assertEqual(validate.json["message"], "Valid")
+        headers = {
+            "Content-Type":"application/json",
+            "Authorization":"Bearer wrongtoken"
+            }
+        validate = self.client.post(path=path, headers=headers)
+        self.assertEqual(validate.status_code, 401)
+        self.assertEqual(validate.json["message"], "invalid")
+
 
     def tearDown(self):
         """This function destroys objests created during the test run"""

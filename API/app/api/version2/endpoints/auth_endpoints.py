@@ -21,6 +21,7 @@ _n_user = UserDTO().n_user
 _n_user_resp = UserDTO().n_user_resp
 _user_resp = UserDTO().user_resp
 _logout_user_resp = UserDTO().user_logout
+_validate_user_resp = UserDTO().validate_user_resp
 
 def _validate_user(user):
         """This function validates the user input and rejects or accepts it"""
@@ -122,9 +123,10 @@ class AuthLogin(Resource):
             date_created=date_created
         )
         return resp, 200
+
 @api.route('/logout')
 class AuthLogout(Resource):
-    """This class collects the methods for the questions endpoint"""
+    """This class collects the methods for the logout endpoint"""
     
     docu_string = "This endpoint allows a registered user to logout."
     @api.doc(docu_string)
@@ -145,5 +147,34 @@ class AuthLogout(Resource):
             # the token decoded succesfully
             # logout the user
             user_token = UserModel().logout_user(auth_token)
-            resp = dict()
             return {"message":"logout successful. {}".format(user_token)}, 200
+
+@api.route('/validate')
+class AuthValidate(Resource):
+    """This class collects the methods for the questions endpoint"""
+    
+    docu_string = "This endpoint validates a token"
+    @api.doc(docu_string)
+    @api.marshal_with(_validate_user_resp, code=200)
+    def post(self):
+        """This endpoint validates a token"""
+        auth_header = request.headers.get('Authorization')
+        if not auth_header:
+            raise BadRequest(
+                "No authorization header provided. This resource is secured.")
+        auth_token = auth_header.split(" ")[1]
+        response = UserModel().decode_auth_token(auth_token)
+        if isinstance(response, str):
+            # token is either invalid, expired or blacklisted
+            raise Unauthorized(response)
+        else:
+            # the token decoded succesfully
+            user = UserModel().get_item_by_id(response)
+            user_id = int(user[0])
+            username = user[3]
+            resp = {
+                "message":"Valid",
+                "user_id":"{}".format(user_id),
+                "username":username
+            }
+            return resp, 200

@@ -33,6 +33,11 @@ class UserDTO(object):
     user_logout = api.model('logout request', {
         'message': fields.String(required=True, description="success message")
     })
+    validate_user_resp = api.model('validation request', {
+        'message': fields.String(required=True, description="success message"),
+        'user_id':fields.String(required=False, description="userid"),
+        'username':fields.String(required=False, description="username")
+    })
 
 class QuestionUserDTO(object):
     """Questions by user Data Transfer Object"""

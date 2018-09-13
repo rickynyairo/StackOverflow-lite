@@ -95,6 +95,9 @@ legend {
 #mostAnswered{
   width: 90%;
 }
+#questionDescription{
+  height:80px;
+}
 .fieldsets{
   border:solid 3px rgb(117, 104, 240);
   position:absolute;
@@ -106,7 +109,7 @@ legend {
 }
 fieldset{
   margin:3px 0 3px 0;
-  padding:3px;
+  padding:3px 3px;
   border:solid 3px rgb(117, 104, 240);
 }
 .signinButton{
@@ -143,10 +146,10 @@ nav a{
   padding-left: 10px;
   color:inherit;
   height: 100%;
-  position: relative;
 }
 nav a:hover{
-  cursor: default;;
+  cursor: default;
+  text-decoration: underline;
 }
 #headerLink{
   font-size: 20px;
@@ -172,11 +175,13 @@ nav a:hover{
   margin:7px;
   border:solid 3px #000;
 }
-
+#postQuestionFieldset{
+  display: none;
+}
 textarea{
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  font-size:12px;
-  width:100%;
+  font-size:14px;
+  width:99%;
   border:solid 2px rgb(117, 104, 240);
 }
 

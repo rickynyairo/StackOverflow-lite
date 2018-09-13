@@ -163,16 +163,16 @@ class BaseModel(object):
         token and decodes it
         """
         if self.blacklisted(auth_token):
-            return "Token has been blacklisted"
+            return "blacklisted"
         APP = create_app()
         secret = APP.config.get("SECRET_KEY")
         try:
             payload = jwt.decode(auth_token, secret)
             return payload['sub'] # user id
         except jwt.ExpiredSignatureError:
-            return "The token has expired"
+            return "expired"
         except jwt.InvalidTokenError:
-            return "The token is invalid"
+            return "invalid"
 
     def check_text_exists(self, text):
         """Checks if the question or answer passed by the user exists"""

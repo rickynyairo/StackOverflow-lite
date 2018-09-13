@@ -11,6 +11,7 @@ if (submitBtn){
 function thisElem(id){
   return document.getElementById(id);
 }
+
 function postData(path, data, token="token"){
   return fetch(path, {
     method:"POST",
@@ -37,37 +38,56 @@ function makeElement(elementType, attr, value, parentId, inner=""){
 }
 
 function signUp(){
-  let email = thisElem("email").value;
-  let fname = thisElem("fname").value;
-  let lname = thisElem("lname").value;
-  let username = thisElem("username").value;
-  let password = thisElem("password").value;
   let newUser = {
-    "first_name":fname,
-    "last_name":lname,
-    "username":username,
-    "email":email,
-    "password":password
+    "first_name":thisElem("fname").value,
+    "last_name":thisElem("lname").value,
+    "username":thisElem("username").value,
+    "email":thisElem("email").value,
+    "password":thisElem("password").value
   };
   path = "/api/v2/auth/signup";
   postData(path, newUser)
   .then((res) => {
    if (res.status == 201){
       res.json().then((data) => {
-          console.log(data);
           localStorage.setItem("AuthToken", data["AuthToken"]);
-          window.location.href = "questions";
+          window.location.href = "home";
       });
     }
     else{
       res.json().then((data) => {
         console.log("Failed: \n"+data);
-        return "Failed";
       });
     }
   })
   .catch(function(err) {
     console.log('Fetch Error :-S', err);
-    return "Failed";
   });
+}
+
+function validateUser(token, callBack){
+  let path ="/api/v2/auth/validate";
+  let user = {
+    "username":"",
+    "user_id":""
+  };
+  postData(path, {}, token)
+  .then((res) => {
+    if (res.status == 200){
+      res.json().then((data) => {
+        user.username = data.username;
+        user.user_id = data.user_id;
+        localStorage.setItem('user', user);
+        callBack({"message":data.message,"user":user});
+      });
+      }
+    else{
+      res.json().then((data) => {
+        callBack({"message":data.message});
+      });
+      }
+    })
+    .catch((err) => {
+      callBack({"message":"error","error":err});
+    });
 }

@@ -30,7 +30,7 @@ class QuestionPage(MethodView):
 class QuestionsPage(MethodView):
     """Encapsulates the views for the questions page"""
     def get(self):
-        """return the questions page"""
+        """redirects to the home page"""
         return redirect(url_for('ui.home'), 303)
 
 class LoginPage(MethodView):

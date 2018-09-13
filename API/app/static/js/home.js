@@ -1,3 +1,5 @@
+const token = localStorage.getItem("AuthToken");
+
 function makeQuestion(element){
     let questionId = element["question_id"];
     let text = element["text"];
@@ -34,4 +36,23 @@ function getQuestions(){
         }
     });
 }
+function showPostQuestion(resp){
+    if (resp.message === "Valid"){
+        thisElem("postQuestionFieldset").style.display = "block";
+    }
+}
+function refreshQuestions(){
+    // clear the current questions
+    elems = thisElem("questionsDiv").children;
+    Array.from(elems).forEach((elem) => {
+        if (Number.isInteger(parseInt(elem.id))){
+            elem.parentNode.removeChild(elem);
+        }
+    });
+    // refresh questions
+    getQuestions();
+}
 getQuestions();
+if (token){
+    validateUser(token, showPostQuestion);
+}

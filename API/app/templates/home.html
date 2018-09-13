@@ -4,10 +4,14 @@
 <div class="item-2" id="questionsDiv">
 
   <h1>Recent Questions</h1>
-  <fieldset>
+  <fieldset id = "postQuestionFieldset">
     <legend>Post a Question:</legend>
-    <textarea name="question" id="questionText"></textarea>
-    <button id = "postQuestion" onclick="postQuestion(this)">Post</button>
+    <label for="question">Question:</label>
+    <textarea name="question" id="questionText" minlength="10"></textarea>
+    <label for="description">Description:</label>
+    <textarea name="description" id="questionDescription" minlength="10"></textarea>
+    <p id="warnings"></p>
+    <button id="postQuestion">Post</button>
   </fieldset>
 </div>
 <div class="item-4">
