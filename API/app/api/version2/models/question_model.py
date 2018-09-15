@@ -12,6 +12,9 @@ from .base_model import BaseModel
 
 class QuestionModel(BaseModel):
     """This class encapsulates the functions of the question model"""
+
+    __tablename__ = "questions"
+
     def __init__(self, user_id=0, text="text", description="desc"):
         """initialize the question model"""
         self.user_id = user_id
@@ -43,6 +46,7 @@ class QuestionModel(BaseModel):
         curr = dbconn.cursor()
         curr.execute("""SELECT question_id, COUNT(answer_id) FROM answers GROUP BY question_id ORDER BY COUNT(answer_id) DESC;""")
         data = curr.fetchone()
+        curr.close()
         return data
 
     def get_all(self):
@@ -52,7 +56,7 @@ class QuestionModel(BaseModel):
         curr.execute("""SELECT * FROM questions ORDER BY date_created DESC;""")
         data = curr.fetchall()
         resp = []
-        
+        curr.close()
         for i, items in enumerate(data):
             question_id, user_id, text, description, date = items
             question = dict(

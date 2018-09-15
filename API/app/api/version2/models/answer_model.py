@@ -9,6 +9,9 @@ from .base_model import BaseModel
 
 class AnswerModel(BaseModel):
     """This class encapsulates the functions of the answer model"""
+
+    __tablename__ = "answers"
+
     def __init__(self, question_id=0, user_id=0, text="text"):
         """initialize the answer model"""
         self.user_id = user_id

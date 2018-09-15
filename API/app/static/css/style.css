@@ -204,14 +204,6 @@ textarea{
   padding:5px 3px 5px 3px;
   font-weight: bold;
 }
-.paginationjs-pages ul li{
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  border:solid 1px rgb(117, 104, 240);
-  font-size: 14px;
-  width:20px;
-  height:20px;
-  display: inline-block;
-}
 .questionDesc{
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
   font-size: 15px;

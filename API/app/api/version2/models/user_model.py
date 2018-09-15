@@ -14,6 +14,9 @@ from .base_model import BaseModel
 
 class UserModel(BaseModel):
     """This class encapsulates the functions of the user model"""
+
+    __tablename__ = "users"
+
     def __init__(self, username="user", first_name="first", 
                  last_name="last", password="pass", email="em@ai.l"):
         """initialize the user model"""

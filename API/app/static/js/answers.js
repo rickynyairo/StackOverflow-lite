@@ -1,6 +1,7 @@
 const questionId = parseInt(document.getElementsByTagName("h3")[0].getAttribute("id"));
 const token = localStorage.getItem("AuthToken");
 const postAnswerBtn = thisElem("postAnswer");
+let validatedUser = false;
 
 postAnswerBtn.addEventListener('click', ()=>{
     let text = thisElem("answer").value;
@@ -30,7 +31,7 @@ function makeAnswer(element){
 }
 function getAnswers(){
     let path = `/api/v2/questions/${questionId}`;
-    getData(path)
+    return getData(path)
     .then((response) => {
         if (response.status == 200){
             response.json().then((data) => {
@@ -51,10 +52,12 @@ function getAnswers(){
 
 function showPostAnswer(resp){
     if (resp.message === "Valid"){
+        validatedUser = true;
         thisElem("postAnswerFieldset").style.display = "block";
     }
 }
 function refreshAnswers(){
+    thisElem('postAnswerFieldset').style.display = 'none';
     elems = thisElem("answersDiv").children;
     Array.from(elems).forEach((elem) => {
         if (Number.isInteger(parseInt(elem.id))){
@@ -62,7 +65,12 @@ function refreshAnswers(){
         }
     });
     // refresh questions
-    getAnswers();
+    getAnswers()
+    .then(()=>{
+        if (validatedUser){
+            thisElem('postAnswerFieldset').style.display = 'block';
+        }
+    });
 }
 
 function postAnswer(answer){

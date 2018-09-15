@@ -14,9 +14,11 @@ class BaseModel(object):
     that will be shared across all other models
     """
 
-   
-    def __init__(self):
+    __tablename__ = None
+
+    def __init__(self, table_name=None):
         """initialize the database"""
+        self.__tablename__ = table_name
         self.db = init_db()
 
     def get_items_by_id(self, item, item_id):
@@ -24,7 +26,8 @@ class BaseModel(object):
         return a list of all the items with the id given
         used by question and answer models
         """
-        table_name = "%ss" % (self._type().lower()[:-5])
+        # table_name = "%ss" % (self._type().lower()[:-5])
+        table_name = self.__tablename__
         database = self.db
         item_name = table_name[:-1]
         curr = database.cursor()
@@ -54,7 +57,8 @@ class BaseModel(object):
         try:
             dbconn = self.db
             curr = dbconn.cursor()
-            table_name = "%ss" % (self._type().lower()[:-5])
+            # table_name = "%ss" % (self._type().lower()[:-5])
+            table_name = self.__tablename__
             item_name = table_name[:-1]
             curr.execute(
                 """SELECT * FROM %s WHERE %s_id = %d;""" % (table_name, 
@@ -69,7 +73,8 @@ class BaseModel(object):
     def delete_item(self, item_id, foreign_key):
         """This function takes an id and removes the corresponding item from the database"""
         try:
-            table_name = "%ss" % (self._type().lower()[:-5])
+            # table_name = "%ss" % (self._type().lower()[:-5])
+            table_name = self.__tablename__
             item_name = table_name[:-1]
             dbconn = self.db
             curr = dbconn.cursor()
@@ -93,7 +98,8 @@ class BaseModel(object):
         try:
             if not isinstance(data, str):
                 raise ValueError
-            table_name = "%ss" % (self._type().lower()[:-5])
+            # table_name = "%ss" % (self._type().lower()[:-5])
+            table_name = self.__tablename__
             item_name = table_name[:-1]
             dbconn = self.db
             curr = dbconn.cursor()
@@ -129,7 +135,6 @@ class BaseModel(object):
         """Function to generate Auth token
         """
         APP = create_app()
-        # import pdb;pdb.set_trace()
         try:
             payload = {
                 "exp": datetime.utcnow() + timedelta(days=1),
@@ -176,7 +181,8 @@ class BaseModel(object):
 
     def check_text_exists(self, text):
         """Checks if the question or answer passed by the user exists"""
-        table_name = "%ss" % (self._type().lower()[:-5])
+        # table_name = "%ss" % (self._type().lower()[:-5])
+        table_name = self.__tablename__
         item_name = item_name = table_name[:-1]
         conn = self.db
         curr = conn.cursor()
