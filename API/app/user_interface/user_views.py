@@ -23,9 +23,22 @@ class QuestionPage(MethodView):
     """Encapsulates the views for the questions page"""
     def get(self, question_id):
         """return the questions page"""
-        if not QuestionModel().get_item_by_id(question_id):
+        questions = QuestionModel()
+        question = questions.get_item_by_id(question_id)
+        if not question:
             raise NotFound("The specified resource cannot be located.")
-        return render_template('question.html', questionId=question_id)
+        else:
+            username = questions.get_username_by_id(question[1])
+            date = question[4]
+            meta = "Asked by {} on {}".format(username, date)
+            context = {
+                "questionId":int(question[0]),
+                "questionText":question[2],
+                "questionDesc":question[3],
+                "questionMeta":meta
+                
+            }
+        return render_template('question.html', **context)
 
 class QuestionsPage(MethodView):
     """Encapsulates the views for the questions page"""

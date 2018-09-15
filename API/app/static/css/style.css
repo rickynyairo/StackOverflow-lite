@@ -95,9 +95,6 @@ legend {
 #mostAnswered{
   width: 90%;
 }
-#questionDescription{
-  height:80px;
-}
 .fieldsets{
   border:solid 3px rgb(117, 104, 240);
   position:absolute;
@@ -176,6 +173,9 @@ nav a:hover{
   border:solid 3px #000;
 }
 #postQuestionFieldset{
+  display: none;
+}
+#postAnswerFieldset{
   display: none;
 }
 textarea{

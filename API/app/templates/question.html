@@ -3,10 +3,17 @@
 {% block body %}
 
 <div class="item-2">
-  <h3 id="{{ questionId }}"></h3>
+  <h3 id="{{ questionId }}">{{ questionText }}</h3>
+    <p class="questionDesc">{{ questionDesc }}</p>
+    <p class="questionMeta">{{ questionMeta }}</p>
     <div id="answersDiv"></div>
-    <textarea name="postanswer" rows="10"></textarea>
-    <button class="postAnswer">Post Answer</button>
+    <fieldset id="postAnswerFieldset">
+      <legend>Post an Answer:</legend>
+      <label for="answer">Answer:</label>
+      <textarea name="answer" id="answer" rows="10"></textarea>
+      <button id="postAnswer">Post Answer</button>
+      <p id="warnings" ></p>
+    </fieldset>
 </div>
 
 {% endblock %}

@@ -27,6 +27,20 @@ function getData(path){
   return fetch(path);
 }
 
+function putData(params){
+  let path = params.path;
+  let data = params.data;
+  let token = params.token;
+  return fetch(path, {
+    method:"PUT",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":`Bearer ${token}`
+    },
+    body:JSON.stringify(data)
+  });
+}
+
 function makeElement(elementType, attr, value, parentId, inner=""){
   let elem = document.createElement(elementType);
   elem.setAttribute(attr, value);
