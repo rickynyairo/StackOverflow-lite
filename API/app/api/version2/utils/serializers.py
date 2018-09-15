@@ -128,9 +128,6 @@ class AnswerDTO(object):
         "description":fields.String(required=True, description="request status"),
         "value":fields.String(required=True, description="the edit response")
     })
-    votes = api.model('the request structure for a up/downvote', {
-        "vote":fields.String(required=True, description="the vote value")
-    })
     vote_answer_resp = api.model('response to editing or marking an answer as preferred', {
         "message":fields.String(required=True, description="request status"),
         "description":fields.String(required=True, description="request status"),

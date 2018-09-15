@@ -153,26 +153,20 @@ class TestAnswers(unittest.TestCase):
         new_answer = self.post_data(question_id, auth_token=auth_token).json
         answer_id = int(new_answer['answer_id'])
         headers = {"Authorization":"Bearer {}".format(auth_token)}
-        path  = "/api/v2/questions/{}/answers/{}/vote".format(question_id,
+        path  = "/api/v2/questions/{}/answers/{}/upvote".format(question_id,
                                                          answer_id)
         result = self.client.put(path,
                                  headers=headers,
-                                 data=json.dumps({"vote":"+1"}),
                                  content_type='application/json')
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json['new_votes'], "1")
+        path  = "/api/v2/questions/{}/answers/{}/downvote".format(question_id,
+                                                         answer_id)
         result = self.client.put(path,
                                  headers=headers,
-                                 data=json.dumps({"vote":"-1"}),
                                  content_type='application/json')
+        self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json['new_votes'], "0")
-        # test that the endpoint rejects more than one vote.
-        result = self.client.put(path,
-                                 headers=headers,
-                                 data=json.dumps({"vote":"5"}),
-                                 content_type='application/json')
-        self.assertEqual(result.status_code, 400)
-        self.assertTrue(result.json['message'])
 
     def tearDown(self):
         """

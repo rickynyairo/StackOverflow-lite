@@ -7,12 +7,13 @@ import string
 
 # third party imports
 from flask_restplus import Resource
-from flask import request, jsonify
+from flask import request, jsonify, g
 from werkzeug.exceptions import BadRequest, NotFound, Unauthorized, Forbidden
 from werkzeug.security import generate_password_hash, check_password_hash
 
 #local imports
 from ..utils.serializers import UserDTO
+from ..utils.auth import auth_required
 from ..models.user_model import UserModel
 
 api = UserDTO().api
@@ -40,7 +41,7 @@ def _validate_user(user):
                     if i not in string.ascii_letters:
                         raise BadRequest("{} cannot have non-alphabetic characters.".format(key))
 
-@api.route("/signup/")
+@api.route("/signup")
 class AuthSignup(Resource):
     """This class collects the methods for the auth/signup method"""
     docu_string = "This endpoint allows an unregistered user to sign up."
@@ -49,21 +50,15 @@ class AuthSignup(Resource):
     @api.marshal_with(_n_user_resp, code=201)
     def post(self):
         """This endpoint allows an unregistered user to sign up."""
-        req_data = request.data.decode().replace("'", '"')
-        if not req_data:
-            raise BadRequest("Provide data in the request")
-        user_details = json.loads(req_data)
-        try:
-            username = user_details['username'].strip()
-            first_name = user_details['first_name'].strip()
-            last_name = user_details['last_name'].strip()
-            email = user_details['email'].strip()
-            password = user_details['password'].strip()
-            if not re.match(r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$',
-                    email):
-                raise BadRequest("The email provided is invalid")
-        except (KeyError, IndexError) as e:
-            raise BadRequest
+        user_details = request.get_json()
+        username = user_details['username'].strip()
+        first_name = user_details['first_name'].strip()
+        last_name = user_details['last_name'].strip()
+        email = user_details['email'].strip()
+        password = user_details['password'].strip()
+        if not re.match(r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$',
+                email):
+            raise BadRequest("The email provided is invalid")
         user = {
             "username":username,
             "first_name":first_name,
@@ -90,7 +85,7 @@ class AuthSignup(Resource):
         user_model.close_db()
         return resp, 201
 
-@api.route("/login/")
+@api.route("/login")
 class AuthLogin(Resource):
     """This class collects the methods for the auth/login endpoint"""
 

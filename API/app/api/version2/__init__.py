@@ -17,7 +17,9 @@ from .endpoints.answer_endpoints import api as answers_ns
 api = Api(version2, 
           title='Stackoverflow-Lite API',
           version='2.0', 
-          description="An amateur's simulation of the stackoverflow Q/A system")
+          description="An amateur's simulation of the stackoverflow Q/A system",
+          default="Stackoverflow-lite",
+          default_label="documentation")
 
 api.add_namespace(auth_ns, path="/auth")
 api.add_namespace(question_ns, path="/questions")

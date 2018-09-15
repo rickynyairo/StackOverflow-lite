@@ -7,7 +7,7 @@ import re
 
 # third party imports
 from flask_restplus import Resource
-from flask import request, jsonify
+from flask import request, jsonify, g
 from werkzeug.exceptions import BadRequest, NotFound, Unauthorized, Forbidden
 
 # local imports
@@ -16,6 +16,7 @@ from ..models.question_model import QuestionModel
 from ..models.answer_model import AnswerModel
 
 from ..utils.serializers import QuestionDTO, QuestionUserDTO
+from ..utils.auth import auth_required
 
 api = QuestionDTO().api
 uapi = QuestionUserDTO.api
@@ -45,41 +46,32 @@ class Questions(Resource):
     @api.doc(docu_string)
     @api.expect(_n_question, validate=True)
     @api.marshal_with(_n_question_resp, code=201)
+    @auth_required
     def post(self):
         """This endpoint allows a registered user to post a question."""
-        auth_header = request.headers.get('Authorization')
-        if not auth_header:
-            raise BadRequest("No authorization header provided. This resource is secured.")
-        auth_token = auth_header.split(" ")[1]
-        response = UserModel().decode_auth_token(auth_token)
-        if not isinstance(response, str):
-            # the token decoded succesfully
-            user_id = response
-            if not request.data:
-                raise BadRequest("The request body is empty, restructure.")
-            req_data = json.loads(request.data.decode().replace("'", '"'))
-            text = req_data['text']
-            description = req_data['description']
-            data = dict(text=text, description=description)
-            # save question in db
-            _validate_input(data)
-            question = QuestionModel(int(user_id), text, description)
-            check = question.check_text_exists(text)
-            if isinstance(check, int):
-                # question exists in the db
-                raise Forbidden("The question exists in the database.")
-            question_id = question.save_question()
-            username = question.get_username_by_id(int(user_id))
-            question.close_db() 
-            resp = dict(message="success",
-                        text=text, 
-                        asked_by=username,
-                        question_id=str(question_id))
+        user_id = g.user
+        if not request.data:
+            raise BadRequest("The request body is empty, restructure.")
+        req_data = json.loads(request.data.decode().replace("'", '"'))
+        text = req_data['text']
+        description = req_data['description']
+        data = dict(text=text, description=description)
+        # save question in db
+        _validate_input(data)
+        question = QuestionModel(int(user_id), text, description)
+        check = question.check_text_exists(text)
+        if isinstance(check, int):
+            # question exists in the db
+            raise Forbidden("The question exists in the database.")
+        question_id = question.save_question()
+        username = question.get_username_by_id(int(user_id))
+        question.close_db() 
+        resp = dict(message="success",
+                    text=text, 
+                    asked_by=username,
+                    question_id=str(question_id))
 
-            return resp, 201
-        else:
-            # token is either invalid or expired
-            raise Unauthorized("You are not authorized to access this resource.")
+        return resp, 201
 
     docu_string = "This endpoint returs a list of the most recently asked questions"
     @api.doc(docu_string)
@@ -124,64 +116,49 @@ class GetQuestion(Resource):
     @api.doc(docu_string)
     @api.expect(validate=False)
     @api.marshal_with(_get_edit_resp, code=200)
+    @auth_required
     def put(self, question_id):
         """This endpoint allows a user to edit the details of a question."""
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or len(auth_header) < 8 or " " not in auth_header:
-            raise BadRequest("Authorization not provided or inadequate.")
-        auth_token = auth_header.split(" ")[1]
-        request_id = UserModel().decode_auth_token(auth_token)
-        if isinstance(request_id, str):
-            raise Unauthorized("You are not authorized to access this resource.")
+        update = request.get_json()
+        _validate_input(update)
+        questions = QuestionModel()
+        question = questions.get_item_by_id(int(question_id))
+        if question == "Not found":
+            raise NotFound("The question was not found in the database")
+        question_id = question[0]
+        user_id = question[1]
+        if int(user_id) == int(g.user):
+            # update question
+            for field, data in update.items():
+                questions.update_item(field=field, data=data,
+                                    item_id=int(question_id))
         else:
-            # confirm user request
-            update = request.get_json()
-            _validate_input(update)
-            questions = QuestionModel()
-            question = questions.get_item_by_id(int(question_id))
-            if question == "Not found":
-                raise NotFound("The question was not found in the database")
-            question_id = question[0]
-            user_id = question[1]
-            if int(user_id) == int(request_id):
-                # update question
-                for field, data in update.items():
-                    questions.update_item(field=field, data=data,
-                                      item_id=int(question_id))
-            else:
-                raise Forbidden("You are not allowed to edit the question")
-            resp = {"message":"success", "text":str(update)}
-            return resp, 200
+            raise Forbidden("You are not allowed to edit the question")
+        resp = {"message":"success", "text":str(update)}
+        return resp, 200
 
     docu_string = "This endpoint allows a user to delete a question."
     @api.doc(docu_string)
     @api.marshal_with(_delete_resp, code=202)
+    @auth_required
     def delete(self, question_id):
         """This endpoint allows a user to delete a question."""
-        auth_header = request.headers.get('Authorization')
-        if not auth_header or len(auth_header) < 8 or " " not in auth_header:
-            raise BadRequest("Authorization not provided or inadequate.")
-        auth_token = auth_header.split(" ")[1]
-        response = UserModel().decode_auth_token(auth_token)
-        if isinstance(response, str):
-            raise Unauthorized("You do not have the authorization to delete the question")
+        # user is authorized
+        questions = QuestionModel()
+        question = questions.get_item_by_id(int(question_id))
+        if question == "Not found":
+            raise NotFound("The question was not located in the database")
+        question_id = question[0]
+        user_id = question[1]           
+        # check if user ids match
+        if int(user_id) == int(g.user):
+            # delete question
+            questions.delete_item(int(question_id), foreign_key="answers")
         else:
-            # user is authorized
-            questions = QuestionModel()
-            question = questions.get_item_by_id(int(question_id))
-            if question == "Not found":
-                raise NotFound("The question was not located in the database")
-            question_id = question[0]
-            user_id = question[1]           
-            # check if user ids match
-            if int(user_id) == int(response):
-                # delete question
-                questions.delete_item(int(question_id), foreign_key="answers")
-            else:
-                raise Forbidden("You are not allowed to delete the question")
-            resp = {"message":"success", 
-                    "description":"question deleted succesfully"}
-            return resp, 202
+            raise Forbidden("You are not allowed to delete the question")
+        resp = {"message":"success", 
+                "description":"question deleted succesfully"}
+        return resp, 202
 
 @api.route("/answers/most")
 class MostAnswered(Resource):
