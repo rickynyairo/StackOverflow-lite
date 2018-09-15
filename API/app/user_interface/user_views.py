@@ -36,7 +36,7 @@ class QuestionPage(MethodView):
                 "questionText":question[2],
                 "questionDesc":question[3],
                 "questionMeta":meta
-                
+
             }
         return render_template('question.html', **context)
 
