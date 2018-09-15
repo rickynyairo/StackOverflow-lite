@@ -24,9 +24,16 @@ function getQuestions(){
             response.json().then((data) => {
                 let questions = data["questions"];
                 console.log(questions);
-                questions.forEach((question) => {
-                    makeQuestion(question);
-                });
+                $("#paginationDiv").pagination({
+                    dataSource:questions,
+                    callback:(data, pagination)=>{
+                        $("#questionsDiv").empty();
+                        data.forEach((question) => {
+                            makeQuestion(question);
+                        });
+                    },
+                    position:"bottom"
+                });        
             });
         }
         else{
@@ -45,9 +52,7 @@ function refreshQuestions(){
     // clear the current questions
     elems = thisElem("questionsDiv").children;
     Array.from(elems).forEach((elem) => {
-        if (Number.isInteger(parseInt(elem.id))){
-            elem.parentNode.removeChild(elem);
-        }
+        elem.parentNode.removeChild(elem);
     });
     // refresh questions
     getQuestions();

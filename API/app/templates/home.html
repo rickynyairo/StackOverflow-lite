@@ -1,9 +1,7 @@
 {% extends "base.html" %}
 
 {% block body %}
-<div class="item-2" id="questionsDiv">
-
-  <h1>Recent Questions</h1>
+<div class="item-2">
   <fieldset id = "postQuestionFieldset">
     <legend>Post a Question:</legend>
     <label for="question">Question:</label>
@@ -13,6 +11,10 @@
     <p id="warnings"></p>
     <button id="postQuestion">Post</button>
   </fieldset>
+  <h1>Recent Questions</h1>
+  <div id="paginationDiv">
+    <div id="questionsDiv"></div>
+  </div>
 </div>
 <div class="item-4">
   <fieldset>

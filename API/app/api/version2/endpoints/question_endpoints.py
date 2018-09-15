@@ -82,7 +82,7 @@ class Questions(Resource):
         questions = QuestionModel().get_all()
         resp = {
             "message":"success",
-            "questions":questions[:10]
+            "questions":questions
         }
         return resp, 200
 
