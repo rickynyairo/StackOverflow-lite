@@ -3,6 +3,9 @@ loginBtn.addEventListener('click', (event) => {
   event.preventDefault();
   login();
 });
+thisElem("signUpBtn").addEventListener("click", ()=>{
+  window.location.href  = "/";
+})
 
 function login(){
   let username = thisElem("username").value;

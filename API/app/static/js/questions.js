@@ -65,27 +65,6 @@ function postQuestion(question){
     });
 }
 
-let loginRequest = (loginurl= "http://127.0.0.1:5000/api/v2/auth/login") => {
-    fetch(loginurl, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        "username": "asdsa",
-        "password": "password"
-      })
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-      })
-      .catch(err => {
-        console.log(`Fetch Error: ${err}`);
-      });
-}
-
 function editQuestion(question){
     let currQstn = question.parentNode.parentNode;
     let questionId = currQstn.id;
@@ -98,29 +77,74 @@ function editQuestion(question){
                             <label for="description">Description:</label>
                             <textarea name="description" id="editDescription" rows="10">${desc}</textarea>
                             <p id="editWarnings"></p>
-                            <button id="editQuestion">Edit Question</button>
+                            <button id="editQuestion">Edit</button>
+                            <button id="cancel">Cancel</button>
                         </fieldset>`;
-    if (thisElem("editDiv")){
-        thisElem("editDiv").remove();
+    if (thisElem("modalDiv")){
+        thisElem("modalDiv").remove();
     }
-    makeElement("div", "id", "editDiv", "modalContent", editFieldset);
+    makeElement("div", "id", "modalDiv", "modalContent", editFieldset);
     thisElem("editQuestion").addEventListener("click", () => {
         let path = `/api/v2/questions/${questionId}`
-        let data = {
-            "text":thisElem("editText").value,
-            "description":thisElem("editDescription").value
+        let editedText = thisElem("editText").value;
+        let editedDesc = thisElem("editDescription").value;
+        if (editedText.length < 10 || editedDesc.length < 10){
+            thisElem("editWarnings").innerHTML = "Invalid length for question title or description";
         }
-        putData({path, data, token})
+        else{
+            let data = {
+                "text":editedText,
+                "description":editedDesc
+            }
+            putData({path, data, token})
+            .then((res) => {
+                if (res.status == 200){
+                    res.json().then((data) => {console.info(data);});
+                    thisElem("myModal").style.display = "none";
+                    refreshQuestions();
+                }else{
+                    res.json().then((data) => {console.info("Failed: ", data);});
+                }
+            })
+            .catch((err) => {console.error("Error: ", err);});
+        }
+    });
+    thisElem("cancel").addEventListener("click", () => {
+        thisElem("myModal").style.display = "none";
+    });
+    thisElem("myModal").style.display = "block";
+}
+
+function deleteQuestion(question){
+    let currQstn = question.parentNode.parentNode;
+    let questionId = currQstn.id;
+    let text = currQstn.children[0].innerHTML;
+    let desc = currQstn.children[1].innerHTML;
+    let deleteHTML = `<h3>Are you sure you want to delete the question?</h3>
+                      <h4>${text}</h4>
+                      <p>${desc}</p>
+                      <button id="deleteQstn">Delete</button>
+                      <button id="cancel">Cancel</button>` ;
+    if (thisElem("modalDiv")){
+        thisElem("modalDiv").remove();
+    }
+    makeElement("div", "id", "modalDiv", "modalContent", deleteHTML);
+    thisElem("deleteQstn").addEventListener("click", () => {
+        let path = `/api/v2/questions/${questionId}`
+        deleteData({path, token})
         .then((res) => {
-            if (res.status == 200){
+            if (res.status == 202){
                 res.json().then((data) => {console.info(data);});
                 thisElem("myModal").style.display = "none";
                 refreshQuestions();
             }else{
-                thisElem("editWarnings").innerHTML = json;
+                res.json().then((data) => {console.info("Failed: ", data);});
             }
         })
         .catch((err) => {console.error("Error: ", err);});
-    })
+    });
+    thisElem("cancel").addEventListener("click", () => {
+        thisElem("myModal").style.display = "none";
+    });
     thisElem("myModal").style.display = "block";
 }

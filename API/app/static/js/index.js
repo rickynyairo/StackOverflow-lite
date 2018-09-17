@@ -40,6 +40,17 @@ function putData(params){
     body:JSON.stringify(data)
   });
 }
+function deleteData(params){
+  let path = params.path;
+  let token = params.token;
+  return fetch(path, {
+    method:"DELETE",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":`Bearer ${token}`
+    }
+  });
+}
 
 function makeElement(elementType, attr, value, parentId, inner=""){
   let elem = document.createElement(elementType);
@@ -88,6 +99,22 @@ function signUp(){
   });
 }
 
+function signOut(){
+  let token = localStorage.getItem("AuthToken");
+  let path = "/api/v2/auth/logout";
+  postData(path, {}, token)
+  .then((res) => {
+    if (res.status == 200){
+      res.json().then((data)=>{console.info(data);});
+      window.location.href = "/home";
+    }
+    else{
+      res.json().then((data)=>{console.info(data);}); 
+    }
+  })
+  .catch((err)=>{console.error("Error: ", err);});
+}
+
 function validateUser(token, callBack){
   let path ="/api/v2/auth/validate";
   let user = {
@@ -127,4 +154,15 @@ window.onclick = function(event) {
   if (event.target == modal) {
       modal.style.display = "none";
   }
+}
+
+function showDialog(html){
+  if (thisElem("modalDiv")){
+    thisElem("modalDiv").remove();
+  }
+  makeElement("div", "id", "modalDiv", "modalContent", html);
+  thisElem("cancel").addEventListener("click", () => {
+      thisElem("myModal").style.display = "none";
+  });
+  thisElem("myModal").style.display = "block";
 }

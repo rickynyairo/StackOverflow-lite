@@ -30,12 +30,12 @@ class QuestionPage(MethodView):
         else:
             username = questions.get_username_by_id(question[1])
             date = question[4]
-            meta = "Asked by {} on {}".format(username, date)
             context = {
                 "questionId":int(question[0]),
                 "questionText":question[2],
                 "questionDesc":question[3],
-                "questionMeta":meta
+                "username":username,
+                "dateCreated":date
 
             }
         return render_template('question.html', **context)

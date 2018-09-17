@@ -262,3 +262,12 @@ textarea{
   text-decoration: none;
   cursor: pointer;
 }
+#signOutLink{
+  display: none;
+}
+.acceptAnsBtn{
+  display: none;
+}
+.preferred{
+  border: #000 1px solid;
+}

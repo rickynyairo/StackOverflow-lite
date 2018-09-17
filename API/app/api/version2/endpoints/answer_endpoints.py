@@ -93,18 +93,18 @@ class GetAnswer(Resource):
         value = ""          
         # check if user ids match
         user_id = int(g.user)
-        if user_id == int(answer_author_id) and user_id != int(question_author_id):
+        if user_id == int(answer_author_id):
             try:
                 new_text = json.loads(request.data.decode().replace("'", '"'))['text']  
             except Exception as error:
                 raise BadRequest("You have to include a text field")  
-            value = answers.update_item(field="text", 
+            value = answers.update_item(field="text",
                                         data=new_text,
                                         item_id=answer_id)[0]
         elif user_id == int(question_author_id) and user_id != int(answer_author_id):
             value = "{}".format(answers.toggle_user_preferred(answer_id))
         else:
-            raise Forbidden("You are not athorized to edit this answer")
+            raise Forbidden("You are not authorized to edit this answer")
         resp = {
             "message":"success",
             "description":"answer updated succesfully",

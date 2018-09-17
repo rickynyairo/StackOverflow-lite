@@ -56,10 +56,12 @@ function getQuestions(){
         }
     });
 }
-function showPostQuestion(resp){
+function validUser(resp){
     if (resp.message === "Valid"){
         validatedUser = true;
         thisElem("postQuestionFieldset").style.display = "block";
+        thisElem("signOutLink").style.display = "block";
+        thisElem("signInLink").style.display = "none";
     }
 }
 function refreshQuestions(){
@@ -73,5 +75,5 @@ function refreshQuestions(){
 }
 getQuestions();
 if (token){
-    validateUser(token, showPostQuestion);
+    validateUser(token, validUser);
 }

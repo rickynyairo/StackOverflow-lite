@@ -5,7 +5,7 @@
 <div class="item-2">
   <h3 id="{{ questionId }}">{{ questionText }}</h3>
     <p class="questionDesc">{{ questionDesc }}</p>
-    <p class="questionMeta">{{ questionMeta }}</p>
+    <p class="questionMeta"></p>
     <div id="answersDiv"></div>
     <fieldset id="postAnswerFieldset">
       <legend>Post an Answer:</legend>
@@ -19,6 +19,12 @@
 {% endblock %}
 
 {% block script %}
+<script>
+  let username = "{{ username }}";
+  let dateCreated = "{{ dateCreated }}";
+  let html = `Asked by <span id="askerUname">${username}</span> on ${dateCreated}`;
+  document.getElementsByClassName("questionMeta")[0].innerHTML = html;
+</script>
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 <script src="{{ url_for('static', filename='js/answers.js') }}"></script>
 {% endblock %}
