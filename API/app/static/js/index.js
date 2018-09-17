@@ -50,6 +50,15 @@ function makeElement(elementType, attr, value, parentId, inner=""){
   
   return elem;
 }
+function toggleDisplay(id){
+  let currStyle = thisElem(id).style.display;
+  if (currStyle == "none"){
+    currStyle = "block";
+  }else{
+    currStyle = "none";
+  }
+  return currStyle;
+}
 
 function signUp(){
   let newUser = {
@@ -91,7 +100,8 @@ function validateUser(token, callBack){
       res.json().then((data) => {
         user.username = data.username;
         user.user_id = data.user_id;
-        localStorage.setItem('user', user);
+        localStorage.setItem('username', user.username);
+        localStorage.setItem('user_id', user.user_id);
         callBack({"message":data.message,"user":user});
       });
       }
@@ -104,4 +114,17 @@ function validateUser(token, callBack){
     .catch((err) => {
       callBack({"message":"error","error":err});
     });
+}
+
+let modal = thisElem("myModal");
+let span = document.getElementsByClassName("close")[0];
+
+span.onclick = () => {
+  modal.style.display = "none";
+}
+
+window.onclick = function(event) {
+  if (event.target == modal) {
+      modal.style.display = "none";
+  }
 }

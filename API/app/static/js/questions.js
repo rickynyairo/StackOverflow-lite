@@ -85,3 +85,42 @@ let loginRequest = (loginurl= "http://127.0.0.1:5000/api/v2/auth/login") => {
         console.log(`Fetch Error: ${err}`);
       });
 }
+
+function editQuestion(question){
+    let currQstn = question.parentNode.parentNode;
+    let questionId = currQstn.id;
+    let text = currQstn.children[0].innerHTML;
+    let desc = currQstn.children[1].innerHTML;
+    let editFieldset = `<fieldset id = "editQuestionFieldset">
+                            <legend>Edit the Question:</legend>
+                            <label for="question">Question:</label>
+                            <textarea name="question" id="editText" minlength="10">${text}</textarea>
+                            <label for="description">Description:</label>
+                            <textarea name="description" id="editDescription" rows="10">${desc}</textarea>
+                            <p id="editWarnings"></p>
+                            <button id="editQuestion">Edit Question</button>
+                        </fieldset>`;
+    if (thisElem("editDiv")){
+        thisElem("editDiv").remove();
+    }
+    makeElement("div", "id", "editDiv", "modalContent", editFieldset);
+    thisElem("editQuestion").addEventListener("click", () => {
+        let path = `/api/v2/questions/${questionId}`
+        let data = {
+            "text":thisElem("editText").value,
+            "description":thisElem("editDescription").value
+        }
+        putData({path, data, token})
+        .then((res) => {
+            if (res.status == 200){
+                res.json().then((data) => {console.info(data);});
+                thisElem("myModal").style.display = "none";
+                refreshQuestions();
+            }else{
+                thisElem("editWarnings").innerHTML = json;
+            }
+        })
+        .catch((err) => {console.error("Error: ", err);});
+    })
+    thisElem("myModal").style.display = "block";
+}

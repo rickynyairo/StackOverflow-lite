@@ -1,6 +1,7 @@
 const token = localStorage.getItem("AuthToken");
+let validatedUser = false;
 
-function makeQuestion(element){
+function makeQuestion(element, isOwner=false){
     let questionId = element["question_id"];
     let text = element["text"];
     let username = element["username"];
@@ -11,8 +12,11 @@ function makeQuestion(element){
     makeElement("p", "class", "questionDesc", questionId, description);
     let meta = `Asked by ${username} on ${dateCreated}`;
     makeElement("p", "class", "questionMeta", questionId, meta);
-    let ansLink = `<a href="/questions/${questionId}">See Answer(s)</a>`;
-    makeElement("p", "class", "linkSpan", questionId, ansLink);
+    let links = `<a href="/questions/${questionId}">See Answer(s)</a>`;
+    if (isOwner){
+        links = `${links}<br/><a onclick=editQuestion(this)>Edit</a>  <a onclick=deleteQuestion(this)>Delete</a>`
+    }
+    makeElement("p", "class", "linkSpan", questionId, links);
     return question;
 }
 
@@ -29,7 +33,16 @@ function getQuestions(){
                     callback:(data, pagination)=>{
                         $("#questionsDiv").empty();
                         data.forEach((question) => {
-                            makeQuestion(question);
+                            if(validatedUser){
+                                let username = localStorage.getItem("username");
+                                if(question["username"] == username){
+                                    makeQuestion(question, true);
+                                }else{
+                                    makeQuestion(question);
+                                }
+                            }else{
+                                makeQuestion(question);
+                            }
                         });
                     },
                     position:"bottom"
@@ -45,6 +58,7 @@ function getQuestions(){
 }
 function showPostQuestion(resp){
     if (resp.message === "Valid"){
+        validatedUser = true;
         thisElem("postQuestionFieldset").style.display = "block";
     }
 }
