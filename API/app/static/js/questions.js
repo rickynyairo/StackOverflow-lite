@@ -57,7 +57,9 @@ function postQuestion(question){
                 refreshQuestions();
             });
         }else{
-            console.log(result);
+            result.json().then((data) => {
+                showDialog(JSON.stringify(data));
+            });
         }
     })
     .catch((err) => {
@@ -138,7 +140,10 @@ function deleteQuestion(question){
                 thisElem("myModal").style.display = "none";
                 refreshQuestions();
             }else{
-                res.json().then((data) => {console.info("Failed: ", data);});
+                res.json().then((data) => {
+                    console.info("Failed: ", data);
+                    showDialog(JSON.stringify(data));
+                });
             }
         })
         .catch((err) => {console.error("Error: ", err);});

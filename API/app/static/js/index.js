@@ -99,6 +99,7 @@ function signUp(){
     else{
       res.json().then((data) => {
         console.log("Failed: \n"+data);
+        showDialog(JSON.stringify(data));
       });
     }
   })
@@ -172,9 +173,6 @@ function showDialog(html){
     thisElem("modalDiv").remove();
   }
   makeElement("div", "id", "modalDiv", "modalContent", html);
-  thisElem("cancel").addEventListener("click", () => {
-      thisElem("myModal").style.display = "none";
-  });
   thisElem("myModal").style.display = "block";
 }
 

@@ -27,6 +27,7 @@ function login(){
     else{
       res.json().then((data) => {
         console.log("Failed: \n"+data);
+        showDialog(JSON.stringify(data));
       });
     }
   })

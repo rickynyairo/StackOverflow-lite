@@ -161,6 +161,7 @@ function postAnswer(answer){
         else{
             res.json().then(data=>{
                 console.log("Failed: ", data);
+                showDialog(JSON.stringify(data));
             });
         }
     })
