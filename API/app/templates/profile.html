@@ -1,25 +1,51 @@
 {% extends "base.html" %}
 
-{% block login %}
-<button class = "buttons" id="signoutButton">Sign Out</button>
-{%  endblock %}
-
 {% block body %}
 
 <div class="item-2">
-  <fieldset>
-    <legend>Nancy</legend>
-    <h5>Questions asked on the platform:</h5>
-    <p>
-      Who was the first Kenyan president?
-    </p>
-    <p>
-      What code editor is better for linux than vim?
-    </p>
-    <p class = "stats">Questions Asked: 2</p>
-    <p class = "stats">Answers Given: 19</p>
-  </fieldset>  
-  
+
+ <!-- Tab links -->
+  <div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'profile')" id="defaultOpen">Profile</button>
+    <button class="tablinks" onclick="openTab(event, 'questions')">Questions</button>
+    <button class="tablinks" onclick="openTab(event, 'answers')">Answers</button>
+  </div>
+
+  <!-- Tab content -->
+  <div id="profile" class="tabcontent">
+    <h3 id="userHeader"></h3>
+    <fieldset>
+      <legend> Stats </legend>
+      <p class = "stats">Questions Asked: <span id="questionsAsked"></span></p>
+      <p class = "stats">Answers Given: <span id="answersGiven"></span></p>
+    </fieldset>
+  </div>
+
+  <div id="questions" class="tabcontent">
+    <h3>Questions Asked</h3>
+    <div id="questionsDiv"></div>
+    <div id="paginationDiv"></div>
+  </div>
+
+  <div id="answers" class="tabcontent">
+    <h3>Answers Given</h3>
+    <div id="answersDiv-1"></div>
+  </div>
 </div>
 
+{% endblock %}
+
+{% block script %}
+<script>
+  let username = "{{ username }}";
+  let html = `Welcome <span id="username">${username}</span>`;
+  document.getElementById("userHeader").innerHTML = html;
+</script>
+<script src="{{ url_for('static', filename='js/index.js') }}"></script>
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+<script src="{{ url_for('static', filename='js/answers.js') }}"></script>
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+<script>
+  document.getElementById("defaultOpen").click();
+</script>
 {% endblock %}

@@ -1,4 +1,6 @@
 const hostname = window.location.hostname
+const token = localStorage.getItem("AuthToken");
+let validatedUser = false;
 
 submitBtn = document.getElementById('submitButton')
 if (submitBtn){

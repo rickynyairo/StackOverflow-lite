@@ -1,8 +1,6 @@
 const questionId = parseInt(document.getElementsByTagName("h3")[0].getAttribute("id"));
-const token = localStorage.getItem("AuthToken");
 const postAnswerBtn = thisElem("postAnswer");
 let asker = false;
-let validatedUser = false;
 
 postAnswerBtn.addEventListener('click', ()=>{
     let text = thisElem("answer").value;

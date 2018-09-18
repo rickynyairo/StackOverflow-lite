@@ -1,6 +1,3 @@
-const token = localStorage.getItem("AuthToken");
-let validatedUser = false;
-
 function makeQuestion(element, isOwner=false){
     let questionId = element["question_id"];
     let text = element["text"];
@@ -20,9 +17,8 @@ function makeQuestion(element, isOwner=false){
     return question;
 }
 
-function getQuestions(){
-    let path = "/api/v2/questions";
-    getData(path)
+async function getQuestions(path = "/api/v2/questions"){
+    return getData(path)
     .then((response) => {
         if (response.status == 200){
             response.json().then((data) => {
@@ -44,8 +40,7 @@ function getQuestions(){
                                 makeQuestion(question);
                             }
                         });
-                    },
-                    position:"bottom"
+                    }
                 });        
             });
         }
@@ -54,7 +49,8 @@ function getQuestions(){
                 console.log("Failed:\n" + data);
             });
         }
-    });
+    })
+    .catch(err => {console.error("Error: ", err);});
 }
 function validUser(resp){
     if (resp.message === "Valid"){
@@ -73,7 +69,10 @@ function refreshQuestions(){
     // refresh questions
     getQuestions();
 }
-getQuestions();
+if (window.location.pathname == "/home"){
+    getQuestions();
+}
+
 if (token){
     validateUser(token, validUser);
 }

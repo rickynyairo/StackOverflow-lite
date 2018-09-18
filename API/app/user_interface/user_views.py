@@ -6,6 +6,7 @@ from flask.views import MethodView
 from werkzeug.exceptions import NotFound
 
 from ..api.version2.models.question_model import QuestionModel
+from ..api.version2.models.user_model import UserModel
 
 class LandingPage(MethodView):
     """Encapsulates the views for the landing page"""
@@ -18,6 +19,16 @@ class HomePage(MethodView):
     def get(self):
         """returns the home page"""
         return render_template('home.html')
+
+class ProfilePage(MethodView):
+    """Encapsulates the views for the user profile page"""
+    def get(self, username):
+        """render the profie page"""
+        user = UserModel().check_exists(username)
+        if (user):
+            return render_template("profile.html", **{"username":username})
+        else:
+            raise NotFound("The username provided was not found")
 
 class QuestionPage(MethodView):
     """Encapsulates the views for the questions page"""

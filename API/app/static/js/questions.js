@@ -11,7 +11,7 @@ postQuestionBtn.addEventListener("click", (event)=>{
     let description = thisElem("questionDescription").value;
     if (text.length < 10 || description.length < 10){
         //to short or unfilled
-        thisElem("warnings").innerHTML = "The text or description is invalid";
+        thisElem("warnings").innerHTML = "The text/description is invalid";
     }
     else{
         thisElem("warnings").innerHTML = "";
