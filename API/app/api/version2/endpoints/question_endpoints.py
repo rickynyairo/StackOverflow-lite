@@ -102,7 +102,7 @@ class GetQuestion(Resource):
             raise NotFound("The question was not found in the database.")
         else:
             # find it's answers
-            answers = AnswerModel().get_answers_by_question_id(int(question_id))
+            answers = AnswerModel().get_answers_by_item_id("question", int(question_id))
             question_id, user_id, text, description, date_created = question
             user = UserModel().get_username_by_id(int(user_id)) # returns the username
             resp = dict(username=user,
@@ -174,7 +174,7 @@ class MostAnswered(Resource):
         question_id, number = most_answered
         # find it's answers
         most_answered_question = question.get_item_by_id(int(question_id))
-        answers = AnswerModel().get_answers_by_question_id(int(question_id))
+        answers = AnswerModel().get_answers_by_item_id("question", int(question_id))
         # import pdb;pdb.set_trace()
         question_id, user_id, text, description, date_created = most_answered_question
         user = UserModel().get_username_by_id(int(user_id)) # returns the username

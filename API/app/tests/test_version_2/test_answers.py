@@ -75,13 +75,13 @@ class TestAnswers(unittest.TestCase):
         question_id = question.json['question_id']
         return int(question_id), question
 
-    def post_data(self, question_id, auth_token=2, data={}, headers=0):
+    def post_data(self, question_id, auth_token=None, data=None, headers=None):
         """This function performs a POST request using the testing client"""
         if not data:
             data = self.answer
         user = self.create_user()
         user_id = user[0]
-        if auth_token is 2:
+        if not auth_token:
             auth_token = user[1]
         if not headers:
             headers = {"Authorization":"Bearer {}".format(auth_token)}
@@ -167,6 +167,34 @@ class TestAnswers(unittest.TestCase):
                                  content_type='application/json')
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json['new_votes'], "0")
+
+    def test_get_answers_by_user(self):
+        """Test that the api can respond with a list of the answers given by a user"""
+        user = self.create_user()
+        user_id = user[0] # answer author user id
+        question_id = int(self.create_question()[0])
+        auth_token = user[1]
+        posted_answers = [
+        {
+            "text":"".join(choice(
+                           string.ascii_letters) for x in range (randint(16,20)))
+        },
+        {
+            "text":"".join(choice(
+                           string.ascii_letters) for x in range (randint(16,20)))
+        },
+        {
+            "text":"".join(choice(
+                           string.ascii_letters) for x in range (randint(16,20)))
+        }]
+        for i, elem, in enumerate(posted_answers):
+            self.post_data(question_id, auth_token=auth_token, data=elem)
+        path = "/api/v2/answers/users/{}".format(user_id)
+        headers = {"Authorization":"Bearer {}".format(auth_token),
+                   "Content-Type":"application/json"}
+        answers = self.client.get(path, headers=headers)
+        self.assertEqual(answers.status_code, 200)
+        self.assertEqual(len(answers.json["answers"]), len(posted_answers))
 
     def tearDown(self):
         """

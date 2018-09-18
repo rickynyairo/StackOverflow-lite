@@ -25,8 +25,13 @@ class ProfilePage(MethodView):
     def get(self, username):
         """render the profie page"""
         user = UserModel().check_exists(username)
-        if (user):
-            return render_template("profile.html", **{"username":username})
+        if user:
+            context = {
+                "userId":int(user[0]),
+                "username":username,
+                "dateCreated":user[1]
+            }
+            return render_template("profile.html", **context)
         else:
             raise NotFound("The username provided was not found")
 

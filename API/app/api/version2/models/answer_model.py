@@ -60,12 +60,13 @@ class AnswerModel(BaseModel):
         dbconn.commit()
         return int(data)
 
-    def get_answers_by_question_id(self, question_id):
-        """return a list of all the answers with the given question_id"""
+    def get_answers_by_item_id(self, item, item_id):
+        """return a list of all the answers with the given item_id"""
         dbconn = self.db
         curr = dbconn.cursor()
         curr.execute("""SELECT * FROM answers WHERE \
-                     question_id = %d ORDER BY up_votes DESC;""" % (int(question_id)))
+                     %s_id = %d ORDER BY \
+                     up_votes DESC, date_created DESC;""" % (item, item_id))
         data = curr.fetchall()
         data_items = []
         if not isinstance(data, list):
@@ -75,7 +76,7 @@ class AnswerModel(BaseModel):
         resp = []
         for i, items in enumerate(data_items):
             answer_id, question_id, user_id, text, up_votes, date, user_preferred = items
-            username = BaseModel().get_username_by_id(int(user_id))
+            username = self.get_username_by_id(int(user_id))
             answer = {
                "answer_id":int(answer_id),
                "question_id":int(question_id),

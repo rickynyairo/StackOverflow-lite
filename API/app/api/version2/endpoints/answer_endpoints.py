@@ -13,14 +13,16 @@ from ..models.user_model import UserModel
 from ..models.question_model import QuestionModel
 from ..models.answer_model import AnswerModel
 
-from ..utils.serializers import AnswerDTO
-from ..utils.auth import auth_required 
+from ..utils.serializers import AnswerDTO, AnswerUserDTO
+from ..utils.auth import auth_required
 
 api = AnswerDTO().api
+uapi = AnswerUserDTO().api
 _n_answer = AnswerDTO().n_answer
 _n_answer_resp = AnswerDTO().n_answer_resp
 _edit_answer_resp = AnswerDTO().edit_answer_resp
-_vote_resp = AnswerDTO.vote_answer_resp
+_vote_resp = AnswerDTO().vote_answer_resp
+_get_by_user_resp = AnswerUserDTO().get_by_user_resp
 
 def _validate_input(req):
     """This function validates the user input and rejects or accepts it"""
@@ -151,5 +153,30 @@ class DownVoteAnswer(Resource):
             "message":"success",
             "description":"answer updated succesfully",
             "new_votes":str(votes_for_answer)
+        }
+        return resp, 200
+
+@uapi.route("/")
+class AnswersByUser(Resource):
+    """This class encapsulates the methods to return the answers given by a user"""
+    docu_string = "This endpoint handles GET requests to the answers resource"
+    @uapi.doc(docu_string)
+    @uapi.marshal_with(_get_by_user_resp)
+    @auth_required
+    def get(self, user_id):
+        """
+        This endpoint allows an authorized user to get the answers given by a user
+        """
+        user = UserModel().get_item_by_id(user_id)
+        if isinstance(user, str):
+            # the user id was not found
+            raise NotFound("The user_id provided was not located in the database")
+        answers = AnswerModel()
+        answers_by_user = answers.get_answers_by_item_id("user", user_id)
+        username = user[3]
+        resp = {
+            "message":"success",
+            "username":username,
+            "answers":answers_by_user
         }
         return resp, 200

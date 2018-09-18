@@ -55,6 +55,24 @@ class QuestionUserDTO(object):
         'questions': fields.List(fields.Nested(questions_by_user_resp), required=False, description="list of all the questions")
     })
 
+class AnswerUserDTO(object):
+    """Answers by user Data Transfer Object"""
+    api = Namespace('answers by a user', description='answers given by a user')
+    answer_by_user_id = api.model('answers to a question', {
+        "answer_id":fields.Integer(required=True, description="the identifier of the answer"),
+        "question_id":fields.Integer(required=True, description="identifier of the question"),
+        "username":fields.String(required=True, description="the username of the user who asked the question"),
+        "text":fields.String(required=True, description="the title of the answer"),
+        "date_created":fields.String(required=True, description="the date the answer was created"),
+        "up_votes":fields.Integer(required=True, description="upvotes given to an answer"),
+        "user_preferred":fields.Boolean(required=True, description="whether the answer is preferred by the user who asked the question")
+    })
+    get_by_user_resp = api.model('response to retrieving questions by username', {
+        'message': fields.String(required=True, description="success or fail message"),
+        'username': fields.String(required=True, description="username of the one who gave the answers"),
+        'answers': fields.List(fields.Nested(answer_by_user_id), required=False, description="list of all the answers")
+    })
+
 class QuestionDTO(object):
     """Question Data Transfer Object"""
     api = Namespace('question', description='question resource')

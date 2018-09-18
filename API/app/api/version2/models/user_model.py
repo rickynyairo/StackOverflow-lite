@@ -42,7 +42,7 @@ class UserModel(BaseModel):
     def check_exists(self, username):
         """Check if the records exist"""
         curr = self.db.cursor()
-        query = "SELECT username FROM users WHERE username = '%s'" % (username)
+        query = "SELECT user_id, date_created FROM users WHERE username = '%s'" % (username)
         curr.execute(query)
         return curr.fetchone() is not None
 

@@ -38,7 +38,10 @@
 {% block script %}
 <script>
   let username = "{{ username }}";
-  let html = `Username: <span id="username">${username}</span>`;
+  let userId = "{{ userId }}";
+  let dateJoined = "{{ dateCreated }}";
+  localStorage.setItem("profileId", parseInt(userId))
+  let html = `Username: <span id="username">${username}</span><br/>Joined on: ${dateJoined}`;
   document.getElementById("userHeader").innerHTML = html;
 </script>
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
