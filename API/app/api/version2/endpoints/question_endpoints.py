@@ -52,7 +52,7 @@ class Questions(Resource):
         user_id = g.user
         if not request.data:
             raise BadRequest("The request body is empty, restructure.")
-        req_data = json.loads(request.data.decode().replace("'", '"'))
+        req_data = request.get_json()
         text = req_data['text']
         description = req_data['description']
         data = dict(text=text, description=description)

@@ -103,12 +103,11 @@ class BaseModel(object):
             item_name = table_name[:-1]
             dbconn = self.db
             curr = dbconn.cursor()
-            curr.execute("UPDATE %s SET %s = '%s' \
-                         WHERE %s_id = %d RETURNING text;" % (table_name,
+            curr.execute("""UPDATE {} SET {} = %s \
+                         WHERE {}_id = {} RETURNING text;""".format(table_name,
                                                               field,
-                                                              data,
                                                               item_name,
-                                                              item_id))
+                                                              item_id), (data,))
             updated_field = curr.fetchone()
             dbconn.commit()
             return updated_field
@@ -183,13 +182,13 @@ class BaseModel(object):
         """Checks if the question or answer passed by the user exists"""
         # table_name = "%ss" % (self._type().lower()[:-5])
         table_name = self.__tablename__
-        item_name = item_name = table_name[:-1]
         conn = self.db
         curr = conn.cursor()
         query = """
-                SELECT %s_id FROM %s WHERE text = '%s';
-                """ % (item_name, table_name, text)
-        curr.execute(query)
+                SELECT * FROM {} WHERE text = %s;
+                """.format(table_name)
+        # params = { "table_name":table_name, "text":text}
+        curr.execute(query, (text,))
         item = curr.fetchone()
         if not item:
             # no question exists with that username

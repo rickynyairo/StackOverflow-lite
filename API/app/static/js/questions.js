@@ -16,8 +16,8 @@ postQuestionBtn.addEventListener("click", (event)=>{
     else{
         thisElem("warnings").innerHTML = "";
         let question = {
-            "text":text,
-            "description":description
+            "text":`${text}`,
+            "description":`${description}`
         };
         postQuestion(question);
     }
