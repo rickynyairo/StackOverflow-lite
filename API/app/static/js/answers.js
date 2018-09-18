@@ -88,14 +88,12 @@ function makeAnswer(element, isOwner=false){
     }
 }
 
-function getAnswers(){
-    let path = `/api/v2/questions/${questionId}`;
+function getAnswers(path = `/api/v2/questions/${questionId}`){
     return getData(path)
     .then((response) => {
         if (response.status == 200){
             response.json().then((data) => {
                 let answers = data["answers"];
-                console.log(answers);
                 answers.forEach((element) => {
                     let username = localStorage.getItem("username");
                     if (username == element.username){
@@ -114,16 +112,6 @@ function getAnswers(){
     });
 }
 
-function showPostAnswer(resp){
-    if (resp.message === "Valid"){
-        validatedUser = true;
-        thisElem("postAnswerFieldset").style.display = "block";
-        thisElem("signOutLink").style.display = "block";
-        thisElem("signInLink").style.display = "none";
-        thisElem("profileLink").innerHTML = localStorage.getItem("username");
-        thisElem("profileLink").style.display = "inline-block";
-    }
-}
 function refreshAnswers(){
     thisElem('postAnswerFieldset').style.display = 'none';
     elems = thisElem("answersDiv").children;
@@ -193,13 +181,22 @@ function voteClicked(button){
     let vote = button.innerHTML.toLowerCase();
     voteAnswer(answerId, vote);
 }
-
-if (token){
-    validateUser(token, showPostAnswer);
-}
-
-if (window.location.href.startsWith("/question")){
+function showPostAnswer(resp){
     getAnswers();
+    if (resp.message === "Valid"){
+        thisElem("postAnswerFieldset").style.display = "block";
+        thisElem("signOutLink").style.display = "block";
+        thisElem("signInLink").style.display = "none";
+        thisElem("profileLink").innerHTML = localStorage.getItem("username");
+        thisElem("profileLink").style.display = "inline-block";
+    }
+}
+if (window.location.pathname.startsWith("/question")){
+    if (token){
+        validateUser(token, showPostAnswer);
+    }else{
+        getAnswers();
+    }
 }
 function editAnswer(question){
     let currAns = question.parentNode;

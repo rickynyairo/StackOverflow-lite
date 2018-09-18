@@ -11,26 +11,25 @@ function makeQuestion(element, isOwner=false){
     makeElement("p", "class", "questionMeta", questionId, meta);
     let links = `<a href="/questions/${questionId}">See Answer(s)</a>`;
     if (isOwner){
-        links = `${links}<br/><a onclick=editQuestion(this)>Edit</a>  <a onclick=deleteQuestion(this)>Delete</a>`
+        links = `${links}<br/><a href=# onclick=editQuestion(this)>Edit</a>  <a href=# onclick=deleteQuestion(this)>Delete</a>`
     }
     makeElement("p", "class", "linkSpan", questionId, links);
     return question;
 }
 
-async function getQuestions(path = "/api/v2/questions"){
-    return getData(path)
+function getQuestions(path="/api/v2/questions"){
+    getData(path)
     .then((response) => {
         if (response.status == 200){
             response.json().then((data) => {
                 let questions = data["questions"];
-                console.log(questions);
                 $("#paginationDiv").pagination({
                     dataSource:questions,
                     callback:(data, pagination)=>{
                         $("#questionsDiv").empty();
                         data.forEach((question) => {
                             if(validatedUser){
-                                let username = localStorage.getItem("username");
+                                let username = localStorage.getItem("username");                            
                                 if(question["username"] == username){
                                     makeQuestion(question, true);
                                 }else{
@@ -40,6 +39,10 @@ async function getQuestions(path = "/api/v2/questions"){
                                 makeQuestion(question);
                             }
                         });
+                        let metaItem = thisElem("questionsAsked")
+                        if (metaItem){
+                            metaItem.innerHTML = thisElem("questionsDiv").children.length;
+                        }
                     }
                 });        
             });
@@ -61,20 +64,22 @@ function validUser(resp){
         thisElem("profileLink").innerHTML = localStorage.getItem("username");
         thisElem("profileLink").style.display = "inline-block";
     }
+    getQuestions();
 }
-function refreshQuestions(){
+function refreshQuestions(path="/api/v2/questions"){
     // clear the current questions
     elems = thisElem("questionsDiv").children;
     Array.from(elems).forEach((elem) => {
         elem.parentNode.removeChild(elem);
     });
     // refresh questions
-    getQuestions();
+    getQuestions(path);
 }
 if (window.location.pathname == "/home"){
-    getQuestions();
+    if (token){
+        validateUser(token, validUser);
+    }else{
+        getQuestions();
+    }
 }
 
-if (token){
-    validateUser(token, validUser);
-}

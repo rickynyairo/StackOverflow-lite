@@ -131,6 +131,9 @@ function validateUser(token, callBack){
         user.user_id = data.user_id;
         localStorage.setItem('username', user.username);
         localStorage.setItem('user_id', user.user_id);
+        if (data.message == "Valid"){
+          validatedUser = true;
+        }
         callBack({"message":data.message,"user":user});
       });
       }

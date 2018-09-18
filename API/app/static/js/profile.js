@@ -14,18 +14,18 @@ function openTab(evt, tabName) {
 }
 function validProfileUser(resp){
     if (resp.message == "Valid"){
-        validatedUser = true;
         thisElem("answerTab").style.display = "block";
         thisElem("signOutLink").style.display = "block";
         thisElem("signInLink").style.display = "none";
         thisElem("profileLink").innerHTML = localStorage.getItem("username");
         thisElem("profileLink").style.display = "inline-block";
     }
+    getQuestions(`/api/v2/questions/${currUser}`);
 }
 if (token){
     validateUser(token, validProfileUser);
+}else{
+    getQuestions(`/api/v2/questions/${currUser}`);
 }
-getQuestions(`/api/v2/questions/${currUser}`)
-.then(()=>{
-    thisElem("questionsAsked").innerHTML = thisElem("questionsDiv").children.length;
-});
+
+

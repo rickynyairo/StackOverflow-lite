@@ -15,7 +15,7 @@
   <div class="container">
     <nav class = "item-1" id = "myHeader">
       <a href="{{ url_for('ui.index') }}" id="logo"><img src="{{ url_for('static', filename='img/logo.png') }}" alt="logo" id="logoImage" class = "headerElements"></a>
-      <a href="{{ url_for('ui.home') }}" id="headerLink"><h3>StackOverflow Lite</h3></a>
+      <a href="{{ url_for('ui.home') }}">StackOverflow Lite</a>
       <a href="{{ url_for('ui.home') }}">Home</a>
       <a onclick="loadProfile()" id="profileLink"></a>
       <a onclick="signOut()" id="signOutLink">Sign Out</a>

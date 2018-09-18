@@ -202,7 +202,7 @@ textarea{
   font-style: italic;
 }
 .questionTitle{
-  
+  border-left:solid 3px rgb(117, 104, 240);
   border-right:solid 3px rgb(117, 104, 240);
   background-color: rgba(255, 127, 80, 0.6);
   margin:5px 0 5px 0;
