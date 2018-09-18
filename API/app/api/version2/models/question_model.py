@@ -49,6 +49,30 @@ class QuestionModel(BaseModel):
         curr.close()
         return data
 
+    def get_questions_by_user(self, user_id):
+        """Return a list of questions associated with a particular user"""
+        database = self.db
+        curr = database.cursor()
+        curr.execute("""SELECT question_id, text, description, date_created\
+                     FROM questions WHERE user_id = %d ORDER BY date_created DESC;""" % (user_id)
+                    )
+        data = curr.fetchall()
+        curr.close()
+        # return a list of dictionaries
+        resp = []
+        for i, items in enumerate(data):
+            question_id, text, description, date_created = items
+            username = self.get_username_by_id(int(user_id))
+            item_dict = {
+                "question_id":int(question_id),
+                "username":username,
+                "text":text,
+                "description":description,
+                "date_created":date_created
+            }
+            resp.append(item_dict)
+        return resp
+
     def get_all(self):
         """This function returns a list of all the questions"""
         dbconn = self.db

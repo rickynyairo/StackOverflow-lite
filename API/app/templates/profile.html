@@ -8,7 +8,7 @@
   <div class="tab">
     <button class="tablinks" onclick="openTab(event, 'profile')" id="defaultOpen">Profile</button>
     <button class="tablinks" onclick="openTab(event, 'questions')">Questions</button>
-    <button class="tablinks" onclick="openTab(event, 'answers')">Answers</button>
+    <button class="tablinks" onclick="openTab(event, 'answers')" id="answerTab">Answers</button>
   </div>
 
   <!-- Tab content -->
@@ -38,7 +38,7 @@
 {% block script %}
 <script>
   let username = "{{ username }}";
-  let html = `Welcome <span id="username">${username}</span>`;
+  let html = `Username: <span id="username">${username}</span>`;
   document.getElementById("userHeader").innerHTML = html;
 </script>
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>

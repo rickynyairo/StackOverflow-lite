@@ -168,3 +168,8 @@ function showDialog(html){
   });
   thisElem("myModal").style.display = "block";
 }
+
+function loadProfile(){
+  let username = localStorage.getItem("username");
+  window.location.href = `/profile/${username}`;
+}

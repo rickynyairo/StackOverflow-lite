@@ -149,8 +149,13 @@ nav a:hover{
   text-decoration: underline;
 }
 #headerLink{
-  font-size: 20px;
   line-height:38px;
+}
+#profileLink{
+  display: none;
+}
+#answerTab{
+  display: none;
 }
 #searchButton{
   width:40px;

@@ -1,5 +1,5 @@
-const questionId = parseInt(document.getElementsByTagName("h3")[0].getAttribute("id"));
-const postAnswerBtn = thisElem("postAnswer");
+let questionId = parseInt(document.getElementsByClassName("questionHeader")[0].id);
+let postAnswerBtn = thisElem("postAnswer");
 let asker = false;
 
 postAnswerBtn.addEventListener('click', ()=>{
@@ -68,7 +68,7 @@ function makeAnswer(element, isOwner=false){
         accept = "Reject";
     }
     makeElement("p", "class", "answer", answerId, text);
-    let meta = `Total votes: ${upvotes}<br/>Answered by ${username} on ${dateCreated}`;
+    let meta = `Total votes: ${upvotes}<br/>Answered by <a href="/profile/${username}">${username}</a> on ${dateCreated}`;
     makeElement("p", "class", "answerMeta", answerId, meta);
     if (validatedUser){
         let upBtn = makeElement("button", "class", "buttons", answerId, "Upvote");
@@ -120,6 +120,8 @@ function showPostAnswer(resp){
         thisElem("postAnswerFieldset").style.display = "block";
         thisElem("signOutLink").style.display = "block";
         thisElem("signInLink").style.display = "none";
+        thisElem("profileLink").innerHTML = localStorage.getItem("username");
+        thisElem("profileLink").style.display = "inline-block";
     }
 }
 function refreshAnswers(){
@@ -192,10 +194,12 @@ function voteClicked(button){
     voteAnswer(answerId, vote);
 }
 
-
-getAnswers();
 if (token){
     validateUser(token, showPostAnswer);
+}
+
+if (window.location.href.startsWith("/question")){
+    getAnswers();
 }
 function editAnswer(question){
     let currAns = question.parentNode;

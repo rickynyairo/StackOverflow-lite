@@ -7,7 +7,7 @@ function makeQuestion(element, isOwner=false){
     let question = makeElement("div", "id", questionId, "questionsDiv");
     makeElement("p", "class", "questionTitle", questionId, text);
     makeElement("p", "class", "questionDesc", questionId, description);
-    let meta = `Asked by ${username} on ${dateCreated}`;
+    let meta = `Asked by <a href="/profile/${username}">${username}</a> on ${dateCreated}`;
     makeElement("p", "class", "questionMeta", questionId, meta);
     let links = `<a href="/questions/${questionId}">See Answer(s)</a>`;
     if (isOwner){
@@ -58,6 +58,8 @@ function validUser(resp){
         thisElem("postQuestionFieldset").style.display = "block";
         thisElem("signOutLink").style.display = "block";
         thisElem("signInLink").style.display = "none";
+        thisElem("profileLink").innerHTML = localStorage.getItem("username");
+        thisElem("profileLink").style.display = "inline-block";
     }
 }
 function refreshQuestions(){

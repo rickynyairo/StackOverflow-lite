@@ -46,6 +46,7 @@ class QuestionUserDTO(object):
                 "question_id":fields.Integer(required=True, description="identifier of the question"),
                 "username":fields.String(required=True, description="the username of the user who asked the question"),
                 "text":fields.String(required=True, description="the title of the question"),
+                'description': fields.String(required=True, description="a description of the question"),
                 "date_created":fields.String(required=True, description="the date the question was created")
     })
     get_by_user_resp = api.model('response to retrieving questions by username', {

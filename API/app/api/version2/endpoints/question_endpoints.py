@@ -207,16 +207,7 @@ class GetUserQuestion(Resource):
             raise NotFound("The username provided does not exist")
         user_id = user_id[0]
         quest = QuestionModel()
-        questions = quest.get_items_by_id(item='user',
-                                          item_id=int(user_id))
-        list_of_questions = []
-        if not questions:
-            # no question was not found
-            raise NotFound("The user has no questions in the database")
-        if not isinstance(questions, list):
-            list_of_questions.append(questions)
-        else:
-            list_of_questions = questions[:]
+        questions = quest.get_questions_by_user(int(user_id))
         resp = {
             "message":"success",
             "username":username,
