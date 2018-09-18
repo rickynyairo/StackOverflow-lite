@@ -82,7 +82,7 @@ class AnswerModel(BaseModel):
                "question_id":int(question_id),
                "username":username,
                "text":text,
-               "date_created":date,
+               "date_created":date.strftime("%B %d, %Y"),
                "up_votes":int(up_votes),
                "user_preferred":user_preferred
             }

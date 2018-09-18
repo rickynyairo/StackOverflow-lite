@@ -12,6 +12,7 @@ function openTab(evt, tabName) {
     thisElem(tabName).style.display = "block";
     evt.currentTarget.className += " active";
 }
+
 function validProfileUser(resp){
     if (resp.message == "Valid"){
         thisElem("answerTab").style.display = "block";
@@ -19,6 +20,8 @@ function validProfileUser(resp){
         thisElem("signInLink").style.display = "none";
         thisElem("profileLink").innerHTML = localStorage.getItem("username");
         thisElem("profileLink").style.display = "inline-block";
+        let userId = localStorage.getItem("profileId");
+        getAnswers(`/api/v2/answers/users/${userId}`);
     }
     getQuestions(`/api/v2/questions/${currUser}`);
 }

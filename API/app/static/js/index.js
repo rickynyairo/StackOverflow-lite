@@ -26,7 +26,13 @@ function postData(path, data, token="token"){
 }
 
 function getData(path){
-  return fetch(path);
+  return fetch(path, {
+    method:"GET",
+    headers:{
+      "Content-Type":"application/json",
+      "Authorization":`Bearer ${token}`
+    }
+  });
 }
 
 function putData(params){

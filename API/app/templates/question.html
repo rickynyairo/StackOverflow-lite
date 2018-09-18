@@ -22,7 +22,9 @@
 <script>
   let username = "{{ username }}";
   let dateCreated = "{{ dateCreated }}";
+  let questionId = parseInt(document.getElementsByClassName("questionHeader")[0].id);
   let html = `Asked by <a href="/profile/${username}" id="askerUname">${username}</a> on ${dateCreated}`;
+  localStorage.setItem("refreshAnsPath", `/api/v2/questions/${questionId}`);
   document.getElementsByClassName("questionMeta")[0].innerHTML = html;
 </script>
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>

@@ -68,7 +68,7 @@ class QuestionModel(BaseModel):
                 "username":username,
                 "text":text,
                 "description":description,
-                "date_created":date_created
+                "date_created":date_created.strftime("%B %d, %Y")
             }
             resp.append(item_dict)
         return resp
@@ -88,7 +88,7 @@ class QuestionModel(BaseModel):
                username=self.get_username_by_id(int(user_id)),
                text=text,
                description=description,
-               date_created=date
+               date_created=date.strftime("%B %d, %Y")
             )
             resp.append(question)
         return resp

@@ -18,6 +18,7 @@ function makeQuestion(element, isOwner=false){
 }
 
 function getQuestions(path="/api/v2/questions"){
+    localStorage.setItem("refreshQuestionsPath", path);
     getData(path)
     .then((response) => {
         if (response.status == 200){
@@ -39,7 +40,7 @@ function getQuestions(path="/api/v2/questions"){
                                 makeQuestion(question);
                             }
                         });
-                        let metaItem = thisElem("questionsAsked")
+                        let metaItem = thisElem("questionsAsked");
                         if (metaItem){
                             metaItem.innerHTML = thisElem("questionsDiv").children.length;
                         }
@@ -66,7 +67,8 @@ function validUser(resp){
     }
     getQuestions();
 }
-function refreshQuestions(path="/api/v2/questions"){
+function refreshQuestions(){
+    let path = localStorage.getItem("refreshQuestionsPath");
     // clear the current questions
     elems = thisElem("questionsDiv").children;
     Array.from(elems).forEach((elem) => {

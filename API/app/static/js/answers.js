@@ -1,4 +1,4 @@
-let questionId = parseInt(document.getElementsByClassName("questionHeader")[0].id);
+questionId = parseInt(document.getElementsByClassName("questionHeader")[0].id);
 let postAnswerBtn = thisElem("postAnswer");
 let asker = false;
 
@@ -14,7 +14,12 @@ postAnswerBtn.addEventListener('click', ()=>{
 });
 
 function mouseIn(answer){
-    if (localStorage.getItem("username") == thisElem("askerUname").innerHTML){
+    let unameElem = thisElem("askerUname");
+    let username = "";
+    if (unameElem){
+        username = unameElem.innerHTML;
+    }
+    if (localStorage.getItem("username") == username){
         let acceptBtn = answer.children[answer.children.length-1];
         acceptBtn.style.display = "inline-block";
     } 
@@ -56,12 +61,14 @@ function acceptAnswer(answer){
 }
 function makeAnswer(element, isOwner=false){
     let answerId = element["answer_id"];
+    let questionId = element["question_id"];
     let text = element["text"];
     let username = element["username"];
     let dateCreated = element["date_created"];
     let upvotes = element["up_votes"];
     let user_preferred = element["user_preferred"];
     let ansElem = makeElement("div", "id", answerId, "answersDiv");
+    ansElem.setAttribute("name", questionId);
     let accept = "Accept";
     if (user_preferred){
         ansElem.setAttribute("class", "preferred");
@@ -72,10 +79,10 @@ function makeAnswer(element, isOwner=false){
     makeElement("p", "class", "answerMeta", answerId, meta);
     if (validatedUser){
         let upBtn = makeElement("button", "class", "buttons", answerId, "Upvote");
-        upBtn.setAttribute("onclick", "voteClicked(this)");
+        upBtn.setAttribute("onclick", "voteAnswer(this)");
         upBtn.setAttribute("name", "upvote");
         let downBtn = makeElement("button", "class", "buttons", answerId, "Downvote"); 
-        downBtn.setAttribute("onclick", "voteClicked(this)");
+        downBtn.setAttribute("onclick", "voteAnswer(this)");
         downBtn.setAttribute("name", "downvote");
         if (isOwner){
             let editBtn = makeElement("button", "class", "buttons", answerId, "Edit");
@@ -89,6 +96,7 @@ function makeAnswer(element, isOwner=false){
 }
 
 function getAnswers(path = `/api/v2/questions/${questionId}`){
+    localStorage.setItem("refreshAnsPath", path);
     return getData(path)
     .then((response) => {
         if (response.status == 200){
@@ -102,6 +110,12 @@ function getAnswers(path = `/api/v2/questions/${questionId}`){
                         makeAnswer(element);
                     }
                 });
+                if (window.location.pathname.startsWith("/profile")){
+                    thisElem("answersGiven").innerHTML = thisElem("answersDiv").children.length;
+                    let quesIds = answers.map(ans => parseInt(ans["question_id"]));
+                    let questionsAnswered = new Set(quesIds).size;
+                    thisElem("questionsAnswered").innerHTML = questionsAnswered;
+                }
             });
         }
         else{
@@ -113,7 +127,11 @@ function getAnswers(path = `/api/v2/questions/${questionId}`){
 }
 
 function refreshAnswers(){
-    thisElem('postAnswerFieldset').style.display = 'none';
+    let path = localStorage.getItem("refreshAnsPath");
+    let postAns = thisElem('postAnswerFieldset')
+    if (postAns){
+        postAns.style.display = 'none';
+    }
     elems = thisElem("answersDiv").children;
     Array.from(elems).forEach((elem) => {
         if (Number.isInteger(parseInt(elem.id))){
@@ -121,10 +139,10 @@ function refreshAnswers(){
         }
     });
     // refresh questions
-    getAnswers()
+    getAnswers(path)
     .then(()=>{
-        if (validatedUser){
-            thisElem('postAnswerFieldset').style.display = 'block';
+        if (validatedUser && postAns){
+            postAns.style.display = 'block';
         }
     });
 }
@@ -150,7 +168,11 @@ function postAnswer(answer){
         console.log("Error: ", error);
     })
 }
-function voteAnswer(answerId, vote){
+
+function voteAnswer(button){
+    let questionId = parseInt(button.parentNode.getAttribute("name"));
+    let answerId = parseInt(button.parentNode.id);
+    let vote = button.getAttribute("name");
     let path = `/api/v2/questions/${questionId}/answers/${answerId}/${vote}`;
     let params = {
         "path":path,
@@ -176,11 +198,6 @@ function voteAnswer(answerId, vote){
     });
 }
 
-function voteClicked(button){
-    let answerId = parseInt(button.parentNode.id);
-    let vote = button.innerHTML.toLowerCase();
-    voteAnswer(answerId, vote);
-}
 function showPostAnswer(resp){
     getAnswers();
     if (resp.message === "Valid"){
@@ -200,6 +217,7 @@ if (window.location.pathname.startsWith("/question")){
 }
 function editAnswer(question){
     let currAns = question.parentNode;
+    let questionId = parseInt(currAns.getAttribute("name"));
     let answerId = currAns.id;
     let text = currAns.children[0].innerHTML;
     let editFieldset = `<fieldset id>

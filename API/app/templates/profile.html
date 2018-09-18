@@ -18,6 +18,7 @@
       <legend> Stats </legend>
       <p class = "stats">Questions Asked: <span id="questionsAsked"></span></p>
       <p class = "stats">Answers Given: <span id="answersGiven"></span></p>
+      <p class = "stats">Questions Answered: <span id="questionsAnswered"></span></p>
     </fieldset>
   </div>
 
@@ -29,7 +30,7 @@
 
   <div id="answers" class="tabcontent">
     <h3>Answers Given</h3>
-    <div id="answersDiv-1"></div>
+    <div id="answersDiv"></div>
   </div>
 </div>
 
@@ -39,13 +40,16 @@
 <script>
   let username = "{{ username }}";
   let userId = "{{ userId }}";
+  userId = parseInt(userId);
   let dateJoined = "{{ dateCreated }}";
-  localStorage.setItem("profileId", parseInt(userId))
+  localStorage.setItem("profileId", userId)
+  localStorage.setItem("refreshAnsPath", `/api/v2/answers/users/${userId}`);
   let html = `Username: <span id="username">${username}</span><br/>Joined on: ${dateJoined}`;
   document.getElementById("userHeader").innerHTML = html;
 </script>
 <script src="{{ url_for('static', filename='js/index.js') }}"></script>
 <script src="{{ url_for('static', filename='js/home.js') }}"></script>
+<script src="{{ url_for('static', filename='js/questions.js') }}"></script>
 <script src="{{ url_for('static', filename='js/answers.js') }}"></script>
 <script src="{{ url_for('static', filename='js/profile.js') }}"></script>
 <script>

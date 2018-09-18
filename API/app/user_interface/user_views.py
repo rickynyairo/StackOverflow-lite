@@ -29,7 +29,7 @@ class ProfilePage(MethodView):
             context = {
                 "userId":int(user[0]),
                 "username":username,
-                "dateCreated":user[1]
+                "dateCreated":user[1].strftime("%B %d, %Y")
             }
             return render_template("profile.html", **context)
         else:
@@ -51,7 +51,7 @@ class QuestionPage(MethodView):
                 "questionText":question[2],
                 "questionDesc":question[3],
                 "username":username,
-                "dateCreated":date
+                "dateCreated":date.strftime("%B %d, %Y")
 
             }
         return render_template('question.html', **context)

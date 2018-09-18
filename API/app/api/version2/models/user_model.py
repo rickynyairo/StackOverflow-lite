@@ -44,7 +44,7 @@ class UserModel(BaseModel):
         curr = self.db.cursor()
         query = "SELECT user_id, date_created FROM users WHERE username = '%s'" % (username)
         curr.execute(query)
-        return curr.fetchone() is not None
+        return curr.fetchone() or None
 
     def logout_user(self, token):
         """This function logs out a user by adding thei token to the blacklist table"""
