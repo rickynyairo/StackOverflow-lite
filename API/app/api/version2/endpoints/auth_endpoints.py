@@ -95,7 +95,7 @@ class AuthLogin(Resource):
     @api.marshal_with(_user_resp, code=200)
     def post(self):
         """This endpoint accepts POST requests to allow a registered user to log in."""       
-        req_data = json.loads(request.data.decode().replace("'", '"'))
+        req_data = request.get_json()
         login_details = {
             "username":req_data['username'],
             "password":req_data['password']
@@ -147,29 +147,18 @@ class AuthLogout(Resource):
 @api.route('/validate')
 class AuthValidate(Resource):
     """This class collects the methods for the questions endpoint"""
-    
     docu_string = "This endpoint validates a token"
     @api.doc(docu_string)
     @api.marshal_with(_validate_user_resp, code=200)
+    @auth_required
     def post(self):
         """This endpoint validates a token"""
-        auth_header = request.headers.get('Authorization')
-        if not auth_header:
-            raise BadRequest(
-                "No authorization header provided. This resource is secured.")
-        auth_token = auth_header.split(" ")[1]
-        response = UserModel().decode_auth_token(auth_token)
-        if isinstance(response, str):
-            # token is either invalid, expired or blacklisted
-            raise Unauthorized(response)
-        else:
-            # the token decoded succesfully
-            user = UserModel().get_item_by_id(response)
-            user_id = int(user[0])
-            username = user[3]
-            resp = {
-                "message":"Valid",
-                "user_id":"{}".format(user_id),
-                "username":username
-            }
-            return resp, 200
+        user = UserModel().get_item_by_id(g.user)
+        user_id = int(user[0])
+        username = user[3]
+        resp = {
+            "message":"Valid",
+            "user_id":"{}".format(user_id),
+            "username":username
+        }
+        return resp, 200

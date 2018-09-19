@@ -132,7 +132,6 @@ class AuthTest(unittest.TestCase):
             }
         validate = self.client.post(path=path, headers=headers)
         self.assertEqual(validate.status_code, 401)
-        self.assertEqual(validate.json["message"], "invalid")
 
 
     def tearDown(self):

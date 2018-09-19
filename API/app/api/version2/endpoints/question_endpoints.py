@@ -50,8 +50,6 @@ class Questions(Resource):
     def post(self):
         """This endpoint allows a registered user to post a question."""
         user_id = g.user
-        if not request.data:
-            raise BadRequest("The request body is empty, restructure.")
         req_data = request.get_json()
         text = req_data['text']
         description = req_data['description']

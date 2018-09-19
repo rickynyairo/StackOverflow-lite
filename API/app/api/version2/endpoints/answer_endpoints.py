@@ -54,7 +54,7 @@ class Answers(Resource):
     def post(self, question_id):
         """This endpoint handles post requests to enable a user to post an answer to a question"""
         user_id = g.user
-        req_data = json.loads(request.data.decode().replace("'", '"'))
+        req_data = request.get_json()
         _validate_input(req_data)
         text = req_data['text']
         # save answer in db
@@ -97,7 +97,7 @@ class GetAnswer(Resource):
         user_id = int(g.user)
         if user_id == int(answer_author_id):
             try:
-                new_text = json.loads(request.data.decode().replace("'", '"'))['text']  
+                new_text = request.get_json()['text']  
             except Exception as error:
                 raise BadRequest("You have to include a text field")  
             value = answers.update_item(field="text",

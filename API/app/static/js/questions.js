@@ -105,7 +105,10 @@ function editQuestion(question){
                     thisElem("myModal").style.display = "none";
                     refreshQuestions();
                 }else{
-                    res.json().then((data) => {console.info("Failed: ", data);});
+                    res.json().then((data) => {
+                        console.info("Failed: ", data);
+                        thisElem("editWarnings").innerHTML = JSON.dumps(data)
+                    });
                 }
             })
             .catch((err) => {console.error("Error: ", err);});
