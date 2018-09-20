@@ -1,18 +1,15 @@
-const hostname = window.location.hostname
 const token = localStorage.getItem("AuthToken");
 let validatedUser = false;
-
-submitBtn = document.getElementById('submitButton')
-if (submitBtn){
-  submitBtn.addEventListener('click', (event) => {
-    event.preventDefault();
-    signUp();
-  });
-}
 
 function thisElem(id){
   return document.getElementById(id);
 }
+
+thisElem('submitButton').addEventListener('click', (event) => {
+    event.preventDefault();
+    signUp();
+  });
+
 
 function postData(path, data, token="token"){
   return fetch(path, {
@@ -173,6 +170,11 @@ function showDialog(html){
     thisElem("modalDiv").remove();
   }
   makeElement("div", "id", "modalDiv", "modalContent", html);
+  if (thisElem("cancel")){
+    thisElem("cancel").addEventListener("click", () => {
+      thisElem("myModal").style.display = "none";
+    });
+  }
   thisElem("myModal").style.display = "block";
 }
 

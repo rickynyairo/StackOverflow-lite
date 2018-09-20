@@ -1,28 +1,7 @@
 let mostAnsweredBtn = thisElem("mostAnswered");
 let postQuestionBtn = thisElem("postQuestion");
-mostAnsweredBtn.addEventListener("click", (event)=>{
-    console.log(event);
-    getMostAnswered();
-})
-
-postQuestionBtn.addEventListener("click", (event)=>{
-    console.log(event);
-    let text = thisElem("questionText").value;
-    let description = thisElem("questionDescription").value;
-    if (text.length < 10 || description.length < 10){
-        //to short or unfilled
-        thisElem("warnings").innerHTML = "The text/description is invalid";
-    }
-    else{
-        thisElem("warnings").innerHTML = "";
-        let question = {
-            "text":`${text}`,
-            "description":`${description}`
-        };
-        postQuestion(question);
-    }
-})
-
+mostAnsweredBtn.addEventListener("click", getMostAnswered);
+postQuestionBtn.addEventListener("click", postQuestion);
 
 function getMostAnswered(){
     //load the question page with the id of the most answered question
@@ -43,28 +22,40 @@ function getMostAnswered(){
     });
 }
 
-function postQuestion(question){
-    let token = localStorage.getItem("AuthToken");
-    let path = "/api/v2/questions";
-    postData(path, question, token)
-    .then((result) => {
-        if (result.status == 201){
-            // question posted successfully
-            result.json().then((resp) => {
-                console.log("question posted: ", resp);
-                thisElem("questionText").value = "";
-                thisElem("questionDescription").value = "";
-                refreshQuestions();
-            });
-        }else{
-            result.json().then((data) => {
-                showDialog(JSON.stringify(data));
-            });
-        }
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+function postQuestion(){
+    let text = thisElem("questionText").value;
+    let description = thisElem("questionDescription").value;
+    if (text.length < 10 || description.length < 10){
+        //to short or unfilled
+        thisElem("warnings").innerHTML = "The text/description is invalid";
+    }
+    else{
+        thisElem("warnings").innerHTML = "";
+        let question = {
+            "text":`${text}`,
+            "description":`${description}`
+        };
+        let path = "/api/v2/questions";
+        postData(path, question, token)
+        .then((result) => {
+            if (result.status == 201){
+                // question posted successfully
+                result.json().then((resp) => {
+                    console.log("question posted: ", resp);
+                    thisElem("questionText").value = "";
+                    thisElem("questionDescription").value = "";
+                    refreshQuestions();
+                });
+            }else{
+                result.json().then((data) => {
+                    showDialog(JSON.stringify(data));
+                });
+            }
+        })
+        .catch((err) => {
+            console.log(err);
+        });
+    }
 }
 
 function editQuestion(question){
@@ -82,10 +73,7 @@ function editQuestion(question){
                             <button id="editQuestion">Edit</button>
                             <button id="cancel">Cancel</button>
                         </fieldset>`;
-    if (thisElem("modalDiv")){
-        thisElem("modalDiv").remove();
-    }
-    makeElement("div", "id", "modalDiv", "modalContent", editFieldset);
+    showDialog(editFieldset);
     thisElem("editQuestion").addEventListener("click", () => {
         let path = `/api/v2/questions/${questionId}`
         let editedText = thisElem("editText").value;
@@ -117,7 +105,6 @@ function editQuestion(question){
     thisElem("cancel").addEventListener("click", () => {
         thisElem("myModal").style.display = "none";
     });
-    thisElem("myModal").style.display = "block";
 }
 
 function deleteQuestion(question){
@@ -129,11 +116,9 @@ function deleteQuestion(question){
                       <h4>${text}</h4>
                       <p>${desc}</p>
                       <button id="deleteQstn">Delete</button>
-                      <button id="cancel">Cancel</button>` ;
-    if (thisElem("modalDiv")){
-        thisElem("modalDiv").remove();
-    }
-    makeElement("div", "id", "modalDiv", "modalContent", deleteHTML);
+                      <button id="cancel">Cancel</button>`;
+    
+    showDialog(deleteHTML);
     thisElem("deleteQstn").addEventListener("click", () => {
         let path = `/api/v2/questions/${questionId}`
         deleteData({path, token})
@@ -151,8 +136,4 @@ function deleteQuestion(question){
         })
         .catch((err) => {console.error("Error: ", err);});
     });
-    thisElem("cancel").addEventListener("click", () => {
-        thisElem("myModal").style.display = "none";
-    });
-    thisElem("myModal").style.display = "block";
 }

@@ -17,17 +17,17 @@ class UserDTO(object):
     n_user_resp = api.model('response to signup',{
         'message': fields.String(required=True, description="success or fail message"),
         'AuthToken': fields.String(required=True, description="authentication token"),
-        'username': fields.String(required=True, description="user's username"),    
+        'username': fields.String(required=True, description="user's username"),
         'user_id': fields.String(required=True, description="user's id")
     })
     user_resp = api.model('response to login',{
         'message': fields.String(required=True, description="success or fail message"),
         'AuthToken': fields.String(required=True, description="authentication token"),
-        'name': fields.String(required=True, description="user's username"),      
+        'name': fields.String(required=True, description="user's username"),
         'date_created': fields.String(required=True, description="user's id")
     })
     user =  api.model('login request', {
-        'username': fields.String(required=True, description="user's username"),  
+        'username': fields.String(required=True, description="user's username"),
         'password': fields.String(required=True, description="user's password")
     })
     user_logout = api.model('logout request', {
