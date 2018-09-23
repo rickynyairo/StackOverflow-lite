@@ -7,24 +7,31 @@
   <link rel="shortcut icon" type="image/png" href="lib/jasmine-3.2.0/jasmine_favicon.png">
   <link rel="stylesheet" href="lib/jasmine-3.2.0/jasmine.css">
 
-  <!-- <script src="lib/jquery.min.js"></script> -->
+  <!-- <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> -->
   <script src="lib/jasmine-3.2.0/jasmine.js"></script>
   <script src="lib/jasmine-3.2.0/jasmine-html.js"></script>
   <script src="lib/jasmine-3.2.0/boot.js"></script>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="lib/sinon.js"></script>
 
+  <script src="lib/jquery.min.js"></script>
   <script src="lib/pagination.min.js"></script>
   <!-- source files -->
   <script src="../../static/js/index.js"></script>
 
 
   <!-- spec files -->
-  <script src="spec/TestIndex.js"></script>
+  <script src="spec/IndexSpec.js"></script>
 
 </head>
 
 <body>
-  <div id="testElements"></div>
+  <div id="testElements">
+    <div id="myModal" class="modal">
+      <div id = "modalContent" class="modal-content">
+        <span class="close">&times;</span>
+        <!-- The content of the dialog box will go here -->
+      </div>
+    </div>
+  </div>
 </body>
 </html>

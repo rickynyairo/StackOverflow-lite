@@ -5,11 +5,6 @@ function thisElem(id){
   return document.getElementById(id);
 }
 
-thisElem('submitButton').addEventListener('click', (event) => {
-    event.preventDefault();
-    signUp();
-  });
-
 
 function postData(path, data, token="token"){
   return fetch(path, {
@@ -68,7 +63,7 @@ function makeElement(elementType, attr, value, parentId, inner=""){
 }
 function toggleDisplay(id){
   let currStyle = thisElem(id).style.display;
-  if (currStyle == "none"){
+  if (currStyle == ""){
     currStyle = "block";
   }else{
     currStyle = "none";
@@ -152,16 +147,20 @@ function validateUser(token, callBack){
     });
 }
 
-let modal = thisElem("myModal");
-let span = document.getElementsByClassName("close")[0];
-
-span.onclick = () => {
-  modal.style.display = "none";
+if (document.getElementsByClassName("close")[0]){
+  let span = document.getElementsByClassName("close")[0];
+  span.onclick = () => {
+    thisElem("myModal").style.display = "none";
+  }
+  thisElem('submitButton').addEventListener('click', (event) => {
+    event.preventDefault();
+    signUp();
+  });
 }
 
 window.onclick = function(event) {
-  if (event.target == modal) {
-      modal.style.display = "none";
+  if (event.target == thisElem("myModal")) {
+    thisElem("myModal").style.display = "none";
   }
 }
 
