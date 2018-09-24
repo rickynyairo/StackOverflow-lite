@@ -20,7 +20,7 @@ before_script:
   - psql -c "GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public to postgres ;" -U postgres
 
 script:
-  - nosetests API/app/tests -v --with-coverage --cover-package=app
+  - nosetests API/app/tests -v --with-coverage --cover-package=app.api
 
 after_success:
   - coveralls
