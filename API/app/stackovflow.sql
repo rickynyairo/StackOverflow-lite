@@ -82,3 +82,9 @@ ALTER TABLE ONLY answers
     ADD CONSTRAINT users_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(user_id) ON UPDATE CASCADE NOT VALID;
 
 ALTER TABLE users ADD UNIQUE (email, username);
+
+ALTER TABLE answers
+    ADD COLUMN down_votes numeric DEFAULT 0;
+
+ALTER TABLE answers
+    ADD COLUMN voters json;

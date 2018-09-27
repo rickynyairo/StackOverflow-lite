@@ -127,7 +127,8 @@ class UpVoteAnswer(Resource):
         """
         _locate_question_and_answer(question_id, answer_id)
         answers = AnswerModel()
-        votes_for_answer = answers.vote_answer(answer_id, 1)
+        user_id = int(g.user)
+        votes_for_answer = answers.up_vote_answer(answer_id, user_id)
         resp = {
             "message":"success",
             "description":"answer updated succesfully",
@@ -148,7 +149,8 @@ class DownVoteAnswer(Resource):
         """
         _locate_question_and_answer(question_id, answer_id)
         answers = AnswerModel()
-        votes_for_answer = answers.vote_answer(answer_id, -1)
+        user_id = int(g.user)
+        votes_for_answer = answers.down_vote_answer(answer_id, user_id)
         resp = {
             "message":"success",
             "description":"answer updated succesfully",

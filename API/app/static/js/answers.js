@@ -66,6 +66,7 @@ function makeAnswer(element, isOwner=false){
     let username = element["username"];
     let dateCreated = element["date_created"];
     let upvotes = element["up_votes"];
+    let downvotes = element["down_votes"];
     let user_preferred = element["user_preferred"];
     let ansElem = makeElement("div", "id", answerId, "answersDiv");
     ansElem.setAttribute("name", questionId);
@@ -75,13 +76,13 @@ function makeAnswer(element, isOwner=false){
         accept = "Reject";
     }
     makeElement("p", "class", "answer", answerId, text);
-    let meta = `Total votes: ${upvotes}<br/>Answered by <a href="/profile/${username}">${username}</a> on ${dateCreated}`;
+    let meta = `Answered by <a href="/profile/${username}">${username}</a> on ${dateCreated}`;
     makeElement("p", "class", "answerMeta", answerId, meta);
     if (validatedUser){
-        let upBtn = makeElement("button", "class", "buttons", answerId, "Upvote");
+        let upBtn = makeElement("button", "class", "buttons", answerId, `Upvote | ${upvotes}`);
         upBtn.setAttribute("onclick", "voteAnswer(this)");
         upBtn.setAttribute("name", "upvote");
-        let downBtn = makeElement("button", "class", "buttons", answerId, "Downvote"); 
+        let downBtn = makeElement("button", "class", "buttons", answerId, `Downvote | ${downvotes}`); 
         downBtn.setAttribute("onclick", "voteAnswer(this)");
         downBtn.setAttribute("name", "downvote");
         if (isOwner){

@@ -65,6 +65,7 @@ class AnswerUserDTO(object):
         "text":fields.String(required=True, description="the title of the answer"),
         "date_created":fields.String(required=True, description="the date the answer was created"),
         "up_votes":fields.Integer(required=True, description="upvotes given to an answer"),
+        "down_votes":fields.Integer(required=True, description="downvotes given to an answer"),
         "user_preferred":fields.Boolean(required=True, description="whether the answer is preferred by the user who asked the question")
     })
     get_by_user_resp = api.model('response to retrieving questions by username', {
@@ -112,6 +113,7 @@ class QuestionDTO(object):
         "text":fields.String(required=True, description="the title of the answer"),
         "date_created":fields.String(required=True, description="the date the answer was created"),
         "up_votes":fields.Integer(required=True, description="upvotes given to an answer"),
+        "down_votes":fields.Integer(required=True, description="downvotes given to an answer"),
         "user_preferred":fields.Boolean(required=True, description="whether the answer is preferred by the user who asked the question")
     })
     get_question_resp = api.model('response to get questions', {

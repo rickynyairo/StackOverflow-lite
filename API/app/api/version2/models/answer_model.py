@@ -2,6 +2,7 @@
 This module defines the answers model and associated functions
 """
 from datetime import datetime, timedelta
+import json
 
 from .... import create_app
 from ....database import init_db
@@ -49,13 +50,72 @@ class AnswerModel(BaseModel):
         dbconn.commit()
         return data
 
-    def vote_answer(self, answer_id, vote):
+    def up_vote_answer(self, answer_id, user_id):
         """This function increments or decrements the up_vote field"""
         dbconn = self.db
         curr = dbconn.cursor()
+        curr.execute("SELECT voters FROM answers \
+                              WHERE answer_id = %s;", (answer_id,))
+        voters  = curr.fetchone()[0]
+        data = {}
+        votes = 1
+        if not voters:
+            data = json.dumps({ "up_voters":[user_id], "down_voters":[] })
+        else:
+            data = voters
+            up_voters = data["up_voters"]
+            if user_id not in up_voters:
+                # the user has not upvoted the answer
+                up_voters.append(user_id)
+            else:
+                up_voters.remove(user_id)
+                votes = -1
+            data = json.dumps({ "up_voters":up_voters, "down_voters":data["down_voters"] })
+        query = "UPDATE answers SET voters = %s WHERE answer_id = %s RETURNING voters;"
+        # import pdb;pdb.set_trace()
+        curr.execute(query, (data, answer_id))
+        # new_voters = curr.fetchone()[0]
         curr.execute("""UPDATE answers SET up_votes = \
-                     up_votes + %d WHERE answer_id = %d \
-                     RETURNING up_votes;""" % (vote, int(answer_id)))
+                     up_votes + %s WHERE answer_id = %s \
+                     RETURNING up_votes;""", (votes, int(answer_id)))
+        data = curr.fetchone()[0]
+        dbconn.commit()
+        return int(data)
+
+    def down_vote_answer(self, answer_id, user_id):
+        """This function increments or decrements the down_vote field"""
+        dbconn = self.db
+        curr = dbconn.cursor()
+        curr.execute("SELECT down_votes, voters FROM answers \
+                              WHERE answer_id = %s;", (answer_id,))
+        res  = curr.fetchone()
+        voters = res[1]
+        down_votes = res[0]
+        if not down_votes:
+            curr.execute("""UPDATE answers SET down_votes = 0 \
+                         WHERE answer_id = %s;""", (int(answer_id),))
+            dbconn.commit()
+        data = {}
+        votes = 1
+        if not voters:
+            data = json.dumps({ "up_voters":[], "down_voters":[user_id] })
+        else:
+            data = voters
+            down_voters = data["down_voters"]
+            if user_id not in down_voters:
+                # the user has not downvoted the answer
+                down_voters.append(user_id)
+            else:
+                down_voters.remove(user_id)
+                votes = -1
+            data = json.dumps({ "up_voters":data["up_voters"], "down_voters":down_voters })
+        query = "UPDATE answers SET voters = %s WHERE answer_id = %s RETURNING voters;"
+        # import pdb;pdb.set_trace()
+        curr.execute(query, (data, answer_id))
+        # new_voters = curr.fetchone()[0]
+        curr.execute("""UPDATE answers SET down_votes = \
+                     down_votes + %s WHERE answer_id = %s \
+                     RETURNING down_votes;""", (votes, int(answer_id)))
         data = curr.fetchone()[0]
         dbconn.commit()
         return int(data)
@@ -75,7 +135,9 @@ class AnswerModel(BaseModel):
             data_items = data[:]
         resp = []
         for i, items in enumerate(data_items):
-            answer_id, question_id, user_id, text, up_votes, date, user_preferred = items
+            answer_id, question_id, user_id, text, up_votes, date, user_preferred, down_votes, voters = items
+            if not down_votes:
+                down_votes = 0
             username = self.get_username_by_id(int(user_id))
             answer = {
                "answer_id":int(answer_id),
@@ -84,6 +146,7 @@ class AnswerModel(BaseModel):
                "text":text,
                "date_created":date.strftime("%B %d, %Y"),
                "up_votes":int(up_votes),
+               "down_votes":int(down_votes),
                "user_preferred":user_preferred
             }
             resp.append(answer)

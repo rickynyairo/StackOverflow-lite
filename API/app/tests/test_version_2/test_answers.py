@@ -160,12 +160,23 @@ class TestAnswers(unittest.TestCase):
                                  content_type='application/json')
         self.assertEqual(result.status_code, 200)
         self.assertEqual(result.json['new_votes'], "1")
+        # attempting to upvote again should undo the upvote
+        result = self.client.put(path,
+                                 headers=headers,
+                                 content_type='application/json')
+        self.assertEqual(result.json['new_votes'], "0") 
+        
+                                        
         path  = "/api/v2/questions/{}/answers/{}/downvote".format(question_id,
                                                          answer_id)
         result = self.client.put(path,
                                  headers=headers,
                                  content_type='application/json')
         self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.json['new_votes'], "1")
+        result = self.client.put(path,
+                                 headers=headers,
+                                 content_type='application/json')
         self.assertEqual(result.json['new_votes'], "0")
 
     def test_get_answers_by_user(self):
