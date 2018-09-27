@@ -79,7 +79,7 @@ function signUp(){
     "email":thisElem("email").value,
     "password":thisElem("password").value
   };
-  path = "/api/v2/auth/signup";
+  let path = "/api/v2/auth/signup";
   postData(path, newUser)
   .then((res) => {
    if (res.status == 201){

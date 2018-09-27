@@ -1,7 +1,8 @@
+let server;
 describe("IndexJS Functions", function() {
-  let server;
+  
   beforeEach(()=>{
-    server = sinon.fakeServer.create();
+    server = sinon.createFakeServer();
     let inner = `<div id="myModal" class="modal">
                   <div id = "modalContent" class="modal-content">
                     <span class="close">&times;</span>
@@ -53,10 +54,13 @@ describe("IndexJS Functions", function() {
     });
 
     it("should collect values from the respective DOM elements and make a POST request", function(){
-      server.respondWith("POST", "api/v2/auth/signup",
+      let port  = window.location.port;
+      let host = window.location.hostname;
+      server.respondWith("POST", `http://${host}:${port}/api/v2/auth/signup`,
                        [201, { "Content-Type": "application/json" },
-                        '{ "message": "success", "AuthToken": "testToken", "username":"testUname", "user_id":"1" }']);
+                        '{ "message": "success", "AuthToken": "testToken", "username":"testUname", "user_id":"1" }']);                        
       thisElem("submitBtn").click();
+      server.respond();
       expect(thisElem("modalContent").children.length).toBeGreaterThan(1);
     });
   });
