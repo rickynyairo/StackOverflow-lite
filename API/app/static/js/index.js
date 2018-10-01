@@ -91,7 +91,7 @@ function signUp(){
     else{
       res.json().then((data) => {
         console.log("Failed: \n"+data);
-        showDialog(JSON.stringify(data));
+        showDialog(JSON.stringify(data.message));
       });
     }
   })
