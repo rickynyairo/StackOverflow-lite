@@ -270,6 +270,9 @@ textarea{
 #signOutLink{
   display: none;
 }
+#signUpLink{
+  display: inline-block;
+}
 .acceptAnsBtn{
   display: none;
 }

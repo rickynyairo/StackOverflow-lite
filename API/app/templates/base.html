@@ -20,6 +20,7 @@
       <a onclick="loadProfile()" id="profileLink"></a>
       <a onclick="signOut()" id="signOutLink">Sign Out</a>
       <a href="{{ url_for('ui.login') }}" id="signInLink">Sign In</a>
+      <a href="{{ url_for('ui.signup') }}" id="signUpLink">Sign Up</a>
     </nav>
     {% block body %}
     {% endblock %}

@@ -8,7 +8,7 @@ from werkzeug.exceptions import NotFound
 from ..api.version2.models.question_model import QuestionModel
 from ..api.version2.models.user_model import UserModel
 
-class LandingPage(MethodView):
+class SignupPage(MethodView):
     """Encapsulates the views for the landing page"""
     def get(self):
         """returns the index page"""

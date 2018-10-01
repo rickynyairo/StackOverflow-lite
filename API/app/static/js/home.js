@@ -61,6 +61,7 @@ function validUser(resp){
         validatedUser = true;
         thisElem("postQuestionFieldset").style.display = "block";
         thisElem("signOutLink").style.display = "block";
+        thisElem("signUpLink").style.display = "none";
         thisElem("signInLink").style.display = "none";
         thisElem("profileLink").innerHTML = localStorage.getItem("username");
         thisElem("profileLink").style.display = "inline-block";
