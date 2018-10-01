@@ -48,7 +48,7 @@ function postQuestion(){
                 });
             }else{
                 result.json().then((data) => {
-                    showDialog(JSON.stringify(data));
+                    showDialog(JSON.stringify(data.message));
                 });
             }
         })
@@ -95,7 +95,7 @@ function editQuestion(question){
                 }else{
                     res.json().then((data) => {
                         console.info("Failed: ", data);
-                        thisElem("editWarnings").innerHTML = JSON.dumps(data)
+                        thisElem("editWarnings").innerHTML = JSON.dumps(data.message);
                     });
                 }
             })
@@ -130,7 +130,7 @@ function deleteQuestion(question){
             }else{
                 res.json().then((data) => {
                     console.info("Failed: ", data);
-                    showDialog(JSON.stringify(data));
+                    showDialog(JSON.stringify(data.message));
                 });
             }
         })
