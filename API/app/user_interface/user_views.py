@@ -62,6 +62,12 @@ class QuestionsPage(MethodView):
         """redirects to the home page"""
         return redirect(url_for('ui.home'), 303)
 
+class LandingPage(MethodView):
+    """Encapsulates the views for the questions page"""
+    def get(self):
+        """redirects to the home page"""
+        return redirect(url_for('ui.home'), 303)
+
 class LoginPage(MethodView):
     """Encapsulates the views for the login page"""
     def get(self):
