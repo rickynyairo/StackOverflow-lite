@@ -1,5 +1,5 @@
 API/flask-env
-API/.env
+API/*.env
 *__pycache__/
 *.pyc
 *.coverage
