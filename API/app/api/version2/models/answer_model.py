@@ -64,13 +64,24 @@ class AnswerModel(BaseModel):
         else:
             data = voters
             up_voters = data["up_voters"]
-            if user_id not in up_voters:
-                # the user has not upvoted the answer
+            down_voters = data['down_voters']
+            downvoted = False
+            if user_id not in up_voters and user_id not in down_voters:
+                # the user has not voted for the answer
                 up_voters.append(user_id)
-            else:
+            elif user_id not in up_voters and user_id in down_voters:
+                # user had downvoted the answer
+                down_voters.remove(user_id)
+                downvoted = True
+                up_voters.append(user_id)
+            elif user_id in up_voters:
+                # user had upvoted the answer
                 up_voters.remove(user_id)
                 votes = -1
-            data = json.dumps({ "up_voters":up_voters, "down_voters":data["down_voters"] })
+            if downvoted:
+                curr.execute("""UPDATE answers SET down_votes = \
+                     down_votes - 1 WHERE answer_id = %s;""", (int(answer_id),))
+            data = json.dumps({ "up_voters":up_voters, "down_voters":down_voters })
         query = "UPDATE answers SET voters = %s WHERE answer_id = %s RETURNING voters;"
         # import pdb;pdb.set_trace()
         curr.execute(query, (data, answer_id))
@@ -102,12 +113,23 @@ class AnswerModel(BaseModel):
         else:
             data = voters
             down_voters = data["down_voters"]
-            if user_id not in down_voters:
-                # the user has not downvoted the answer
+            up_voters = data["up_voters"]
+            upvoted = False
+            if user_id not in down_voters and user_id not in up_voters:
+                # the user has not voted for the answer
                 down_voters.append(user_id)
-            else:
+            elif user_id not in down_voters and user_id in up_voters:
+                # the user had upvoted the answer
+                up_voters.remove(user_id)
+                upvoted = True
+                down_voters.append(user_id)
+            elif user_id in down_voters:
+                # user had down_voted the answer
                 down_voters.remove(user_id)
                 votes = -1
+            if upvoted:
+                curr.execute("""UPDATE answers SET up_votes = \
+                     up_votes - 1 WHERE answer_id = %s;""", (int(answer_id),))
             data = json.dumps({ "up_voters":data["up_voters"], "down_voters":down_voters })
         query = "UPDATE answers SET voters = %s WHERE answer_id = %s RETURNING voters;"
         # import pdb;pdb.set_trace()
