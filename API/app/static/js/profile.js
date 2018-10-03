@@ -13,6 +13,15 @@ function openTab(evt, tabName) {
     evt.currentTarget.className += " active";
 }
 
+function getAnswerQuestions(){
+    let answers = thisElem("answersDiv").children;
+    Array.from(answers).forEach((answer) => {
+        let qId = parseInt(answer.getAttribute("name"));
+        let aId = answer.id
+        let questionLink = `<a href="/questions/${qId}">See Question</a>`;
+        makeElement("p", "class", "answerMeta", aId, questionLink);
+    });
+}
 function validProfileUser(resp){
     if (resp.message == "Valid"){
         thisElem("answerTab").style.display = "block";

@@ -20,13 +20,15 @@ function mouseIn(answer){
         username = unameElem.innerHTML;
     }
     if (localStorage.getItem("username") == username){
-        let acceptBtn = answer.children[answer.children.length-1];
+        let answerButtons = answer.getElementsByTagName("button");
+        let acceptBtn = answerButtons[answerButtons.length - 1];
         acceptBtn.style.display = "inline-block";
     } 
 }
 
 function mouseOut(answer){
-    let acceptBtn = answer.children[answer.children.length-1];
+    let answerButtons = answer.getElementsByTagName("button");
+    let acceptBtn = answerButtons[answerButtons.length - 1];
     acceptBtn.style.display = "none";
 }
 
@@ -116,6 +118,7 @@ function getAnswers(path = `/api/v2/questions/${questionId}`){
                     let quesIds = answers.map(ans => parseInt(ans["question_id"]));
                     let questionsAnswered = new Set(quesIds).size;
                     thisElem("questionsAnswered").innerHTML = questionsAnswered;
+                    getAnswerQuestions();
                 }
             });
         }
