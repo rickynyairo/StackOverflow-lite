@@ -16,7 +16,7 @@ function getMostAnswered(){
         }
         else{
             response.json().then((data) => {
-                console.log("Failed:\n" + data);
+                showDialog(JSON.stringify(data));
             });
         }
     });
@@ -41,7 +41,6 @@ function postQuestion(){
             if (result.status == 201){
                 // question posted successfully
                 result.json().then((resp) => {
-                    console.log("question posted: ", resp);
                     thisElem("questionText").value = "";
                     thisElem("questionDescription").value = "";
                     refreshQuestions();
@@ -53,7 +52,7 @@ function postQuestion(){
             }
         })
         .catch((err) => {
-            console.log(err);
+            showDialog(JSON.stringify(err));
         });
     }
 }
@@ -89,17 +88,15 @@ function editQuestion(question){
             putData({path, data, token})
             .then((res) => {
                 if (res.status == 200){
-                    res.json().then((data) => {console.info(data);});
                     thisElem("myModal").style.display = "none";
                     refreshQuestions();
                 }else{
                     res.json().then((data) => {
-                        console.info("Failed: ", data);
                         thisElem("editWarnings").innerHTML = JSON.dumps(data.message);
                     });
                 }
             })
-            .catch((err) => {console.error("Error: ", err);});
+            .catch((err) => {showDialog(JSON.stringify(err));});
         }
     });
     thisElem("cancel").addEventListener("click", () => {
@@ -124,16 +121,14 @@ function deleteQuestion(question){
         deleteData({path, token})
         .then((res) => {
             if (res.status == 202){
-                res.json().then((data) => {console.info(data);});
                 thisElem("myModal").style.display = "none";
                 refreshQuestions();
             }else{
                 res.json().then((data) => {
-                    console.info("Failed: ", data);
                     showDialog(JSON.stringify(data.message));
                 });
             }
         })
-        .catch((err) => {console.error("Error: ", err);});
+        .catch((err) => {showDialog(JSON.stringify(err));});
     });
 }

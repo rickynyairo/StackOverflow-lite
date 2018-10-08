@@ -50,11 +50,11 @@ function getQuestions(path="/api/v2/questions"){
         }
         else{
             response.json().then((data) => {
-                console.log("Failed:\n" + data);
+                showDialog(JSON.stringify(data));
             });
         }
     })
-    .catch(err => {console.error("Error: ", err);});
+    .catch(err => {showDialog(JSON.stringify(err));});
 }
 function validUser(resp){
     if (resp.message === "Valid"){

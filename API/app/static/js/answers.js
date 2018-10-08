@@ -124,7 +124,7 @@ function getAnswers(path = `/api/v2/questions/${questionId}`){
         }
         else{
             response.json().then((data) => {
-                console.log("Failed:\n" + data);
+                showDialog(JSON.stringify(data));
             });
         }
     });
@@ -170,7 +170,7 @@ function postAnswer(answer){
         }
     })
     .catch(error=>{
-        console.log("Error: ", error);
+        showDialog(JSON.stringify(error));
     })
 }
 
@@ -188,18 +188,17 @@ function voteAnswer(button){
     .then((res) => {
         if (res.status == 200){
             res.json().then(data => {
-                console.log("Success: ", data);
                 refreshAnswers();
             });
         }
         else{
             res.json().then(data => {
-                console.log("Failed: ", data);
+                showDialog(JSON.stringify(data));
             });
         }
     })
     .catch(error => {
-        console.log("Error: ", error)
+        showDialog(JSON.stringify(error));
     });
 }
 
@@ -256,12 +255,11 @@ function editAnswer(question){
                     refreshAnswers();
                 }else{
                     res.json().then((data) => {
-                        console.info("Failed: ", data);
                         thisElem("editWarnings").innerHTML = JSON.stringify(data.message);
                     });
                 }
             })
-            .catch((err) => {console.error("Error: ", err);});
+            .catch((err) => {showDialog(JSON.stringify(err));});
         }
     });
     thisElem("cancel").addEventListener("click", () => {

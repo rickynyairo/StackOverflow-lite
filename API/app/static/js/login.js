@@ -19,19 +19,17 @@ function login(){
   .then((res) => {
    if (res.status == 200){
       res.json().then((data) => {
-        console.log(data);
         localStorage.setItem("AuthToken", data["AuthToken"]);
         window.location.href = "home";
       });
     }
     else{
       res.json().then((data) => {
-        console.log("Failed: \n"+data);
         showDialog(JSON.stringify(data));
       });
     }
   })
-  .catch(function(err) {
-    console.log('Fetch Error :-S', err);
+  .catch((err) => {
+    showDialog(JSON.stringify(err));
   });
 }

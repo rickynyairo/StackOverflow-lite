@@ -90,13 +90,12 @@ function signUp(){
     }
     else{
       res.json().then((data) => {
-        console.log("Failed: \n"+data);
         showDialog(JSON.stringify(data.message));
       });
     }
   })
-  .catch(function(err) {
-    console.log('Fetch Error :-S', err);
+  .catch((err) => {
+    showDialog(JSON.stringify(err));
   });
 }
 
@@ -106,14 +105,13 @@ function signOut(){
   postData(path, {}, token)
   .then((res) => {
     if (res.status == 200){
-      res.json().then((data)=>{console.info(data);});
       window.location.href = "/home";
     }
     else{
-      res.json().then((data)=>{console.info(data);}); 
+      res.json().then((data)=>{showDialog(JSON.stringify(data));}); 
     }
   })
-  .catch((err)=>{console.error("Error: ", err);});
+  .catch((err)=>{showDialog(JSON.stringify(err));});
 }
 
 function validateUser(token, callBack){
