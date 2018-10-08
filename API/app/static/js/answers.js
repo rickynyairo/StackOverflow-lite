@@ -157,14 +157,12 @@ function postAnswer(answer){
     .then((res) => {
         if (res.status == 201){
             res.json().then(data=>{
-                console.log(data);
                 thisElem("answer").value = "";
                 refreshAnswers();
             });
         }
         else{
             res.json().then(data=>{
-                console.log("Failed: ", data);
                 showDialog(JSON.stringify(data));
             });
         }
